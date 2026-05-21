@@ -1,0 +1,258 @@
+[gd_scene format=3 uid="uid://drp82uarm5sjg"]
+
+[ext_resource type="Script" uid="uid://cujtno760tx2" path="res://Scripts/test_combat_gym.gd" id="1_nqkjc"]
+[ext_resource type="Script" uid="uid://d1rfmpj3ie3ip" path="res://Resources/Move.gd" id="2_1bv32"]
+[ext_resource type="PackedScene" uid="uid://vey4iwqmr78t" path="res://Scenes/battle manager/battle_arena.tscn" id="2_wnuto"]
+[ext_resource type="Script" uid="uid://du0mcmwag1pen" path="res://Resources/Stats.gd" id="4_1bv32"]
+[ext_resource type="Script" uid="uid://xyjeoprc8rta" path="res://Resources/ElementAffinityEntry.gd" id="4_60cw4"]
+[ext_resource type="Resource" uid="uid://dmsbu1r2bj8v1" path="res://Resources/Moves/fireball.tres" id="5_krc16"]
+[ext_resource type="Script" uid="uid://dwxgehexu25y4" path="res://Resources/PhysicalAffinityEntry.gd" id="5_suehm"]
+[ext_resource type="Resource" uid="uid://bjwxd7pumyfq5" path="res://Resources/Moves/grassball.tres" id="6_l0e8c"]
+[ext_resource type="Resource" uid="uid://bjj4i3ksplb0w" path="res://Resources/Moves/neonlight.tres" id="7_60cw4"]
+[ext_resource type="Resource" uid="uid://dde17amjunth" path="res://Resources/Moves/radium ball.tres" id="8_suehm"]
+[ext_resource type="Resource" uid="uid://b2agq8yoj4kc" path="res://Resources/Moves/snowball.tres" id="9_70ka3"]
+[ext_resource type="Resource" uid="uid://x8wt6hq5uks" path="res://Resources/Moves/water_gun.tres" id="10_p6ame"]
+[ext_resource type="Resource" uid="uid://c6kal3k3urd2f" path="res://Resources/Moves/zio.tres" id="11_rperh"]
+[ext_resource type="Resource" uid="uid://bc4ikxkhx5yts" path="res://Resources/Moves/Gun.tres" id="14_suehm"]
+[ext_resource type="PackedScene" uid="uid://dikhhlb2frkt5" path="res://Scenes/battler/battler.tscn" id="15_rperh"]
+[ext_resource type="Script" uid="uid://7272tw1kw6cp" path="res://Resources/Equipment.gd" id="16_l4kvx"]
+[ext_resource type="Resource" uid="uid://c0vkoko0p3x2r" path="res://Resources/Moves/Basic atk.tres" id="17_hf1gq"]
+[ext_resource type="Resource" uid="uid://ch6djndd7fns0" path="res://Resources/Equipment/test_weapon.tres" id="18_l4kvx"]
+
+[sub_resource type="Resource" id="Resource_ukifm"]
+script = ExtResource("4_1bv32")
+id = "ply_mc"
+character_name = "Null Tester"
+max_hp = 100
+max_mp = 100
+speed = 3
+magic = 30
+metadata/_custom_type_script = "uid://du0mcmwag1pen"
+
+[sub_resource type="Resource" id="Resource_c5se7"]
+script = ExtResource("2_1bv32")
+id = "Phy_Punch"
+move_name = "Punch"
+physical_type = 2
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_0mfjd"]
+script = ExtResource("4_60cw4")
+element = 1
+metadata/_custom_type_script = "uid://xyjeoprc8rta"
+
+[sub_resource type="Resource" id="Resource_pg5ye"]
+script = ExtResource("4_1bv32")
+id = "ply_pty2"
+character_name = "INT Tester"
+elemental_affinities = Array[ExtResource("4_60cw4")]([SubResource("Resource_0mfjd")])
+max_hp = 100
+max_mp = 100
+speed = 3
+strength = 50
+magic = 30
+metadata/_custom_type_script = "uid://du0mcmwag1pen"
+
+[sub_resource type="Resource" id="Resource_ed0pe"]
+script = ExtResource("2_1bv32")
+id = "Phy_Punch"
+move_name = "Punch"
+physical_type = 2
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_l4kvx"]
+script = ExtResource("2_1bv32")
+id = "mg_Thunder"
+move_name = "Thunder"
+target_type = 1
+is_magic = true
+element = 5
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_dk416"]
+script = ExtResource("2_1bv32")
+id = "mg_snowstorm"
+move_name = "SnowStorm"
+target_type = 3
+is_magic = true
+element = 3
+chance_applying_element = 100.0
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_a8fv2"]
+script = ExtResource("16_l4kvx")
+id = "test_sword"
+weapon_attack_move = ExtResource("17_hf1gq")
+bonus_max_hp = 2
+bonus_strength = 3
+bonus_magic = 4
+bonus_crit_rate = 0.2
+bonus_crit_dmg = 0.5
+metadata/_custom_type_script = "uid://7272tw1kw6cp"
+
+[sub_resource type="Resource" id="Resource_pl0bs"]
+script = ExtResource("16_l4kvx")
+id = "armor_test"
+equip_name = "Mock up Kevlar"
+equip_desc = "Kevlar"
+slot_type = 1
+bonus_physical_def = 5
+bonus_magic_def = 5
+metadata/_custom_type_script = "uid://7272tw1kw6cp"
+
+[sub_resource type="Resource" id="Resource_v2qia"]
+script = ExtResource("16_l4kvx")
+id = "shoe_test"
+equip_name = "Mock up Abbibas"
+equip_desc = "running shoe for Beginner"
+slot_type = 2
+bonus_luck = 4
+bonus_speed = 4
+metadata/_custom_type_script = "uid://7272tw1kw6cp"
+
+[sub_resource type="Resource" id="Resource_8ow6m"]
+script = ExtResource("2_1bv32")
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_kwgu1"]
+script = ExtResource("4_60cw4")
+element = 4
+affinity = 0
+metadata/_custom_type_script = "uid://xyjeoprc8rta"
+
+[sub_resource type="Resource" id="Resource_4dlrh"]
+script = ExtResource("4_60cw4")
+element = 2
+affinity = 2
+metadata/_custom_type_script = "uid://xyjeoprc8rta"
+
+[sub_resource type="Resource" id="Resource_hf1gq"]
+script = ExtResource("4_1bv32")
+id = "enm_monster2"
+character_name = "Coyote"
+elemental_affinities = Array[ExtResource("4_60cw4")]([SubResource("Resource_kwgu1"), SubResource("Resource_4dlrh")])
+max_hp = 4000
+speed = 4
+strength = 8
+magic = 9
+physical_def = 70
+magic_def = 65
+metadata/_custom_type_script = "uid://du0mcmwag1pen"
+
+[sub_resource type="Resource" id="Resource_lu6nk"]
+script = ExtResource("2_1bv32")
+move_name = "Punch"
+physical_type = 2
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[node name="CombatGYM" type="Control" unique_id=1231679415 node_paths=PackedStringArray("battle_manager", "damage_label", "button_container", "player_party_stats_label", "enemy_party_stats_label", "turn_manipulation_container", "turn_order_container", "last_move_used_label")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
+script = ExtResource("1_nqkjc")
+battle_manager = NodePath("Battle_arena")
+damage_label = NodePath("Battlelogs")
+button_container = NodePath("BattleMoves")
+player_party_stats_label = NodePath("PlayerParty/PartyCurrentStats")
+enemy_party_stats_label = NodePath("EnemyParty/PartyCurrentStats")
+turn_manipulation_container = NodePath("TurnManipulator")
+turn_order_container = NodePath("TurnOrder")
+last_move_used_label = NodePath("LastUsedMove")
+
+[node name="Battle_arena" parent="." unique_id=143384498 instance=ExtResource("2_wnuto")]
+max_active_players = 2
+max_active_enemies = 2
+
+[node name="Hero" parent="Battle_arena/PlayerParty" parent_id_path=PackedInt32Array(143384498, 704442100) index="0" unique_id=1167692167]
+stats = SubResource("Resource_ukifm")
+basic_atk = SubResource("Resource_c5se7")
+skills_list = Array[ExtResource("2_1bv32")]([ExtResource("5_krc16"), ExtResource("6_l0e8c"), ExtResource("7_60cw4"), ExtResource("8_suehm"), ExtResource("9_70ka3"), ExtResource("10_p6ame"), ExtResource("11_rperh"), ExtResource("14_suehm")])
+
+[node name="Hero2" parent="Battle_arena/PlayerParty" parent_id_path=PackedInt32Array(143384498, 704442100) index="1" unique_id=97719253 instance=ExtResource("15_rperh")]
+stats = SubResource("Resource_pg5ye")
+basic_atk = SubResource("Resource_ed0pe")
+skills_list = Array[ExtResource("2_1bv32")]([ExtResource("5_krc16"), ExtResource("6_l0e8c"), SubResource("Resource_l4kvx"), SubResource("Resource_dk416")])
+equipped_weapon = SubResource("Resource_a8fv2")
+equipped_armor = SubResource("Resource_pl0bs")
+equipped_shoe = SubResource("Resource_v2qia")
+
+[node name="Slime" parent="Battle_arena/EnemyParty" parent_id_path=PackedInt32Array(143384498, 1938227301) index="0" unique_id=1094677972]
+skills_list = Array[ExtResource("2_1bv32")]([SubResource("Resource_8ow6m")])
+
+[node name="Slime2" parent="Battle_arena/EnemyParty" parent_id_path=PackedInt32Array(143384498, 1938227301) index="1" unique_id=540048331 instance=ExtResource("15_rperh")]
+stats = SubResource("Resource_hf1gq")
+basic_atk = SubResource("Resource_lu6nk")
+skills_list = Array[ExtResource("2_1bv32")]([SubResource("Resource_8ow6m")])
+equipped_armor = ExtResource("18_l4kvx")
+
+[node name="Battlelogs" type="Label" parent="." unique_id=1155352905]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 70.0
+offset_right = 880.0
+offset_bottom = 560.0
+text = "logs"
+
+[node name="BattleMoves" type="VBoxContainer" parent="." unique_id=1497715568]
+layout_mode = 0
+offset_left = 920.0
+offset_top = 70.0
+offset_right = 1346.0
+offset_bottom = 560.0
+
+[node name="PlayerParty" type="VBoxContainer" parent="." unique_id=527507764]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 610.0
+offset_right = 640.0
+offset_bottom = 748.0
+
+[node name="PartyCurrentStats" type="Label" parent="PlayerParty" unique_id=1568291982]
+layout_mode = 2
+text = "Party"
+
+[node name="EnemyParty" type="VBoxContainer" parent="." unique_id=1924701946]
+layout_mode = 0
+offset_left = 726.0
+offset_top = 610.0
+offset_right = 1346.0
+offset_bottom = 748.0
+
+[node name="PartyCurrentStats" type="Label" parent="EnemyParty" unique_id=1356810402]
+layout_mode = 2
+text = "party"
+horizontal_alignment = 2
+
+[node name="TurnManipulator" type="HBoxContainer" parent="." unique_id=1278202140]
+layout_mode = 0
+offset_left = 920.0
+offset_top = 20.0
+offset_right = 1346.0
+offset_bottom = 60.0
+
+[node name="TurnOrder" type="HBoxContainer" parent="." unique_id=2057287998]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 900.0
+offset_bottom = 60.0
+
+[node name="Turn" type="Label" parent="TurnOrder" unique_id=1291834396]
+layout_mode = 2
+text = "Turn"
+
+[node name="LastUsedMove" type="Label" parent="." unique_id=69459991]
+layout_mode = 0
+offset_left = 650.0
+offset_top = 4.0
+offset_right = 690.0
+offset_bottom = 27.0
+text = "Move"
+horizontal_alignment = 1
+
+[editable path="Battle_arena"]
+[editable path="Battle_arena/PlayerParty/Hero"]
+[editable path="Battle_arena/PlayerParty/Hero2"]

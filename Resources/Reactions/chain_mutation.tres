@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3 uid="uid://d33iji6rgpswu"]
+
+[ext_resource type="Script" uid="uid://j0r7ctwoj6l0" path="res://Resources/StatusEffect.gd" id="1_pbbyc"]
+
+[resource]
+script = ExtResource("1_pbbyc")
+id = "chain_mutation"
+effect_name = "Mutation"
+description = "Target Atk Up, High DoT, Heal Lowest friendly party each turn"
+duration_turns = 4
+dot_dmg = 30
+heals_lowest_ally_per_turn = 25
+stat_mult_strength = 0.5
+is_chain_reaction = true
+reaction_primer = 4
+reaction_trigger = 7

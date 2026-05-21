@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c25b700wpokha"]
+
+[ext_resource type="Script" uid="uid://crnf1kxh0xyut" path="res://Resources/chain_reaction_importer.gd" id="1_043ua"]
+
+[node name="Node" type="Node" unique_id=1712176768]
+script = ExtResource("1_043ua")

@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://dikhhlb2frkt5"]
+
+[ext_resource type="Script" uid="uid://bix0nre4oyvm8" path="res://Scenes/battler/battler.gd" id="1_7jvhn"]
+[ext_resource type="Script" uid="uid://bgerfanvn3s2c" path="res://Scripts/Battler/stats_manager.gd" id="2_exy5k"]
+[ext_resource type="Script" uid="uid://xb0o13dljng8" path="res://Scripts/Battler/status_manager.gd" id="3_bqepd"]
+[ext_resource type="Script" uid="uid://dfwonxve02444" path="res://Scripts/Battler/down_manager.gd" id="4_g1s5l"]
+[ext_resource type="Script" path="res://Scripts/Battler/affinity_manager.gd" id="5_affm1"]
+
+[node name="Battler" type="CharacterBody2D" unique_id=1167692167]
+script = ExtResource("1_7jvhn")
+
+[node name="StatsManager" type="Node" parent="." unique_id=816831854]
+script = ExtResource("2_exy5k")
+
+[node name="StatusManager" type="Node" parent="." unique_id=102106077]
+script = ExtResource("3_bqepd")
+
+[node name="AffinityManager" type="Node" parent="." unique_id=218746981]
+script = ExtResource("5_affm1")
+
+[node name="DownManager" type="Node" parent="." unique_id=8045499]
+script = ExtResource("4_g1s5l")

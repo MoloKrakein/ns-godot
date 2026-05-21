@@ -1,0 +1,534 @@
+[
+  {
+	"id": "chain_short_circuit",
+	"name": "Short Circuit",
+	"description": "Stun target for 1 turn and area damage",
+	"effect_type": 1,
+	"duration_turns": 1,
+	"is_chain_reaction": true,
+	"applies_to_all_enemies": true, 
+	"damage": {
+	  "dot_dmg": 5,
+	  "heals_lowest_ally": 0,
+	  "heals_attacker_mp": 0,
+	  "down_meter_fill": 0
+	},
+	"locks": {
+	  "is_stunned": true,
+	  "guarantees_crit": false,
+	  "locks_magic": false,
+	  "locks_physical": false,
+	  "disables_dodge": false,
+	  "disables_healing": false,
+	  "clears_statuses": false
+	},
+	"stat_multipliers": {
+	  "defense": 1,
+	  "magic": 1,
+	  "strength": 1,
+	  "accuracy": 1
+	},
+	"macro": {
+	  "causes_friendly_fire": 0.0,
+	  "randomizes_weakness": false,
+	  "steals_defense": false,
+	  "changes_turn_queue": false,
+	  "spreads_radium_on_down": false,
+	  "scales_with_debuffs": false,
+	  "is_conductive": true,
+	  "decay_per_jump": 0.3,
+	  "base_stun_chance": 0.8
+	}
+  },
+  {
+	"id": "chain_nerve_shock",
+	"name": "Nerve Shock",
+	"description": "Lower Magic Atk, Down Meter fill faster, Target will attack member party",
+	"effect_type": 1,
+	"duration_turns": 3,
+	"is_chain_reaction": true,
+	"damage": {
+	  "dot_dmg": 0,
+	  "heals_lowest_ally": 0,
+	  "heals_attacker_mp": 0,
+	  "down_meter_fill": 10
+	},
+	"locks": {
+	  "is_stunned": false,
+	  "guarantees_crit": false,
+	  "locks_magic": false,
+	  "locks_physical": false,
+	  "disables_dodge": false,
+	  "disables_healing": false,
+	  "clears_statuses": false
+	},
+	"stat_multipliers": {
+	  "defense": 1,
+	  "magic": 0.5,
+	  "strength": 1,
+	  "accuracy": 1
+	},
+	"macro": {
+	  "causes_friendly_fire": 0.5,
+	  "randomizes_weakness": false,
+	  "steals_defense": false,
+	  "changes_turn_queue": false,
+	  "spreads_radium_on_down": false,
+	  "scales_with_debuffs": false,
+	  "is_conductive": false,
+	  "decay_per_jump": 0.3,
+	  "base_stun_chance": 0.8
+	}
+  },
+  {
+	"id": "chain_EMP",
+	"name": "EMP",
+	"description": "Lock magic attack, remove buff status and add random debuff, change target queue turn",
+	"effect_type": 1,
+	"duration_turns": 3,
+	"is_chain_reaction": true,
+	"applies_to_all_enemies": true,
+	"removes_buffs": true,
+	"add_random_nerfs": 1,
+	"damage": {
+	  "dot_dmg": 0,
+	  "heals_lowest_ally": 0,
+	  "heals_attacker_mp": 0,
+	  "down_meter_fill": 10
+	},
+	"locks": {
+	  "is_stunned": false,
+	  "guarantees_crit": false,
+	  "locks_magic": true,
+	  "locks_physical": false,
+	  "disables_dodge": false,
+	  "disables_healing": false,
+	  "clears_statuses": true
+	},
+	"stat_multipliers": {
+	  "defense": 1,
+	  "magic": 1,
+	  "strength": 1,
+	  "accuracy": 1
+	},
+	"macro": {
+	  "causes_friendly_fire": 0.0,
+	  "randomizes_weakness": false,
+	  "steals_defense": false,
+	  "changes_turn_queue": true,
+	  "spreads_radium_on_down": false,
+	  "scales_with_debuffs": false,
+	  "is_conductive": false,
+	  "decay_per_jump": 0.3,
+	  "base_stun_chance": 0.8
+	}
+  },
+  {
+	"id": "chain_splinter",
+	"name": "Splinter",
+	"description": "Steal 50% target defenses stats",
+	"effect_type": 1,
+	"duration_turns": 2,
+	"is_chain_reaction": true,
+	"damage": {
+	  "dot_dmg": 0,
+	  "heals_lowest_ally": 0,
+	  "heals_attacker_mp": 0,
+	  "down_meter_fill": 0
+	},
+	"locks": {
+	  "is_stunned": false,
+	  "guarantees_crit": false,
+	  "locks_magic": false,
+	  "locks_physical": false,
+	  "disables_dodge": false,
+	  "disables_healing": false,
+	  "clears_statuses": false
+	},
+	"stat_multipliers": {
+	  "defense": 0.5,
+	  "magic": 0.5,
+	  "strength": 1,
+	  "accuracy": 1
+	},
+	"macro": {
+	  "causes_friendly_fire": 0.0,
+	  "randomizes_weakness": false,
+	  "steals_defense": true,
+	  "changes_turn_queue": false,
+	  "spreads_radium_on_down": false,
+	  "scales_with_debuffs": false,
+	  "is_conductive": false,
+	  "decay_per_jump": 0.3,
+	  "base_stun_chance": 0.8
+	}
+  },
+  {
+	"id": "chain_overgrowth",
+	"name": "Overgrowth",
+	"description": "Disable Dodge, Disable Physical, Down Meter Fill faster, DoT, Heal MP  ",
+	"effect_type": 1,
+	"duration_turns": 3,
+	"is_chain_reaction": true,
+	"damage": {
+	  "dot_dmg": 20,
+	  "heals_lowest_ally": 0,
+	  "heals_attacker_mp": 5,
+	  "down_meter_fill": 5
+	},
+	"locks": {
+	  "is_stunned": false,
+	  "guarantees_crit": false,
+	  "locks_magic": false,
+	  "locks_physical": true,
+	  "disables_dodge": true,
+	  "disables_healing": false,
+	  "clears_statuses": false
+	},
+	"stat_multipliers": {
+	  "defense": 1,
+	  "magic": 1,
+	  "strength": 1,
+	  "accuracy": 1
+	},
+	"macro": {
+	  "causes_friendly_fire": 0.0,
+	  "randomizes_weakness": false,
+	  "steals_defense": false,
+	  "changes_turn_queue": false,
+	  "spreads_radium_on_down": false,
+	  "scales_with_debuffs": false,
+	  "is_conductive": false,
+	  "decay_per_jump": 0.3,
+	  "base_stun_chance": 0.8
+	}
+  },
+  {
+	"id": "chain_freeze",
+	"name": "Frozen",
+	"description": "Stun Target for 2 Turns. Removes on Physical hit.",
+	"effect_type": 1,
+	"duration_turns": 2,
+	"is_chain_reaction": true,
+	"removes_on_physical_hit": true,
+	"damage": {
+	  "dot_dmg": 0,
+	  "heals_lowest_ally": 0,
+	  "heals_attacker_mp": 0,
+	  "down_meter_fill": 0
+	},
+	"locks": {
+	  "is_stunned": true,
+	  "guarantees_crit": true,
+	  "locks_magic": false,
+	  "locks_physical": false,
+	  "disables_dodge": false,
+	  "disables_healing": false,
+	  "clears_statuses": false
+	},
+	"stat_multipliers": {
+	  "defense": 1,
+	  "magic": 1,
+	  "strength": 1,
+	  "accuracy": 1
+	},
+	"macro": {
+	  "causes_friendly_fire": 0.0,
+	  "randomizes_weakness": false,
+	  "steals_defense": false,
+	  "changes_turn_queue": false,
+	  "spreads_radium_on_down": false,
+	  "scales_with_debuffs": false,
+	  "is_conductive": false,
+	  "decay_per_jump": 0.3,
+	  "base_stun_chance": 0.8
+	}
+  },
+  {
+	"id": "chain_ionize",
+	"name": "Ionize",
+	"description": "Change Weakness into random, Random Lock Magic / Physical Skill",
+	"effect_type": 1,
+	"duration_turns": 3,
+	"is_chain_reaction": true,
+	"damage": {
+	  "dot_dmg": 0,
+	  "heals_lowest_ally": 0,
+	  "heals_attacker_mp": 0,
+	  "down_meter_fill": 0
+	},
+	"locks": {
+	  "is_stunned": false,
+	  "guarantees_crit": false,
+	  "locks_magic": true,
+	  "locks_physical": true,
+	  "disables_dodge": false,
+	  "disables_healing": false,
+	  "clears_statuses": false
+	},
+	"stat_multipliers": {
+	  "defense": 1,
+	  "magic": 1,
+	  "strength": 1,
+	  "accuracy": 1
+	},
+	"macro": {
+	  "causes_friendly_fire": 0.0,
+	  "randomizes_weakness": true,
+	  "steals_defense": false,
+	  "changes_turn_queue": false,
+	  "spreads_radium_on_down": false,
+	  "scales_with_debuffs": false,
+	  "is_conductive": false,
+	  "decay_per_jump": 0.0,
+	  "base_stun_chance": 0.0
+	}
+  },
+  {
+	"id": "chain_biohazard",
+	"name": "Biohazard",
+	"description": "DoT (Target), Physical Atk Down, When down give all party Radium status",
+	"effect_type": 1,
+	"duration_turns": 3,
+	"is_chain_reaction": true,
+	"spreads_radium_on_down": true,
+	"spreads_when_down": true,
+	"damage": {
+	  "dot_dmg": 15,
+	  "heals_lowest_ally": 0,
+	  "heals_attacker_mp": 0,
+	  "down_meter_fill": 0
+	},
+	"locks": {
+	  "is_stunned": false,
+	  "guarantees_crit": false,
+	  "locks_magic": false,
+	  "locks_physical": false,
+	  "disables_dodge": false,
+	  "disables_healing": false,
+	  "clears_statuses": false
+	},
+	"stat_multipliers": {
+	  "defense": 1,
+	  "magic": 1,
+	  "strength": 0.5,
+	  "accuracy": 1
+	},
+	"macro": {
+	  "causes_friendly_fire": 0.0,
+	  "randomizes_weakness": false,
+	  "steals_defense": false,
+	  "changes_turn_queue": false,
+	  "spreads_radium_on_down": true,
+	  "scales_with_debuffs": false,
+	  "is_conductive": false,
+	  "decay_per_jump": 0.0,
+	  "base_stun_chance": 0.0
+	}
+  },
+  {
+	"id": "chain_inferno",
+	"name": "Inferno",
+	"description": "AoE, DoT, fill down meter each turn",
+	"effect_type": 1,
+	"duration_turns": 4,
+	"is_chain_reaction": true,
+	"applies_to_all_enemies": true,
+	"damage": {
+	  "dot_dmg": 20,
+	  "heals_lowest_ally": 0,
+	  "heals_attacker_mp": 0,
+	  "down_meter_fill": 10
+	},
+	"locks": {
+	  "is_stunned": false,
+	  "guarantees_crit": false,
+	  "locks_magic": false,
+	  "locks_physical": false,
+	  "disables_dodge": false,
+	  "disables_healing": false,
+	  "clears_statuses": false
+	},
+	"stat_multipliers": {
+	  "defense": 1,
+	  "magic": 1,
+	  "strength": 1,
+	  "accuracy": 1
+	},
+	"macro": {
+	  "causes_friendly_fire": 0.0,
+	  "randomizes_weakness": false,
+	  "steals_defense": false,
+	  "changes_turn_queue": false,
+	  "spreads_radium_on_down": false,
+	  "scales_with_debuffs": false,
+	  "is_conductive": false,
+	  "decay_per_jump": 0.0,
+	  "base_stun_chance": 0.0
+	}
+  },
+  {
+	"id": "chain_mutation",
+	"name": "Mutation",
+	"description": "Target Atk Up, High DoT, Heal Lowest friendly party each turn",
+	"effect_type": 1,
+	"duration_turns": 4,
+	"is_chain_reaction": true,
+	"damage": {
+	  "dot_dmg": 30,
+	  "heals_lowest_ally": 25,
+	  "heals_attacker_mp": 0,
+	  "down_meter_fill": 0
+	},
+	"locks": {
+	  "is_stunned": false,
+	  "guarantees_crit": false,
+	  "locks_magic": false,
+	  "locks_physical": false,
+	  "disables_dodge": false,
+	  "disables_healing": false,
+	  "clears_statuses": false
+	},
+	"stat_multipliers": {
+	  "defense": 1,
+	  "magic": 1,
+	  "strength": 1.5,
+	  "accuracy": 1
+	},
+	"macro": {
+	  "causes_friendly_fire": 0.0,
+	  "randomizes_weakness": false,
+	  "steals_defense": false,
+	  "changes_turn_queue": false,
+	  "spreads_radium_on_down": false,
+	  "scales_with_debuffs": false,
+	  "is_conductive": false,
+	  "decay_per_jump": 0.0,
+	  "base_stun_chance": 0.0
+	}
+  },
+  {
+	"id": "chain_meltdown",
+	"name": "Meltdown",
+	"description": "Clear Status, Dmg bonus based on current debuff",
+	"effect_type": 1,
+	"duration_turns": 1,
+	"is_chain_reaction": true,
+	"removes_buffs": true,
+	"damage": {
+	  "dot_dmg": 0,
+	  "heals_lowest_ally": 0,
+	  "heals_attacker_mp": 0,
+	  "down_meter_fill": 0
+	},
+	"locks": {
+	  "is_stunned": false,
+	  "guarantees_crit": false,
+	  "locks_magic": false,
+	  "locks_physical": false,
+	  "disables_dodge": false,
+	  "disables_healing": false,
+	  "clears_statuses": true
+	},
+	"stat_multipliers": {
+	  "defense": 1,
+	  "magic": 1,
+	  "strength": 1,
+	  "accuracy": 1
+	},
+	"macro": {
+	  "causes_friendly_fire": 0.0,
+	  "randomizes_weakness": false,
+	  "steals_defense": false,
+	  "changes_turn_queue": false,
+	  "spreads_radium_on_down": false,
+	  "scales_with_debuffs": true,
+	  "is_conductive": false,
+	  "decay_per_jump": 0.0,
+	  "base_stun_chance": 0.0
+	}
+  },
+  {
+	"id": "chain_flashbang",
+	"name": "Flashbang",
+	"description": "Accuracy Down, Next turn 50% chance attack friend",
+	"effect_type": 1,
+	"duration_turns": 3,
+	"is_chain_reaction": true,
+	"damage": {
+	  "dot_dmg": 0,
+	  "heals_lowest_ally": 0,
+	  "heals_attacker_mp": 0,
+	  "down_meter_fill": 0
+	},
+	"locks": {
+	  "is_stunned": false,
+	  "guarantees_crit": false,
+	  "locks_magic": false,
+	  "locks_physical": false,
+	  "disables_dodge": false,
+	  "disables_healing": false,
+	  "clears_statuses": false
+	},
+	"stat_multipliers": {
+	  "defense": 1,
+	  "magic": 1,
+	  "strength": 1,
+	  "accuracy": 0.5
+	},
+	"macro": {
+	  "causes_friendly_fire": 0.5,
+	  "randomizes_weakness": false,
+	  "steals_defense": false,
+	  "changes_turn_queue": false,
+	  "spreads_radium_on_down": false,
+	  "scales_with_debuffs": false,
+	  "is_conductive": false,
+	  "decay_per_jump": 0.0,
+	  "base_stun_chance": 0.0
+	}
+  },
+  {
+	"id": "chain_singularity",
+    "name": "Singularity",
+    "description": "AoE, Friendly Fire, Burst Dmg, All party debuff, Disable Healing",
+    "effect_type": 1,
+    "duration_turns": 3,
+    "is_chain_reaction": true,
+    "applies_to_all_enemies": true,
+    "applies_to_all_allies": true,
+    "affects_both_parties": true,
+	"damage": {
+	  "dot_dmg": 40,
+	  "heals_lowest_ally": 0,
+	  "heals_attacker_mp": 0,
+	  "down_meter_fill": 0
+	},
+	"locks": {
+	  "is_stunned": false,
+	  "guarantees_crit": false,
+	  "locks_magic": false,
+	  "locks_physical": false,
+	  "disables_dodge": false,
+	  "disables_healing": true,
+	  "clears_statuses": false
+	},
+	"stat_multipliers": {
+	  "defense": 0.7,
+	  "magic": 0.7,
+	  "strength": 0.7,
+	  "accuracy": 1
+	},
+	"macro": {
+	  "causes_friendly_fire": 1.0,
+	  "randomizes_weakness": false,
+	  "steals_defense": false,
+	  "changes_turn_queue": false,
+	  "spreads_radium_on_down": false,
+	  "scales_with_debuffs": false,
+	  "is_conductive": false,
+	  "decay_per_jump": 0.0,
+	  "base_stun_chance": 0.0
+	}
+  }
+]

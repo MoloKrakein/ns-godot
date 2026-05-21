@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://cre3m3calsacs"]
+
+[ext_resource type="Script" uid="uid://dgsenwnqb4ulc" path="res://Scripts/UI/BattlerHUDPanel.gd" id="1_dgbfi"]
+
+[node name="BattlerHUDPanel" type="Control" unique_id=954404243]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_dgbfi")

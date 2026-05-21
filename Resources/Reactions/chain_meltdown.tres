@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3 uid="uid://qgi7r8lthfs6"]
+
+[ext_resource type="Script" uid="uid://j0r7ctwoj6l0" path="res://Resources/StatusEffect.gd" id="1_nlknj"]
+
+[resource]
+script = ExtResource("1_nlknj")
+id = "chain_meltdown"
+effect_name = "Meltdown"
+description = "Clear Status, Dmg bonus based on current debuff"
+is_chain_reaction = true
+reaction_primer = 1
+reaction_trigger = 7
+clears_all_statuses = true
+scales_with_debuffs = true
+removes_buffs = true

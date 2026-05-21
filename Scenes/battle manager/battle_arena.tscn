@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://vey4iwqmr78t"]
+
+[ext_resource type="Script" uid="uid://xlpgodoxh5r5" path="res://Scenes/battle manager/battlemanager.gd" id="1_76ps5"]
+[ext_resource type="PackedScene" uid="uid://dikhhlb2frkt5" path="res://Scenes/battler/battler.tscn" id="2_hsv08"]
+[ext_resource type="Resource" uid="uid://k28y7cm7evjx" path="res://Resources/Party/Player/hero_stats.tres" id="3_thb7o"]
+[ext_resource type="Resource" uid="uid://c0vkoko0p3x2r" path="res://Resources/Moves/Basic atk.tres" id="4_3lcit"]
+[ext_resource type="Resource" uid="uid://iestkwd56067" path="res://Resources/Party/Enemy/slime.tres" id="8_jgk8b"]
+[ext_resource type="Resource" uid="uid://ch6djndd7fns0" path="res://Resources/Equipment/test_weapon.tres" id="8_mmcye"]
+[ext_resource type="Resource" uid="uid://bicpmwrttbekf" path="res://Resources/Equipment/test_armor.tres" id="9_jgk8b"]
+[ext_resource type="Resource" uid="uid://gpdpm4lb403i" path="res://Resources/Equipment/test_shoe.tres" id="10_tmkku"]
+
+[node name="Battle_arena" type="Node2D" unique_id=143384498]
+script = ExtResource("1_76ps5")
+
+[node name="PlayerParty" type="Node2D" parent="." unique_id=704442100]
+
+[node name="Hero" parent="PlayerParty" unique_id=1167692167 instance=ExtResource("2_hsv08")]
+stats = ExtResource("3_thb7o")
+basic_atk = ExtResource("4_3lcit")
+equipped_weapon = ExtResource("8_mmcye")
+equipped_armor = ExtResource("9_jgk8b")
+equipped_shoe = ExtResource("10_tmkku")
+
+[node name="EnemyParty" type="Node2D" parent="." unique_id=1938227301]
+
+[node name="Slime" parent="EnemyParty" unique_id=1094677972 instance=ExtResource("2_hsv08")]
+stats = ExtResource("8_jgk8b")
+basic_atk = ExtResource("4_3lcit")
+equipped_armor = ExtResource("8_mmcye")

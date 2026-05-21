@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3 uid="uid://b3ahkuqrl262r"]
+
+[ext_resource type="Script" uid="uid://j0r7ctwoj6l0" path="res://Resources/StatusEffect.gd" id="1_6c1nf"]
+
+[resource]
+script = ExtResource("1_6c1nf")
+id = "chain_flashbang"
+effect_name = "Flashbang"
+description = "Accuracy Down, Next turn 50% chance attack friend"
+duration_turns = 3
+stat_mult_accuracy = -0.5
+is_chain_reaction = true
+reaction_primer = 1
+reaction_trigger = 6
+chance_friendly_fire = 0.5

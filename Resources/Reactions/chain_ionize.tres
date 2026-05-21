@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3 uid="uid://ecohtm4yvp8v"]
+
+[ext_resource type="Script" uid="uid://j0r7ctwoj6l0" path="res://Resources/StatusEffect.gd" id="1_gxcwi"]
+
+[resource]
+script = ExtResource("1_gxcwi")
+id = "chain_ionize"
+effect_name = "Ionize"
+description = "Change Weakness into random, Random Lock Magic / Physical Skill"
+duration_turns = 3
+locks_magic = true
+locks_physical = true
+flips_weaknesses = true
+is_chain_reaction = true
+reaction_primer = 2
+reaction_trigger = 6
