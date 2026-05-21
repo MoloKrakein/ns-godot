@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 755de82152ca9f54d85e54cadd7ddb33, type: 3}
+  m_Name: ChangeWeakness
+  m_EditorClassIdentifier: 
+  ItemName: Manipulate
+  ItemPower: 0
+  itemType: 4
+  Cost: 20
+  ItemDescription: Change Weakness
+  ItemSprite: {fileID: 21300000, guid: 75211ab1f47182a48a5a8b0251d7335a, type: 3}
+  isUsingHP: 0
