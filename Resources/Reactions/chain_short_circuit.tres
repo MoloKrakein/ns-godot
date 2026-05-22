@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3 uid="uid://2a0v3juuq02e"]
+
+[ext_resource type="Script" uid="uid://j0r7ctwoj6l0" path="res://Resources/StatusEffect.gd" id="1_ohp0j"]
+
+[resource]
+script = ExtResource("1_ohp0j")
+id = "chain_short_circuit"
+effect_name = "Short Circuit"
+description = "Stun target for 1 turn and area damage"
+is_conductive = true
+decay_per_jump = 0.3
+base_stun_chance = 0.8
+dot_dmg = 5
+is_stunned = true
+is_chain_reaction = true
+reaction_primer = 5
+reaction_trigger = 2
+applies_to_all_enemies = true

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3 uid="uid://bisl8xnyj3eql"]
+
+[ext_resource type="Script" uid="uid://j0r7ctwoj6l0" path="res://Resources/StatusEffect.gd" id="1_njljy"]
+
+[resource]
+script = ExtResource("1_njljy")
+id = "chain_nerve_shock"
+effect_name = "Nerve Shock"
+description = "Lower Magic Atk, Down Meter fill faster, Target will attack member party"
+duration_turns = 3
+decay_per_jump = 0.3
+base_stun_chance = 0.8
+down_meter_fill_per_turn = 10
+stat_mult_magic = -0.5
+is_chain_reaction = true
+reaction_primer = 5
+reaction_trigger = 3
+chance_friendly_fire = 0.5

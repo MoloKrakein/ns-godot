@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3 uid="uid://bs44oqhp5trlw"]
+
+[ext_resource type="Script" uid="uid://j0r7ctwoj6l0" path="res://Resources/StatusEffect.gd" id="1_nyq72"]
+
+[resource]
+script = ExtResource("1_nyq72")
+id = "chain_emp"
+effect_name = "EMP"
+description = "Lock magic attack, remove buff status and add random debuff, change target queue turn"
+duration_turns = 3
+is_conductive = true
+decay_per_jump = 0.3
+base_stun_chance = 0.8
+down_meter_fill_per_turn = 10
+locks_magic = true
+is_chain_reaction = true
+reaction_primer = 5
+reaction_trigger = 6
+clears_all_statuses = true
+changes_turn_queue = true
+applies_to_all_enemies = true
+removes_buffs = true
+add_random_nerfs = 1
