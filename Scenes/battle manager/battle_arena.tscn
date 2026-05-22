@@ -2,12 +2,93 @@
 
 [ext_resource type="Script" uid="uid://xlpgodoxh5r5" path="res://Scenes/battle manager/battlemanager.gd" id="1_76ps5"]
 [ext_resource type="PackedScene" uid="uid://dikhhlb2frkt5" path="res://Scenes/battler/battler.tscn" id="2_hsv08"]
-[ext_resource type="Resource" uid="uid://k28y7cm7evjx" path="res://Resources/Party/Player/hero_stats.tres" id="3_thb7o"]
-[ext_resource type="Resource" uid="uid://c0vkoko0p3x2r" path="res://Resources/Moves/Basic atk.tres" id="4_3lcit"]
-[ext_resource type="Resource" uid="uid://iestkwd56067" path="res://Resources/Party/Enemy/slime.tres" id="8_jgk8b"]
-[ext_resource type="Resource" uid="uid://ch6djndd7fns0" path="res://Resources/Equipment/test_weapon.tres" id="8_mmcye"]
-[ext_resource type="Resource" uid="uid://bicpmwrttbekf" path="res://Resources/Equipment/test_armor.tres" id="9_jgk8b"]
-[ext_resource type="Resource" uid="uid://gpdpm4lb403i" path="res://Resources/Equipment/test_shoe.tres" id="10_tmkku"]
+[ext_resource type="Script" uid="uid://xyjeoprc8rta" path="res://Resources/ElementAffinityEntry.gd" id="3_60ohh"]
+[ext_resource type="Texture2D" uid="uid://10ih2ctvhmsp" path="res://Arts/Character/enemy/pixil-frame-0.png" id="3_mmcye"]
+[ext_resource type="Texture2D" uid="uid://rf12p64ns14k" path="res://Arts/Character/enemy/pixil-frame-1.png" id="4_jgk8b"]
+[ext_resource type="Script" uid="uid://dwxgehexu25y4" path="res://Resources/PhysicalAffinityEntry.gd" id="4_rwj1c"]
+[ext_resource type="Script" uid="uid://du0mcmwag1pen" path="res://Resources/Stats.gd" id="5_es405"]
+[ext_resource type="Texture2D" uid="uid://dcsjks274mx07" path="res://Arts/Character/enemy/pixil-frame-2.png" id="5_tmkku"]
+[ext_resource type="Texture2D" uid="uid://djbwf46f10uxh" path="res://Arts/Character/enemy/pixil-frame-3.png" id="6_60ohh"]
+[ext_resource type="Texture2D" uid="uid://15h5n8tscy10" path="res://Arts/Background/bacgkround/pixil-frame-0.png" id="7_rwj1c"]
+[ext_resource type="Texture2D" uid="uid://cdcgj2nngck1l" path="res://Arts/Background/bacgkround/pixil-frame-1.png" id="8_es405"]
+[ext_resource type="Texture2D" uid="uid://itw6k1i3j45b" path="res://Arts/Background/bacgkround/pixil-frame-2.png" id="9_hnjxo"]
+[ext_resource type="Texture2D" uid="uid://c7hkk4w7l0ktp" path="res://Arts/Background/bacgkround/pixil-frame-3.png" id="10_gc473"]
+[ext_resource type="Texture2D" uid="uid://dgjygq4yi44iy" path="res://Arts/Background/bacgkround/pixil-frame-4.png" id="11_kuq2i"]
+
+[sub_resource type="Resource" id="Resource_hnjxo"]
+script = ExtResource("3_60ohh")
+metadata/_custom_type_script = "uid://xyjeoprc8rta"
+
+[sub_resource type="Resource" id="Resource_gc473"]
+script = ExtResource("5_es405")
+id = "plr_mc"
+character_name = "Noesa"
+elemental_affinities = Array[ExtResource("3_60ohh")]([SubResource("Resource_hnjxo")])
+metadata/_custom_type_script = "uid://du0mcmwag1pen"
+
+[sub_resource type="Resource" id="Resource_o8xxo"]
+metadata/__load_path__ = "res://Resources/Moves/Basic atk.tres"
+
+[sub_resource type="Resource" id="Resource_ok5f6"]
+metadata/__load_path__ = "res://Resources/Equipment/test_weapon.tres"
+
+[sub_resource type="Resource" id="Resource_adwav"]
+metadata/__load_path__ = "res://Resources/Equipment/test_armor.tres"
+
+[sub_resource type="Resource" id="Resource_tw058"]
+metadata/__load_path__ = "res://Resources/Equipment/test_shoe.tres"
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_n83wa"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_mmcye")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_jgk8b")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_tmkku")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_60ohh")
+}],
+"loop": true,
+"name": &"Idle",
+"speed": 5.0
+}]
+
+[sub_resource type="Resource" id="Resource_ohorb"]
+metadata/__load_path__ = "res://Resources/Party/Enemy/slime.tres"
+
+[sub_resource type="Resource" id="Resource_ejusq"]
+metadata/__load_path__ = "res://Resources/Moves/Basic atk.tres"
+
+[sub_resource type="Resource" id="Resource_fw3oc"]
+metadata/__load_path__ = "res://Resources/Equipment/test_weapon.tres"
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_6lhvi"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_rwj1c")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_es405")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_hnjxo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_gc473")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_kuq2i")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
 
 [node name="Battle_arena" type="Node2D" unique_id=143384498]
 script = ExtResource("1_76ps5")
@@ -15,15 +96,35 @@ script = ExtResource("1_76ps5")
 [node name="PlayerParty" type="Node2D" parent="." unique_id=704442100]
 
 [node name="Hero" parent="PlayerParty" unique_id=1167692167 instance=ExtResource("2_hsv08")]
-stats = ExtResource("3_thb7o")
-basic_atk = ExtResource("4_3lcit")
-equipped_weapon = ExtResource("8_mmcye")
-equipped_armor = ExtResource("9_jgk8b")
-equipped_shoe = ExtResource("10_tmkku")
+stats = SubResource("Resource_gc473")
+basic_atk = SubResource("Resource_o8xxo")
+equipped_weapon = SubResource("Resource_ok5f6")
+equipped_armor = SubResource("Resource_adwav")
+equipped_shoe = SubResource("Resource_tw058")
+
+[node name="HeroSprite" type="AnimatedSprite2D" parent="PlayerParty/Hero" unique_id=2031156688]
+position = Vector2(345, 758)
+scale = Vector2(6.0225, 6.0225)
+sprite_frames = SubResource("SpriteFrames_n83wa")
+animation = &"Idle"
+frame_progress = 0.48552534
+speed_scale = 0.5
 
 [node name="EnemyParty" type="Node2D" parent="." unique_id=1938227301]
 
 [node name="Slime" parent="EnemyParty" unique_id=1094677972 instance=ExtResource("2_hsv08")]
-stats = ExtResource("8_jgk8b")
-basic_atk = ExtResource("4_3lcit")
-equipped_armor = ExtResource("8_mmcye")
+stats = SubResource("Resource_ohorb")
+basic_atk = SubResource("Resource_ejusq")
+equipped_armor = SubResource("Resource_fw3oc")
+
+[node name="Bg" type="Node2D" parent="." unique_id=45225204]
+metadata/_edit_lock_ = true
+
+[node name="Background" type="AnimatedSprite2D" parent="Bg" unique_id=1752176268]
+z_index = -10
+position = Vector2(1100, 1093)
+scale = Vector2(8.734375, 8.734375)
+sprite_frames = SubResource("SpriteFrames_6lhvi")
+frame = 1
+frame_progress = 0.7877325
+metadata/_edit_lock_ = true

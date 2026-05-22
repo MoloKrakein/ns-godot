@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3 uid="uid://new_chain_gravity"]
+
+[ext_resource type="Script" uid="uid://status_script" path="res://Resources/StatusEffect.gd" id="1_status"]
+
+[resource]
+script = ExtResource("1_status")
+id = "chain_gravity"
+effect_name = "Gravity"
+description = "Increases down meter fill rate on the target"
+is_chain_reaction = true
+reaction_primer = 2
+reaction_trigger = 3
+duration_turns = 3
+down_meter_fill_per_turn = 20

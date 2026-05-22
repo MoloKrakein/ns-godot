@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3 uid="uid://new_chain_soulburn"]
+
+[ext_resource type="Script" uid="uid://status_script" path="res://Resources/StatusEffect.gd" id="1_status"]
+
+[resource]
+script = ExtResource("1_status")
+id = "chain_soul_burn"
+effect_name = "Soul Burn"
+description = "High DoT for 2 turns; increases target Magic and Physical Atk"
+is_chain_reaction = true
+reaction_primer = 1
+reaction_trigger = 3
+duration_turns = 2
+dot_dmg = 30
+stat_mult_magic = 0.35
+stat_mult_strength = 0.35

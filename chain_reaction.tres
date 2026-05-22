@@ -5,32 +5,18 @@
 [resource]
 script = ExtResource("1_pf201")
 _uids_to_string_ids = Dictionary[StringName, StringName]({
-&"uid://2a0v3juuq02e": &"chain_short_circuit",
-&"uid://b3ahkuqrl262r": &"chain_flashbang",
-&"uid://b72hwwjkg0ev2": &"chain_biohazard",
-&"uid://batmuxwdplm5a": &"chain_freeze",
-&"uid://bisl8xnyj3eql": &"chain_nerve_shock",
-&"uid://bkl5715alsh3m": &"chain_overgrowth",
-&"uid://bs44oqhp5trlw": &"chain_EMP",
-&"uid://chqxnubw1ebjk": &"chain_inferno",
-&"uid://d33iji6rgpswu": &"chain_mutation",
-&"uid://dsuia62bp3j4n": &"chain_singularity",
-&"uid://ecohtm4yvp8v": &"chain_ionize",
-&"uid://qgi7r8lthfs6": &"chain_meltdown",
-&"uid://wvat8jlufw4": &"chain_splinter"
+&"uid://new_chain_flash": &"chain_flash",
+&"uid://new_chain_burning": &"chain_burning",
+&"uid://new_chain_soulburn": &"chain_soul_burn",
+&"uid://new_chain_gravity": &"chain_gravity",
+&"uid://new_chain_eclipse": &"chain_eclipse",
+&"uid://new_chain_void": &"chain_void"
 })
 _string_ids_to_uids = Dictionary[StringName, StringName]({
-&"chain_EMP": &"uid://bs44oqhp5trlw",
-&"chain_biohazard": &"uid://b72hwwjkg0ev2",
-&"chain_flashbang": &"uid://b3ahkuqrl262r",
-&"chain_freeze": &"uid://batmuxwdplm5a",
-&"chain_inferno": &"uid://chqxnubw1ebjk",
-&"chain_ionize": &"uid://ecohtm4yvp8v",
-&"chain_meltdown": &"uid://qgi7r8lthfs6",
-&"chain_mutation": &"uid://d33iji6rgpswu",
-&"chain_nerve_shock": &"uid://bisl8xnyj3eql",
-&"chain_overgrowth": &"uid://bkl5715alsh3m",
-&"chain_short_circuit": &"uid://2a0v3juuq02e",
-&"chain_singularity": &"uid://dsuia62bp3j4n",
-&"chain_splinter": &"uid://wvat8jlufw4"
+&"chain_flash": &"uid://new_chain_flash",
+&"chain_burning": &"uid://new_chain_burning",
+&"chain_soul_burn": &"uid://new_chain_soulburn",
+&"chain_gravity": &"uid://new_chain_gravity",
+&"chain_eclipse": &"uid://new_chain_eclipse",
+&"chain_void": &"uid://new_chain_void"
 })

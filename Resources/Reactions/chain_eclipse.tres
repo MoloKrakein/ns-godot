@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="StatusEffect" format=3 uid="uid://new_chain_eclipse"]
+
+[ext_resource type="Script" uid="uid://status_script" path="res://Resources/StatusEffect.gd" id="1_status"]
+
+[resource]
+script = ExtResource("1_status")
+id = "chain_eclipse"
+effect_name = "Eclipse"
+description = "Reduces target's Magic and Strength for several turns"
+is_chain_reaction = true
+reaction_primer = 2
+reaction_trigger = 4
+duration_turns = 3
+stat_mult_magic = -0.35
+stat_mult_strength = -0.35
