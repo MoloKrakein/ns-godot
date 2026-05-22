@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BattleMove" format=3 uid="uid://c6kal3k3urd2f"]
+
+[ext_resource type="Script" uid="uid://d1rfmpj3ie3ip" path="res://Resources/Move.gd" id="1_w1rtq"]
+
+[resource]
+script = ExtResource("1_w1rtq")
+id = "Mg_Electro"
+move_name = "Zap"
+mp_cost = 2
+is_magic = true
+element = 5
+chance_applying_element = 100.0
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"

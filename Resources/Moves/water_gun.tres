@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BattleMove" format=3 uid="uid://x8wt6hq5uks"]
+
+[ext_resource type="Script" uid="uid://d1rfmpj3ie3ip" path="res://Resources/Move.gd" id="1_dnefb"]
+
+[resource]
+script = ExtResource("1_dnefb")
+id = "Mg_water_gun"
+move_name = "water ball"
+mp_cost = 3
+is_magic = true
+element = 2
+chance_applying_element = 100.0
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"

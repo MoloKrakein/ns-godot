@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BattleMove" format=3 uid="uid://dmsbu1r2bj8v1"]
+
+[ext_resource type="Script" uid="uid://d1rfmpj3ie3ip" path="res://Resources/Move.gd" id="1_16rpe"]
+
+[resource]
+script = ExtResource("1_16rpe")
+id = "Mg_fireball"
+move_name = "Fireball"
+mp_cost = 3
+is_magic = true
+element = 1
+chance_applying_element = 100.0
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"

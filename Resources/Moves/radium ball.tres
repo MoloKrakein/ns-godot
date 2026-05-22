@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BattleMove" format=3 uid="uid://dde17amjunth"]
+
+[ext_resource type="Script" uid="uid://d1rfmpj3ie3ip" path="res://Resources/Move.gd" id="1_bq5pw"]
+
+[resource]
+script = ExtResource("1_bq5pw")
+id = "Mg_radium_test"
+move_name = "Radium Block"
+mp_cost = 2
+is_magic = true
+element = 7
+chance_applying_element = 100.0
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"

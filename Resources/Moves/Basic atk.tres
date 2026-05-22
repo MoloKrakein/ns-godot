@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="BattleMove" format=3 uid="uid://c0vkoko0p3x2r"]
+
+[ext_resource type="Script" uid="uid://d1rfmpj3ie3ip" path="res://Resources/Move.gd" id="1_v6jey"]
+
+[resource]
+script = ExtResource("1_v6jey")
+move_name = "Punch"
+physical_type = 2
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"

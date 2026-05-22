@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Equipment" format=3 uid="uid://ch6djndd7fns0"]
+
+[ext_resource type="Script" uid="uid://7272tw1kw6cp" path="res://Resources/Equipment.gd" id="1_rri7a"]
+[ext_resource type="Resource" uid="uid://c0vkoko0p3x2r" path="res://Resources/Moves/Basic atk.tres" id="2_g4ub2"]
+
+[resource]
+script = ExtResource("1_rri7a")
+id = "test_sword"
+weapon_attack_move = ExtResource("2_g4ub2")
+bonus_max_hp = 2
+bonus_strength = 3
+bonus_magic = 4
+bonus_crit_rate = 0.2
+bonus_crit_dmg = 0.5
+metadata/_custom_type_script = "uid://7272tw1kw6cp"

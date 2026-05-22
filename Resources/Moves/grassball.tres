@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="BattleMove" format=3 uid="uid://bjwxd7pumyfq5"]
+
+[ext_resource type="Script" uid="uid://d1rfmpj3ie3ip" path="res://Resources/Move.gd" id="1_n7v4f"]
+
+[resource]
+script = ExtResource("1_n7v4f")
+id = "Mg_grassball"
+move_name = "Grass Ball"
+is_magic = true
+element = 4
+chance_applying_element = 100.0
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"

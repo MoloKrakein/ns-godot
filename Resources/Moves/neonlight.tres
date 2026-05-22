@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BattleMove" format=3 uid="uid://bjj4i3ksplb0w"]
+
+[ext_resource type="Script" uid="uid://d1rfmpj3ie3ip" path="res://Resources/Move.gd" id="1_wrf5n"]
+
+[resource]
+script = ExtResource("1_wrf5n")
+id = "Mg_Neon"
+move_name = "Neon Light"
+power = 8
+is_magic = true
+element = 6
+chance_applying_element = 100.0
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"

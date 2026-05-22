@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Equipment" format=3 uid="uid://gpdpm4lb403i"]
+
+[ext_resource type="Script" uid="uid://7272tw1kw6cp" path="res://Resources/Equipment.gd" id="1_8dsaw"]
+
+[resource]
+script = ExtResource("1_8dsaw")
+id = "shoe_test"
+equip_name = "Mock up Abbibas"
+equip_desc = "running shoe for Beginner"
+slot_type = 2
+bonus_luck = 4
+bonus_speed = 4
+metadata/_custom_type_script = "uid://7272tw1kw6cp"

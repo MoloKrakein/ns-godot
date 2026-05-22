@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Equipment" format=3 uid="uid://bicpmwrttbekf"]
+
+[ext_resource type="Script" uid="uid://7272tw1kw6cp" path="res://Resources/Equipment.gd" id="1_kqt4v"]
+
+[resource]
+script = ExtResource("1_kqt4v")
+id = "armor_test"
+equip_name = "Mock up Kevlar"
+equip_desc = "Kevlar"
+slot_type = 1
+bonus_physical_def = 5
+bonus_magic_def = 5
+metadata/_custom_type_script = "uid://7272tw1kw6cp"

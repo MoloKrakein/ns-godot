@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BattlerStats" format=3 uid="uid://k28y7cm7evjx"]
+
+[ext_resource type="Script" uid="uid://du0mcmwag1pen" path="res://Resources/Stats.gd" id="1_wa4dk"]
+
+[resource]
+script = ExtResource("1_wa4dk")
+id = "ply_mc"
+character_name = "Null Tester"
+max_hp = 100
+max_mp = 100
+speed = 3
+magic = 30
+metadata/_custom_type_script = "uid://du0mcmwag1pen"
