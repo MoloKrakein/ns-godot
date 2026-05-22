@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://by3xvb8fsdms7"
-path="res://.godot/imported/CRITICAL_.png-a56db0d121ec66e07a4ddb2e524c9018.ctex"
+path="res://.godot/imported/CRITICAL_.png-6344b760695a13b6623fe919909ecfe5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/Dmg Popups/CRITICAL_.png"
-dest_files=["res://.godot/imported/CRITICAL_.png-a56db0d121ec66e07a4ddb2e524c9018.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/Dmg Popups/CRITICAL_.png"
+dest_files=["res://.godot/imported/CRITICAL_.png-6344b760695a13b6623fe919909ecfe5.ctex"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b5rc6g3mp3q1i"
-path="res://.godot/imported/Last Move _.png-ec7857a235eb02e01bfa049dc5eedf9b.ctex"
+path="res://.godot/imported/Last Move _.png-b647c59b927258fd8d38fdd88eb5a8db.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/BattleLogs/Last Move _.png"
-dest_files=["res://.godot/imported/Last Move _.png-ec7857a235eb02e01bfa049dc5eedf9b.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/BattleLogs/Last Move _.png"
+dest_files=["res://.godot/imported/Last Move _.png-b647c59b927258fd8d38fdd88eb5a8db.ctex"]
 
 [params]
 

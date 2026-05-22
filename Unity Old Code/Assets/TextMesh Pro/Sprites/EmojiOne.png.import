@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c1ao068vix5mg"
-path="res://.godot/imported/EmojiOne.png-7cdc52fcf88991635cf5b7e5eeab6e18.ctex"
+path="res://.godot/imported/EmojiOne.png-5aa35f376e8b99a234f3d589fb3b7f0c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/TextMesh Pro/Sprites/EmojiOne.png"
-dest_files=["res://.godot/imported/EmojiOne.png-7cdc52fcf88991635cf5b7e5eeab6e18.ctex"]
+source_file="res://Unity Old Code/Assets/TextMesh Pro/Sprites/EmojiOne.png"
+dest_files=["res://.godot/imported/EmojiOne.png-5aa35f376e8b99a234f3d589fb3b7f0c.ctex"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c1igenytdkn63"
-path="res://.godot/imported/Health Bar.png-f683e55e2f4d1ee4cc5474f0ded348c4.ctex"
+path="res://.godot/imported/Health Bar.png-2006e40af6ae94dc21a97afb41d1842a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/Health UI/EnemyHealthBar/Health Bar.png"
-dest_files=["res://.godot/imported/Health Bar.png-f683e55e2f4d1ee4cc5474f0ded348c4.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/Health UI/EnemyHealthBar/Health Bar.png"
+dest_files=["res://.godot/imported/Health Bar.png-2006e40af6ae94dc21a97afb41d1842a.ctex"]
 
 [params]
 

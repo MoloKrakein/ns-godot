@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dm1cst2rqfbsw"
-path="res://.godot/imported/Ribbon #1 - Shapes4FREE 1.png-78b0cfba2d179fbc315d17047a834a5d.ctex"
+path="res://.godot/imported/Ribbon #1 - Shapes4FREE 1.png-d68da0057fe11c816000438e359b061e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/BattleSubs/Ribbon #1 - Shapes4FREE 1.png"
-dest_files=["res://.godot/imported/Ribbon #1 - Shapes4FREE 1.png-78b0cfba2d179fbc315d17047a834a5d.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/BattleSubs/Ribbon #1 - Shapes4FREE 1.png"
+dest_files=["res://.godot/imported/Ribbon #1 - Shapes4FREE 1.png-d68da0057fe11c816000438e359b061e.ctex"]
 
 [params]
 

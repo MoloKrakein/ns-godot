@@ -3,12 +3,12 @@
 importer="font_data_dynamic"
 type="FontFile"
 uid="uid://c0k4v8tklj7jp"
-path="res://.godot/imported/Saira-Medium.ttf-468afd9a9af4b998559e9ae0820a67cf.fontdata"
+path="res://.godot/imported/Saira-Medium.ttf-a98d2d9cc2b129f406a08eae92cfd7e2.fontdata"
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/Font/Saira-Medium.ttf"
-dest_files=["res://.godot/imported/Saira-Medium.ttf-468afd9a9af4b998559e9ae0820a67cf.fontdata"]
+source_file="res://Unity Old Code/Assets/Assets/UI/Font/Saira-Medium.ttf"
+dest_files=["res://.godot/imported/Saira-Medium.ttf-a98d2d9cc2b129f406a08eae92cfd7e2.fontdata"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bdmgsoty75dmg"
-path="res://.godot/imported/noesaGetHit.png-2519d8e0e78d95e1ba11a1ca617ac015.ctex"
+path="res://.godot/imported/noesaGetHit.png-b932a950a9aafd9f47f73074f3091573.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/UI_Package/noesaGetHit/Sprites/noesaGetHit.png"
-dest_files=["res://.godot/imported/noesaGetHit.png-2519d8e0e78d95e1ba11a1ca617ac015.ctex"]
+source_file="res://Unity Old Code/Assets/UI_Package/noesaGetHit/Sprites/noesaGetHit.png"
+dest_files=["res://.godot/imported/noesaGetHit.png-b932a950a9aafd9f47f73074f3091573.ctex"]
 
 [params]
 

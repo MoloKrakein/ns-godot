@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dh5gdx1mrcmcf"
-path="res://.godot/imported/switch_weak_scroll.png-4a5dd4dc66e36defbb834cf1328bb3c4.ctex"
+path="res://.godot/imported/switch_weak_scroll.png-5e5615bb3016ccb7f050bd02569af2d6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/ItemUI/IconType/switch_weak_scroll.png"
-dest_files=["res://.godot/imported/switch_weak_scroll.png-4a5dd4dc66e36defbb834cf1328bb3c4.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/ItemUI/IconType/switch_weak_scroll.png"
+dest_files=["res://.godot/imported/switch_weak_scroll.png-5e5615bb3016ccb7f050bd02569af2d6.ctex"]
 
 [params]
 

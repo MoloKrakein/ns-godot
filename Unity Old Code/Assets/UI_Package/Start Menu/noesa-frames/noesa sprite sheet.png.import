@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bbka5yewf5sq3"
-path="res://.godot/imported/noesa sprite sheet.png-42d967bbf5ceae61d5f6f9b43bc31598.ctex"
+path="res://.godot/imported/noesa sprite sheet.png-b4d2135e0cb3386d08f0ad83e21edfbc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/UI_Package/Start Menu/noesa-frames/noesa sprite sheet.png"
-dest_files=["res://.godot/imported/noesa sprite sheet.png-42d967bbf5ceae61d5f6f9b43bc31598.ctex"]
+source_file="res://Unity Old Code/Assets/UI_Package/Start Menu/noesa-frames/noesa sprite sheet.png"
+dest_files=["res://.godot/imported/noesa sprite sheet.png-b4d2135e0cb3386d08f0ad83e21edfbc.ctex"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cdbvrn2i3sc3i"
-path="res://.godot/imported/Choose BTN.png-cf6b2f540a81176e5f48d8d4b71755fd.ctex"
+path="res://.godot/imported/Choose BTN.png-14c3c0ce19f65bebb0a8c996888a18b7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/MenuUI/Choose Action/Choose BTN.png"
-dest_files=["res://.godot/imported/Choose BTN.png-cf6b2f540a81176e5f48d8d4b71755fd.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/MenuUI/Choose Action/Choose BTN.png"
+dest_files=["res://.godot/imported/Choose BTN.png-14c3c0ce19f65bebb0a8c996888a18b7.ctex"]
 
 [params]
 

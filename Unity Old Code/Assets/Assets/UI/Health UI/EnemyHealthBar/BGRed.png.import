@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://3syjq44bodk1"
-path="res://.godot/imported/BGRed.png-be1e445037ab4bbcb0b63096f5e3f23b.ctex"
+path="res://.godot/imported/BGRed.png-1e52fe05275c39f470445565eefc7beb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/Health UI/EnemyHealthBar/BGRed.png"
-dest_files=["res://.godot/imported/BGRed.png-be1e445037ab4bbcb0b63096f5e3f23b.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/Health UI/EnemyHealthBar/BGRed.png"
+dest_files=["res://.godot/imported/BGRed.png-1e52fe05275c39f470445565eefc7beb.ctex"]
 
 [params]
 

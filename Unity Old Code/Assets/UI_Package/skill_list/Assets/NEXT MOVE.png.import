@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dd4ba3oysg1ta"
-path="res://.godot/imported/NEXT MOVE.png-986e75f3f405c77e48d599782c02b3a0.ctex"
+path="res://.godot/imported/NEXT MOVE.png-4f70fb88407d76613f6fcadffc26bea2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/UI_Package/skill_list/Assets/NEXT MOVE.png"
-dest_files=["res://.godot/imported/NEXT MOVE.png-986e75f3f405c77e48d599782c02b3a0.ctex"]
+source_file="res://Unity Old Code/Assets/UI_Package/skill_list/Assets/NEXT MOVE.png"
+dest_files=["res://.godot/imported/NEXT MOVE.png-4f70fb88407d76613f6fcadffc26bea2.ctex"]
 
 [params]
 

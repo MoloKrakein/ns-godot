@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cvri8dn44qxbb"
-path="res://.godot/imported/hallway png.png-366890e60522a2d80dd3f94166710ff8.ctex"
+path="res://.godot/imported/hallway png.png-43f4a89864f08be78b67fb88f1162e8d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/Background/hallway png.png"
-dest_files=["res://.godot/imported/hallway png.png-366890e60522a2d80dd3f94166710ff8.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/Background/hallway png.png"
+dest_files=["res://.godot/imported/hallway png.png-43f4a89864f08be78b67fb88f1162e8d.ctex"]
 
 [params]
 

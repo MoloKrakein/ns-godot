@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cmi7a1p4lrfjx"
-path="res://.godot/imported/Snake.png-d472d59f83eb37faf0772d17c8aad2a4.ctex"
+path="res://.godot/imported/Snake.png-b0b65f8b27e45418ae2d4dc03623af98.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/Character/Snake.png"
-dest_files=["res://.godot/imported/Snake.png-d472d59f83eb37faf0772d17c8aad2a4.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/Character/Snake.png"
+dest_files=["res://.godot/imported/Snake.png-b0b65f8b27e45418ae2d4dc03623af98.ctex"]
 
 [params]
 

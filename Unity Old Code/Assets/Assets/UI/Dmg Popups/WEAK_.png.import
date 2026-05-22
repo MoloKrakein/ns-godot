@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cpflfg7ko1lkj"
-path="res://.godot/imported/WEAK_.png-6872f55625bcfb447099684238b3b1e4.ctex"
+path="res://.godot/imported/WEAK_.png-9183d331f9c241fd980406ed1866966a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/Dmg Popups/WEAK_.png"
-dest_files=["res://.godot/imported/WEAK_.png-6872f55625bcfb447099684238b3b1e4.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/Dmg Popups/WEAK_.png"
+dest_files=["res://.godot/imported/WEAK_.png-9183d331f9c241fd980406ed1866966a.ctex"]
 
 [params]
 

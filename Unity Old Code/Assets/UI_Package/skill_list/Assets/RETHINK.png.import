@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dwvy8jrny8pbp"
-path="res://.godot/imported/RETHINK.png-e2d0a06d5ab7ac4e76495ec6e514c1a1.ctex"
+path="res://.godot/imported/RETHINK.png-62017d272db6ee72d3b8e4203ffc6809.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/UI_Package/skill_list/Assets/RETHINK.png"
-dest_files=["res://.godot/imported/RETHINK.png-e2d0a06d5ab7ac4e76495ec6e514c1a1.ctex"]
+source_file="res://Unity Old Code/Assets/UI_Package/skill_list/Assets/RETHINK.png"
+dest_files=["res://.godot/imported/RETHINK.png-62017d272db6ee72d3b8e4203ffc6809.ctex"]
 
 [params]
 

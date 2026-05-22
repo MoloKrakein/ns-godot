@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c87a7bhlx0o70"
-path="res://.godot/imported/ActionMenu1.png-e878c149ad26fffcc0f2012f863dd04e.ctex"
+path="res://.godot/imported/ActionMenu1.png-562e1a65eb0d41901767c1bd9ca7b244.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/UI_Package/battleMenu/Sprites/ActionMenu1.png"
-dest_files=["res://.godot/imported/ActionMenu1.png-e878c149ad26fffcc0f2012f863dd04e.ctex"]
+source_file="res://Unity Old Code/Assets/UI_Package/battleMenu/Sprites/ActionMenu1.png"
+dest_files=["res://.godot/imported/ActionMenu1.png-562e1a65eb0d41901767c1bd9ca7b244.ctex"]
 
 [params]
 

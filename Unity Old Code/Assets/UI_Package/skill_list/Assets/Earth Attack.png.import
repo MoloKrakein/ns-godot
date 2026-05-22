@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cqbewd7xnreak"
-path="res://.godot/imported/Earth Attack.png-19afb0ed0017f808331fd7f1d476f86a.ctex"
+path="res://.godot/imported/Earth Attack.png-21a6079aa0bc34f83201b7dc7ae88eb3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/UI_Package/skill_list/Assets/Earth Attack.png"
-dest_files=["res://.godot/imported/Earth Attack.png-19afb0ed0017f808331fd7f1d476f86a.ctex"]
+source_file="res://Unity Old Code/Assets/UI_Package/skill_list/Assets/Earth Attack.png"
+dest_files=["res://.godot/imported/Earth Attack.png-21a6079aa0bc34f83201b7dc7ae88eb3.ctex"]
 
 [params]
 

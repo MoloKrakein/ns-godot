@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://8a57ro3vbnic"
-path="res://.godot/imported/Rectangle 8.png-e5af2eff3fa603e6d1a9e4ec9723022c.ctex"
+path="res://.godot/imported/Rectangle 8.png-fb0cf17ab74dd1280edfe40342eacd46.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/UI_Package/skill_list/Assets/Rectangle 8.png"
-dest_files=["res://.godot/imported/Rectangle 8.png-e5af2eff3fa603e6d1a9e4ec9723022c.ctex"]
+source_file="res://Unity Old Code/Assets/UI_Package/skill_list/Assets/Rectangle 8.png"
+dest_files=["res://.godot/imported/Rectangle 8.png-fb0cf17ab74dd1280edfe40342eacd46.ctex"]
 
 [params]
 

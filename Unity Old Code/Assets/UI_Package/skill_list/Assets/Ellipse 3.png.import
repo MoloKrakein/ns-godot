@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://j4dum40qqn37"
-path="res://.godot/imported/Ellipse 3.png-d6423778e436213e8a3cda4de2146de3.ctex"
+path="res://.godot/imported/Ellipse 3.png-03cfc94276049e3cae8bd93806437242.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/UI_Package/skill_list/Assets/Ellipse 3.png"
-dest_files=["res://.godot/imported/Ellipse 3.png-d6423778e436213e8a3cda4de2146de3.ctex"]
+source_file="res://Unity Old Code/Assets/UI_Package/skill_list/Assets/Ellipse 3.png"
+dest_files=["res://.godot/imported/Ellipse 3.png-03cfc94276049e3cae8bd93806437242.ctex"]
 
 [params]
 

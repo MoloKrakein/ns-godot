@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dqb64c8u0nmy6"
-path="res://.godot/imported/Group 1.png-aed9f9ab316bd150897f42708cba1607.ctex"
+path="res://.godot/imported/Group 1.png-08971ce5882cf27b5ebcd460cfe0bec9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/MenuUI/Choose Action/Group 1.png"
-dest_files=["res://.godot/imported/Group 1.png-aed9f9ab316bd150897f42708cba1607.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/MenuUI/Choose Action/Group 1.png"
+dest_files=["res://.godot/imported/Group 1.png-08971ce5882cf27b5ebcd460cfe0bec9.ctex"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://2q3vrmy7rrkx"
-path="res://.godot/imported/pixil-frame-0.png-e6241f772d3e50aca7fa2d9c9d74f272.ctex"
+path="res://.godot/imported/pixil-frame-0.png-67975f41682cd9226b18e131b1babbd0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/Character/enemy/snake_idle/pixil-frame-0.png"
-dest_files=["res://.godot/imported/pixil-frame-0.png-e6241f772d3e50aca7fa2d9c9d74f272.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/Character/enemy/snake_idle/pixil-frame-0.png"
+dest_files=["res://.godot/imported/pixil-frame-0.png-67975f41682cd9226b18e131b1babbd0.ctex"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://1ec3odapaxy1"
-path="res://.godot/imported/Mana Fill.png-832961ce2192e92322ea582eb5ce23df.ctex"
+path="res://.godot/imported/Mana Fill.png-46642b625dd3802fab13b365445cba0e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/Player HUD/Mana Fill.png"
-dest_files=["res://.godot/imported/Mana Fill.png-832961ce2192e92322ea582eb5ce23df.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/Player HUD/Mana Fill.png"
+dest_files=["res://.godot/imported/Mana Fill.png-46642b625dd3802fab13b365445cba0e.ctex"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bm634hjw1y7mf"
-path="res://.godot/imported/PlaceHolder Enemies.png-d704c04d61999ddb55fb02bdcf5431d3.ctex"
+path="res://.godot/imported/PlaceHolder Enemies.png-ce614c4097d809ad0e8a17d5abed1ca2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/Character/PlaceHolder Enemies.png"
-dest_files=["res://.godot/imported/PlaceHolder Enemies.png-d704c04d61999ddb55fb02bdcf5431d3.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/Character/PlaceHolder Enemies.png"
+dest_files=["res://.godot/imported/PlaceHolder Enemies.png-ce614c4097d809ad0e8a17d5abed1ca2.ctex"]
 
 [params]
 

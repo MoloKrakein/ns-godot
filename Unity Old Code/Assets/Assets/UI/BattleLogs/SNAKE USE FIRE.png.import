@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://csmu1nkofqlq3"
-path="res://.godot/imported/SNAKE USE FIRE.png-22dea3a1cd3371841e4ca42894abdfe9.ctex"
+path="res://.godot/imported/SNAKE USE FIRE.png-9d2b6a38e48b188fa92b8742e283404e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/BattleLogs/SNAKE USE FIRE.png"
-dest_files=["res://.godot/imported/SNAKE USE FIRE.png-22dea3a1cd3371841e4ca42894abdfe9.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/BattleLogs/SNAKE USE FIRE.png"
+dest_files=["res://.godot/imported/SNAKE USE FIRE.png-9d2b6a38e48b188fa92b8742e283404e.ctex"]
 
 [params]
 

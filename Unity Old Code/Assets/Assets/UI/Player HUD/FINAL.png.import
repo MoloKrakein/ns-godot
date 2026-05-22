@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dixn6kwj4pyr1"
-path="res://.godot/imported/FINAL.png-43046e86183a220e2614ae6b4316c8fa.ctex"
+path="res://.godot/imported/FINAL.png-0bed88f721fa97369bae2c1e89cbfa15.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/Player HUD/FINAL.png"
-dest_files=["res://.godot/imported/FINAL.png-43046e86183a220e2614ae6b4316c8fa.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/Player HUD/FINAL.png"
+dest_files=["res://.godot/imported/FINAL.png-0bed88f721fa97369bae2c1e89cbfa15.ctex"]
 
 [params]
 

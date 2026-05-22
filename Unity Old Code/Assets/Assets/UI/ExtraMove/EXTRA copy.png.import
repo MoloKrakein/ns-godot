@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b2xuopdu65hiq"
-path="res://.godot/imported/EXTRA copy.png-e3420c287e6c736ed01c78f1258bff48.ctex"
+path="res://.godot/imported/EXTRA copy.png-e9ae36a6f78b8168fbde4ca74d3b50cb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/ExtraMove/EXTRA copy.png"
-dest_files=["res://.godot/imported/EXTRA copy.png-e3420c287e6c736ed01c78f1258bff48.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/ExtraMove/EXTRA copy.png"
+dest_files=["res://.godot/imported/EXTRA copy.png-e9ae36a6f78b8168fbde4ca74d3b50cb.ctex"]
 
 [params]
 

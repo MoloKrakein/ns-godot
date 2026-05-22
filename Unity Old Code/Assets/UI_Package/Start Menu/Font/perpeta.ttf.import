@@ -3,12 +3,12 @@
 importer="font_data_dynamic"
 type="FontFile"
 uid="uid://dk665vjsmhfyb"
-path="res://.godot/imported/perpeta.ttf-1301b25eb711a558247ddcc9c16677d9.fontdata"
+path="res://.godot/imported/perpeta.ttf-846264a62767a341257e32bdaf8c7505.fontdata"
 
 [deps]
 
-source_file="res://Old Code/Assets/UI_Package/Start Menu/Font/perpeta.ttf"
-dest_files=["res://.godot/imported/perpeta.ttf-1301b25eb711a558247ddcc9c16677d9.fontdata"]
+source_file="res://Unity Old Code/Assets/UI_Package/Start Menu/Font/perpeta.ttf"
+dest_files=["res://.godot/imported/perpeta.ttf-846264a62767a341257e32bdaf8c7505.fontdata"]
 
 [params]
 

@@ -3,12 +3,12 @@
 importer="font_data_dynamic"
 type="FontFile"
 uid="uid://bets0ksahavxk"
-path="res://.godot/imported/LiberationSans.ttf-57b553d4bb9867f68b37cb6b3d8c1c34.fontdata"
+path="res://.godot/imported/LiberationSans.ttf-7365d450758994c8353d150ef863276b.fontdata"
 
 [deps]
 
-source_file="res://Old Code/Assets/TextMesh Pro/Fonts/LiberationSans.ttf"
-dest_files=["res://.godot/imported/LiberationSans.ttf-57b553d4bb9867f68b37cb6b3d8c1c34.fontdata"]
+source_file="res://Unity Old Code/Assets/TextMesh Pro/Fonts/LiberationSans.ttf"
+dest_files=["res://.godot/imported/LiberationSans.ttf-7365d450758994c8353d150ef863276b.fontdata"]
 
 [params]
 

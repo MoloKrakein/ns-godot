@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cdfpepnw8kd07"
-path="res://.godot/imported/Dmg Popups (Number).png-978ba2f676810511576ac99b61fe020c.ctex"
+path="res://.godot/imported/Dmg Popups (Number).png-6b7726d97a45b7d76da66437ffb314ad.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/Dmg Popups/Dmg Popups (Number).png"
-dest_files=["res://.godot/imported/Dmg Popups (Number).png-978ba2f676810511576ac99b61fe020c.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/Dmg Popups/Dmg Popups (Number).png"
+dest_files=["res://.godot/imported/Dmg Popups (Number).png-6b7726d97a45b7d76da66437ffb314ad.ctex"]
 
 [params]
 

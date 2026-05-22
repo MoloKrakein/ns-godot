@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://de2hfkf6g3r1p"
-path="res://.godot/imported/Crystal 2-1.png-aaea4ff70a7d0afb1a6960f1b3a4bca2.ctex"
+path="res://.godot/imported/Crystal 2-1.png-d228e28d7bb90b9a25a364fc7620d53b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/UI_Package/skill_list/Assets/Crystal 2-1.png"
-dest_files=["res://.godot/imported/Crystal 2-1.png-aaea4ff70a7d0afb1a6960f1b3a4bca2.ctex"]
+source_file="res://Unity Old Code/Assets/UI_Package/skill_list/Assets/Crystal 2-1.png"
+dest_files=["res://.godot/imported/Crystal 2-1.png-d228e28d7bb90b9a25a364fc7620d53b.ctex"]
 
 [params]
 

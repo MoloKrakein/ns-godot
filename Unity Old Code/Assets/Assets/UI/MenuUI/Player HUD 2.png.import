@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dvnx873nh51h"
-path="res://.godot/imported/Player HUD 2.png-615f5af528d127c1fedfd65b41a1838c.ctex"
+path="res://.godot/imported/Player HUD 2.png-0c0136086f63d89dbdf988dc572f9e8b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/MenuUI/Player HUD 2.png"
-dest_files=["res://.godot/imported/Player HUD 2.png-615f5af528d127c1fedfd65b41a1838c.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/MenuUI/Player HUD 2.png"
+dest_files=["res://.godot/imported/Player HUD 2.png-0c0136086f63d89dbdf988dc572f9e8b.ctex"]
 
 [params]
 

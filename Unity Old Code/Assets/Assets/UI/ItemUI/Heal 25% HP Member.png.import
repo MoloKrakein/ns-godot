@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dmn78p37jqk0"
-path="res://.godot/imported/Heal 25% HP Member.png-79818ad68954a0b570f9884abf91c359.ctex"
+path="res://.godot/imported/Heal 25% HP Member.png-f34f2006a96eeebf4677c65875edabde.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/ItemUI/Heal 25% HP Member.png"
-dest_files=["res://.godot/imported/Heal 25% HP Member.png-79818ad68954a0b570f9884abf91c359.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/ItemUI/Heal 25% HP Member.png"
+dest_files=["res://.godot/imported/Heal 25% HP Member.png-f34f2006a96eeebf4677c65875edabde.ctex"]
 
 [params]
 

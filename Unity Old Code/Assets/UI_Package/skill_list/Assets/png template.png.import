@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://buu2c04hbug0u"
-path="res://.godot/imported/png template.png-432f14db2414abb495915a6ffa46269c.ctex"
+path="res://.godot/imported/png template.png-1701adbec0c17931992555277657418c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/UI_Package/skill_list/Assets/png template.png"
-dest_files=["res://.godot/imported/png template.png-432f14db2414abb495915a6ffa46269c.ctex"]
+source_file="res://Unity Old Code/Assets/UI_Package/skill_list/Assets/png template.png"
+dest_files=["res://.godot/imported/png template.png-1701adbec0c17931992555277657418c.ctex"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bkgr02t32voou"
-path="res://.godot/imported/farming-cow.png-9961cffa3cdccbaaa7047d313419399d.ctex"
+path="res://.godot/imported/farming-cow.png-f7fe32261446de699564cd06f17265b8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/Farming Asset Pack/farming-cow.png"
-dest_files=["res://.godot/imported/farming-cow.png-9961cffa3cdccbaaa7047d313419399d.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/Farming Asset Pack/farming-cow.png"
+dest_files=["res://.godot/imported/farming-cow.png-f7fe32261446de699564cd06f17265b8.ctex"]
 
 [params]
 

@@ -3,12 +3,12 @@
 importer="font_data_dynamic"
 type="FontFile"
 uid="uid://4br3a2r02pdd"
-path="res://.godot/imported/MSUIGHUR.TTF-9079b3b890ddf170e4892d4f388918b1.fontdata"
+path="res://.godot/imported/MSUIGHUR.TTF-60ff5941738079e5764b71b6ca309e38.fontdata"
 
 [deps]
 
-source_file="res://Old Code/Assets/UI_Package/Start Menu/Font/MSUIGHUR.TTF"
-dest_files=["res://.godot/imported/MSUIGHUR.TTF-9079b3b890ddf170e4892d4f388918b1.fontdata"]
+source_file="res://Unity Old Code/Assets/UI_Package/Start Menu/Font/MSUIGHUR.TTF"
+dest_files=["res://.godot/imported/MSUIGHUR.TTF-60ff5941738079e5764b71b6ca309e38.fontdata"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cx0y0vwxxmp21"
-path="res://.godot/imported/Skill List copy 7.png-6e832b93120f640fead97c7930212f41.ctex"
+path="res://.godot/imported/Skill List copy 7.png-c0a922c77c42bbd65a976cf304f98918.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/UI/ItemUI/Skill List copy 7.png"
-dest_files=["res://.godot/imported/Skill List copy 7.png-6e832b93120f640fead97c7930212f41.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/UI/ItemUI/Skill List copy 7.png"
+dest_files=["res://.godot/imported/Skill List copy 7.png-c0a922c77c42bbd65a976cf304f98918.ctex"]
 
 [params]
 

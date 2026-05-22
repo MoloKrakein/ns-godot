@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c6rtf8ptrpbc3"
-path="res://.godot/imported/pixil-frame-0.png-ba4b20650246f535cc1af471fc956a11.ctex"
+path="res://.godot/imported/pixil-frame-0.png-b6fad3d3acb10e14c37b4d19990a2aa1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/Character/enemy/snake_get_hit/pixil-frame-0.png"
-dest_files=["res://.godot/imported/pixil-frame-0.png-ba4b20650246f535cc1af471fc956a11.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/Character/enemy/snake_get_hit/pixil-frame-0.png"
+dest_files=["res://.godot/imported/pixil-frame-0.png-b6fad3d3acb10e14c37b4d19990a2aa1.ctex"]
 
 [params]
 

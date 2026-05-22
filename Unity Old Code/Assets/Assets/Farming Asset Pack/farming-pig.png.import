@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dlkebc4d3ud5t"
-path="res://.godot/imported/farming-pig.png-4da848b982565c9bafb10ced6070ea20.ctex"
+path="res://.godot/imported/farming-pig.png-da68f6ada073a7c4c53c54a18460b42f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Old Code/Assets/Assets/Farming Asset Pack/farming-pig.png"
-dest_files=["res://.godot/imported/farming-pig.png-4da848b982565c9bafb10ced6070ea20.ctex"]
+source_file="res://Unity Old Code/Assets/Assets/Farming Asset Pack/farming-pig.png"
+dest_files=["res://.godot/imported/farming-pig.png-da68f6ada073a7c4c53c54a18460b42f.ctex"]
 
 [params]
 
