@@ -10,5 +10,6 @@ description = "Reduce target accuracy for 2 turns"
 is_chain_reaction = true
 reaction_primer = 1
 reaction_trigger = 4
+reaction_recipes = [ Vector2i(1, 4) ]
 duration_turns = 2
 stat_mult_accuracy = -0.4

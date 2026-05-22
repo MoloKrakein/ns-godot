@@ -10,6 +10,7 @@ description = "High DoT for 2 turns; increases target Magic and Physical Atk"
 is_chain_reaction = true
 reaction_primer = 1
 reaction_trigger = 3
+reaction_recipes = [ Vector2i(1, 3) ]
 duration_turns = 2
 dot_dmg = 30
 stat_mult_magic = 0.35

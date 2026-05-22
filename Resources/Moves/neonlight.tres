@@ -8,6 +8,6 @@ id = "Mg_Neon"
 move_name = "Neon Light"
 power = 8
 is_magic = true
-element = 6
+element = 0
 chance_applying_element = 100.0
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"

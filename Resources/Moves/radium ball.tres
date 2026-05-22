@@ -8,6 +8,6 @@ id = "Mg_radium_test"
 move_name = "Radium Block"
 mp_cost = 2
 is_magic = true
-element = 7
+element = 0
 chance_applying_element = 100.0
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"

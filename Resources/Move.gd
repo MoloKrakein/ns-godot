@@ -155,18 +155,8 @@ func get_placeholder_icon_name() -> StringName:
 			if target_type == Target.ALL_ENEMIES or target_type == Target.ALL_ALLIES:
 				return &"Group"
 			if is_magic:
-				match element:
-					GlobalData.Element.FIRE:
-						return &"ColorRect"
-					GlobalData.Element.WATER:
-						return &"ColorRect"
-					GlobalData.Element.ELECTRO:
-						return &"ColorRect"
-					GlobalData.Element.GRASS:
-						return &"ColorRect"
-					_:
-						return &"Sword"
-				return &"Sword"
+				# All magic elements use the generic magic icon
+				return &"ColorRect"
 			return &"Sword"
 		MoveTemplate.HEAL:
 			return &"Heart"

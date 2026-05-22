@@ -1,28 +1,17 @@
 extends Node
 
 # Element Diagram Reference : https://app.diagrams.net/#G1aOTtExOuKytT-BcfikGi5PLnJVyz7wpg#%7B%22pageId%22%3A%220KW8x6qtRERvc5qper4m%22%7D
-enum Element {NEUTRAL,FIRE,WATER,ICE,GRASS,ELECTRO,NEON,RADIUM}
+enum Element {NEUTRAL,FIRE,EARTH,DARK,LIGHT}
 enum PhysicalType {NONE, SLASH, PIERCE, TRAUMA}
-enum AscendedElement {NONE, THERMAL, ORGANIC, SYNTHETIC}
 
+# Minimal element interaction table for the 5-element system.
+# Values are multipliers applied when attacker element hits defender element.
 var elements = {
-	# ATK Element | Value : {Defender Element : Multiplier}
-	# "Fire": {"Grass":2.0, "Water": 0.5, "Fire": 0.25},
-	# "Water": {"Fire":2.0, "Grass": 0.5, "Water": 0.25},
-	# "Grass": {"Water":2.0, "Fire": 0.5, "Grass": 0.25},
-	# "Electro": {"Water":2.0, "Grass": 1.0, "Electro": 0.25},
-	# "Neutral":{}
-
-	Element.FIRE: {Element.ICE:2.0, Element.GRASS:1.2, Element.ELECTRO:0.5, Element.WATER:0.5, Element.FIRE:0.2},
-	Element.WATER: {Element.FIRE:2.0, Element.GRASS:1.2, Element.ELECTRO:0.5, Element.ICE:0.5, Element.WATER:0.2},
-	Element.GRASS: {Element.ELECTRO:2.0, Element.ICE:1.2, Element.WATER:0.5, Element.FIRE:0.5, Element.GRASS:0.2},
-	Element.ICE: {Element.WATER:2.0, Element.ELECTRO:1.2, Element.FIRE:0.5, Element.GRASS:0.5, Element.ICE: 0.2},
-	Element.ELECTRO: {Element.WATER:2.0, Element.FIRE:1.2, Element.ICE:0.5, Element.GRASS:0.5, Element.ELECTRO: 0.2},
-	Element.NEON : {Element.RADIUM:2.0, Element.NEON:0.1},
-	Element.RADIUM: {Element.NEON:2.0, Element.RADIUM:0.1},
-	Element.NEUTRAL:{}
-
-
+	Element.FIRE: {Element.EARTH:1.2, Element.DARK:1.0, Element.LIGHT:0.95, Element.FIRE:0.2},
+	Element.EARTH: {Element.FIRE:0.9, Element.DARK:1.1, Element.LIGHT:1.2, Element.EARTH:0.2},
+	Element.DARK: {Element.LIGHT:0.8, Element.EARTH:1.15, Element.FIRE:1.0, Element.DARK:0.2},
+	Element.LIGHT: {Element.DARK:1.2, Element.EARTH:0.9, Element.FIRE:1.0, Element.LIGHT:0.2},
+	Element.NEUTRAL: {}
 }
 
 func get_mult(attk_element: Element, deff_element: Element) -> float:
@@ -34,13 +23,3 @@ func get_mult(attk_element: Element, deff_element: Element) -> float:
 func get_reaction_id(primer: Element, trigger: Element) -> String:
 	return ItemDatabase.get_reaction_id(primer, trigger)
 
-func get_ascended_element(element: Element) -> AscendedElement:
-	match element:
-		Element.FIRE, Element.WATER, Element.ICE:
-			return AscendedElement.THERMAL
-		Element.ELECTRO, Element.GRASS:
-			return AscendedElement.ORGANIC
-		Element.NEON, Element.RADIUM:
-			return AscendedElement.SYNTHETIC
-		_:
-			return AscendedElement.NONE

@@ -4,12 +4,13 @@
 
 [resource]
 script = ExtResource("1_status")
-id = "chain_eclipse"
-effect_name = "Eclipse"
-description = "Reduces target's Magic and Strength for several turns"
+id = "chain_bloom"
+effect_name = "Bloom"
+description = "Reduce both defenses for 2 turns"
 is_chain_reaction = true
-reaction_primer = 2
-reaction_trigger = 4
-duration_turns = 3
+reaction_primer = 4
+reaction_trigger = 2
+reaction_recipes = [ Vector2i(4, 2) ]
+duration_turns = 2
+stat_mult_defense = -0.35
 stat_mult_magic = -0.35
-stat_mult_strength = -0.35

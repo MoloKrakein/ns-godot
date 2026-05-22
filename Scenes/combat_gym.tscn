@@ -8,7 +8,7 @@
 [ext_resource type="Resource" uid="uid://dmsbu1r2bj8v1" path="res://Resources/Moves/fireball.tres" id="5_krc16"]
 [ext_resource type="Script" uid="uid://dwxgehexu25y4" path="res://Resources/PhysicalAffinityEntry.gd" id="5_suehm"]
 [ext_resource type="Resource" uid="uid://bjwxd7pumyfq5" path="res://Resources/Moves/grassball.tres" id="6_l0e8c"]
-[ext_resource type="Resource" uid="uid://bjj4i3ksplb0w" path="res://Resources/Moves/neonlight.tres" id="7_60cw4"]
+	[ext_resource type="Resource" uid="uid://bjj4i3ksplb0w" path="res://Resources/Moves/neonlight.tres" id="7_60cw4"]
 [ext_resource type="Resource" uid="uid://dde17amjunth" path="res://Resources/Moves/radium ball.tres" id="8_suehm"]
 [ext_resource type="Resource" uid="uid://b2agq8yoj4kc" path="res://Resources/Moves/snowball.tres" id="9_70ka3"]
 [ext_resource type="Resource" uid="uid://x8wt6hq5uks" path="res://Resources/Moves/water_gun.tres" id="10_p6ame"]
@@ -66,7 +66,7 @@ id = "mg_Thunder"
 move_name = "Thunder"
 target_type = 1
 is_magic = true
-element = 5
+	element = 0
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
 [sub_resource type="Resource" id="Resource_dk416"]

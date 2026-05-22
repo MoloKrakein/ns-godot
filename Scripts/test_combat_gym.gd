@@ -123,11 +123,13 @@ func _on_end_turn_pressed():
 	_advance_turn_flow()
 
 func _on_toggle_player_overdrive_pressed() -> void:
-	battle_manager.set_party_overdrive(false, not player_party[0].is_in_ascended_state())
+	var current = battle_manager.overdrive_parties.get(false, false)
+	battle_manager.set_party_overdrive(false, not current)
 	_update_ui_text("Player Overdrive toggled.", 0, false, false)
 
 func _on_toggle_enemy_overdrive_pressed() -> void:
-	battle_manager.set_party_overdrive(true, not enemy_party[0].is_in_ascended_state())
+	var current = battle_manager.overdrive_parties.get(true, false)
+	battle_manager.set_party_overdrive(true, not current)
 	_update_ui_text("Enemy Overdrive toggled.", 0, false, false)
 
 func _on_dump_queue_pressed() -> void:

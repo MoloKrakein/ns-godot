@@ -41,9 +41,6 @@ var adrenaline_stacks: int = 0
 var adrenaline_dodge_bonus: float = 0.15
 var adrenaline_max_stacks: int = 5
 var elemental_primer: GlobalData.Element = GlobalData.Element.NEUTRAL
-var is_ascended_active: bool = false
-var ascended_element: int = GlobalData.AscendedElement.NONE
-var stored_normal_primer: GlobalData.Element = GlobalData.Element.NEUTRAL
 var reaction_cooldowns: Dictionary = {}
 #endregion
 
@@ -86,34 +83,8 @@ func _set_elemental_primer(new_primer: GlobalData.Element) -> void:
 	if elemental_primer == new_primer:
 		return
 	elemental_primer = new_primer
-	if is_ascended_active:
-		ascended_element = GlobalData.get_ascended_element(elemental_primer)
 	emit_signal("primer_changed", elemental_primer)
 	emit_signal("ui_state_changed")
-
-func set_ascended_state(active: bool) -> void:
-	if is_ascended_active == active:
-		return
-	is_ascended_active = active
-	if active:
-		stored_normal_primer = elemental_primer
-		ascended_element = GlobalData.get_ascended_element(elemental_primer)
-		print(stats.character_name, " ascended into ", GlobalData.AscendedElement.keys()[ascended_element], " form!")
-	else:
-		ascended_element = GlobalData.AscendedElement.NONE
-		if stored_normal_primer != GlobalData.Element.NEUTRAL:
-			_set_elemental_primer(stored_normal_primer)
-		stored_normal_primer = GlobalData.Element.NEUTRAL
-		print(stats.character_name, " returned to normal elemental form.")
-	emit_signal("ui_state_changed")
-
-func is_in_ascended_state() -> bool:
-	return is_ascended_active
-
-func get_ascended_element_name() -> String:
-	if not is_ascended_active:
-		return "NONE"
-	return GlobalData.AscendedElement.keys()[ascended_element]
 
 func get_ui_snapshot() -> Dictionary:
 	return {
@@ -125,8 +96,7 @@ func get_ui_snapshot() -> Dictionary:
 		"is_down": down_manager.is_downed,
 		"down_meter": down_manager.current_meter,
 		"primer": elemental_primer,
-		"ascended_active": is_ascended_active,
-		"ascended_element": ascended_element,
+		
 		"threat": threat,
 		"is_adrenaline_active": is_adrenaline_active,
 		"adrenaline_stacks": adrenaline_stacks,

@@ -4,11 +4,12 @@
 
 [resource]
 script = ExtResource("1_status")
-id = "chain_void"
-effect_name = "Void"
+id = "chain_twilight"
+effect_name = "Twilight"
 description = "Randomly change the target's weakness for 2 turns"
 is_chain_reaction = true
 reaction_primer = 4
 reaction_trigger = 3
+reaction_recipes = [ Vector2i(4, 3) ]
 duration_turns = 2
 flips_weaknesses = true

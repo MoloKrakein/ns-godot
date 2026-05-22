@@ -222,9 +222,7 @@ func set_party_overdrive(is_enemy_party: bool, active: bool) -> void:
 		return
 
 	overdrive_parties[is_enemy_party] = active
-	for battler in _get_full_party(is_enemy_party):
-		if battler != null:
-			battler.set_ascended_state(active)
+	# Overdrive no longer toggles an 'ascended' state; keep placeholder for future behavior.
 
 	var party_name: String = "Enemy" if is_enemy_party else "Player"
 	if active:

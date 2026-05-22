@@ -8,6 +8,6 @@ id = "Mg_Electro"
 move_name = "Zap"
 mp_cost = 2
 is_magic = true
-element = 5
+element = 0
 chance_applying_element = 100.0
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
