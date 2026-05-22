@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://battle_arena_template_scene"]
+
+[ext_resource type="Script" path="res://Scenes/battle manager/battlemanager.gd" id="1_76ps5"]
+
+[node name="Battle_arena" type="Node2D"]
+script = ExtResource("1_76ps5")
+
+[node name="PlayerParty" type="Node2D" parent="."]
+
+[node name="EnemyParty" type="Node2D" parent="."]

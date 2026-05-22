@@ -1,0 +1,74 @@
+[gd_scene format=3 uid="uid://4lpuiuambayr"]
+
+[ext_resource type="Texture2D" uid="uid://ckfhvvh3exle4" path="res://Arts/UI/PlayerPartyHud/Star 3.png" id="1_saspk"]
+[ext_resource type="Texture2D" uid="uid://dixn6kwj4pyr1" path="res://Unity Old Code/Assets/Assets/UI/Player HUD/FINAL.png" id="2_hp5b6"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r2hvd"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.080200896, 0.23041998, 0.05369164, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8y2u2"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.422, 1, 0.32, 1)
+corner_detail = 1
+
+[node name="PartyPanel" type="Control" unique_id=1976608536]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="BGStar" type="TextureRect" parent="." unique_id=808295796]
+layout_mode = 0
+offset_right = 191.0
+offset_bottom = 181.0
+texture = ExtResource("1_saspk")
+
+[node name="Portrait" type="TextureRect" parent="BGStar" unique_id=2090249044]
+clip_contents = true
+layout_mode = 0
+offset_left = 34.0
+offset_top = 16.000004
+offset_right = 306.0
+offset_bottom = 352.0
+scale = Vector2(0.407, 0.407)
+texture = ExtResource("2_hp5b6")
+
+[node name="StatBar" type="Control" parent="BGStar" unique_id=236436834]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -40.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Background" type="Polygon2D" parent="BGStar/StatBar" unique_id=372978801]
+position = Vector2(-1.4999981, 1.0000019)
+scale = Vector2(0.82613033, 0.6233985)
+color = Color(0, 0, 0, 1)
+antialiased = true
+polygon = PackedVector2Array(-56.5, -27, 117.5, -29, 113.78351, 40.102753, -70.5, 38)
+
+[node name="ProgressBar" type="ProgressBar" parent="BGStar/StatBar/Background" unique_id=137786549]
+offset_left = -54.470825
+offset_top = -16.041103
+offset_right = 111.36258
+offset_bottom = -4.8123283
+theme_override_styles/background = SubResource("StyleBoxFlat_r2hvd")
+theme_override_styles/fill = SubResource("StyleBoxFlat_8y2u2")
+show_percentage = false

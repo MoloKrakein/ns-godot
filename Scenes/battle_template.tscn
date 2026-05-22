@@ -1,0 +1,92 @@
+[gd_scene format=3 uid="uid://battle_template_scene"]
+
+[ext_resource type="Script" path="res://Scripts/test_combat_gym.gd" id="1_nqkjc"]
+[ext_resource type="PackedScene" path="res://Scenes/battle manager/battle_arena_template.tscn" id="2_wnuto"]
+
+[node name="BattleTemplate" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
+script = ExtResource("1_nqkjc")
+battle_manager = NodePath("Battle_arena")
+damage_label = NodePath("Battlelogs")
+button_container = NodePath("BattleMoves")
+player_party_stats_label = NodePath("PlayerParty/PartyCurrentStats")
+enemy_party_stats_label = NodePath("EnemyParty/PartyCurrentStats")
+turn_manipulation_container = NodePath("TurnManipulator")
+turn_order_container = NodePath("TurnOrder")
+last_move_used_label = NodePath("LastUsedMove")
+
+[node name="Battle_arena" parent="." unique_id=143384498 instance=ExtResource("2_wnuto")]
+max_active_players = 2
+max_active_enemies = 2
+
+[node name="Battlelogs" type="Label" parent="." unique_id=1155352905]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 70.0
+offset_right = 880.0
+offset_bottom = 560.0
+text = "logs"
+
+[node name="BattleMoves" type="VBoxContainer" parent="." unique_id=1497715568]
+layout_mode = 0
+offset_left = 920.0
+offset_top = 70.0
+offset_right = 1346.0
+offset_bottom = 560.0
+
+[node name="PlayerParty" type="VBoxContainer" parent="." unique_id=527507764]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 610.0
+offset_right = 640.0
+offset_bottom = 748.0
+
+[node name="PartyCurrentStats" type="Label" parent="PlayerParty" unique_id=1568291982]
+layout_mode = 2
+text = "Drop battler scenes into Battle_arena/PlayerParty"
+
+[node name="EnemyParty" type="VBoxContainer" parent="." unique_id=1924701946]
+layout_mode = 0
+offset_left = 726.0
+offset_top = 610.0
+offset_right = 1346.0
+offset_bottom = 748.0
+
+[node name="PartyCurrentStats" type="Label" parent="EnemyParty" unique_id=1356810402]
+layout_mode = 2
+text = "Drop battler scenes into Battle_arena/EnemyParty"
+horizontal_alignment = 2
+
+[node name="TurnManipulator" type="HBoxContainer" parent="." unique_id=1278202140]
+layout_mode = 0
+offset_left = 920.0
+offset_top = 20.0
+offset_right = 1346.0
+offset_bottom = 60.0
+
+[node name="TurnOrder" type="HBoxContainer" parent="." unique_id=2057287998]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 900.0
+offset_bottom = 60.0
+
+[node name="Turn" type="Label" parent="TurnOrder" unique_id=1291834396]
+layout_mode = 2
+text = "Turn"
+
+[node name="LastUsedMove" type="Label" parent="." unique_id=69459991]
+layout_mode = 0
+offset_left = 650.0
+offset_top = 4.0
+offset_right = 690.0
+offset_bottom = 27.0
+text = "Move"
+horizontal_alignment = 1
+
+[editable path="Battle_arena"]
