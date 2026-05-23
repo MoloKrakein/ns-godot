@@ -1,0 +1,113 @@
+[gd_scene format=3 uid="uid://daqokcco8w08i"]
+
+[ext_resource type="Texture2D" uid="uid://b1pe6y3h742ut" path="res://Arts/UI/ActionMenuHud/Star 1.svg" id="1_45ea4"]
+[ext_resource type="FontFile" uid="uid://dy4ruh0opke57" path="res://Arts/Fonts/Bangers/Bangers-Regular.ttf" id="2_65171"]
+[ext_resource type="Texture2D" uid="uid://bu1l717flp6ew" path="res://Arts/UI/ActionMenuHud/Button Magic.svg" id="3_45ea4"]
+[ext_resource type="Texture2D" uid="uid://c6470w1nns8d0" path="res://Arts/UI/ActionMenuHud/Magic.svg" id="3_65171"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mhie5"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0, 0.6313726, 0.84313726, 1)
+corner_radius_top_left = 500
+corner_radius_top_right = 500
+corner_radius_bottom_right = 500
+corner_radius_bottom_left = 500
+corner_detail = 20
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ep2ra"]
+content_margin_left = 29.0
+content_margin_top = 2.0
+content_margin_right = 0.0
+texture = ExtResource("3_65171")
+expand_margin_left = 8.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jteyg"]
+texture = ExtResource("3_45ea4")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mhie5"]
+texture = ExtResource("3_45ea4")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_yxm5i"]
+texture = ExtResource("3_45ea4")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_kvmpf"]
+texture = ExtResource("3_45ea4")
+
+[node name="ActionMenu" type="Control" unique_id=1305986002]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Bg" type="Control" parent="." unique_id=1729979860]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BG1" type="Panel" parent="Bg" unique_id=973900652]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -82.0
+offset_top = -82.0
+offset_right = 82.0
+offset_bottom = 82.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_mhie5")
+
+[node name="Polygon2D" type="Polygon2D" parent="Bg/BG1" unique_id=594655096]
+position = Vector2(-0.99999523, -44.999992)
+scale = Vector2(0.99999994, 1.3043463)
+color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+polygon = PackedVector2Array(32, 146.4335, 135, 146.4335, 153, 169, 84.2738, 169, 15, 169)
+
+[node name="TextureRect" type="TextureRect" parent="Bg/BG1" unique_id=306613908]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 4.0
+offset_right = 550.0
+offset_bottom = 539.0
+scale = Vector2(0.076, 0.076)
+texture = ExtResource("1_45ea4")
+
+[node name="Magic_btn" type="Control" parent="Bg" unique_id=1040465705]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+
+[node name="MainBtn" type="Button" parent="Bg/Magic_btn" unique_id=727597840]
+layout_mode = 0
+offset_left = 50.0
+offset_top = -79.0
+offset_right = 178.55882
+offset_bottom = -32.0
+theme_override_fonts/font = ExtResource("2_65171")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxTexture_ep2ra")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_jteyg")
+theme_override_styles/hover = SubResource("StyleBoxTexture_mhie5")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_yxm5i")
+theme_override_styles/focus = SubResource("StyleBoxTexture_kvmpf")
+text = "Magic"

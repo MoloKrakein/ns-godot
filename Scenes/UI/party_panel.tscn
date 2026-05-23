@@ -2,22 +2,52 @@
 
 [ext_resource type="Texture2D" uid="uid://ckfhvvh3exle4" path="res://Arts/UI/PlayerPartyHud/Star 3.png" id="1_saspk"]
 [ext_resource type="Texture2D" uid="uid://dixn6kwj4pyr1" path="res://Unity Old Code/Assets/Assets/UI/Player HUD/FINAL.png" id="2_hp5b6"]
+[ext_resource type="FontFile" uid="uid://dy4ruh0opke57" path="res://Arts/Fonts/Bangers/Bangers-Regular.ttf" id="3_hp5b6"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r2hvd"]
-content_margin_left = 2.0
-content_margin_top = 2.0
-content_margin_right = 2.0
-content_margin_bottom = 2.0
-bg_color = Color(0.080200896, 0.23041998, 0.05369164, 1)
+[sub_resource type="LabelSettings" id="LabelSettings_r2hvd"]
+font = ExtResource("3_hp5b6")
+font_size = 30
+font_color = Color(0.039215688, 0.8392157, 0.6, 1)
+outline_size = 3
+outline_color = Color(0.015686275, 0.29803923, 0.21568628, 1)
+shadow_size = 2
+shadow_color = Color(0.015686275, 0.29803923, 0.21568628, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_8y2u2"]
+font = ExtResource("3_hp5b6")
+font_size = 30
+font_color = Color(0.8980392, 0.78039217, 0.06666667, 1)
+outline_size = 3
+outline_color = Color(0.18039216, 0.15686275, 0.011764706, 1)
+shadow_size = 2
+shadow_color = Color(0.18039216, 0.15686275, 0.011764706, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1327d"]
+bg_color = Color(0.015000004, 0.3, 0.21449995, 1)
 corner_detail = 1
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8y2u2"]
-content_margin_left = 2.0
-content_margin_top = 2.0
-content_margin_right = 2.0
-content_margin_bottom = 2.0
-bg_color = Color(0.422, 1, 0.32, 1)
+bg_color = Color(0.039215688, 0.8392157, 0.6, 1)
 corner_detail = 1
+anti_aliasing_size = 0.01
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6x8fo"]
+bg_color = Color(0.18, 0.15768, 0.012599999, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fm4tp"]
+bg_color = Color(0.8980392, 0.78039217, 0.06666667, 1)
+corner_detail = 1
+anti_aliasing_size = 0.01
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qew5c"]
+bg_color = Color(0.26937002, 0.2646, 0.27, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jjdko"]
+bg_color = Color(0.9, 0.9, 0.9, 1)
+corner_detail = 1
+anti_aliasing_size = 0.01
 
 [node name="PartyPanel" type="Control" unique_id=1976608536]
 layout_mode = 3
@@ -44,6 +74,39 @@ offset_bottom = 352.0
 scale = Vector2(0.407, 0.407)
 texture = ExtResource("2_hp5b6")
 
+[node name="NumVal" type="Control" parent="BGStar" unique_id=1818237534]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -20.0
+offset_bottom = 20.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="HpVal" type="Label" parent="BGStar/NumVal" unique_id=1403730718]
+layout_mode = 0
+offset_left = 2.0
+offset_top = -11.5
+offset_right = 46.0
+offset_bottom = 57.5
+text = "999
+"
+label_settings = SubResource("LabelSettings_r2hvd")
+
+[node name="ManaVal" type="Label" parent="BGStar/NumVal" unique_id=1882635731]
+layout_mode = 0
+offset_left = -5.0
+offset_top = 15.5
+offset_right = 39.0
+offset_bottom = 84.5
+text = "999
+"
+label_settings = SubResource("LabelSettings_8y2u2")
+
 [node name="StatBar" type="Control" parent="BGStar" unique_id=236436834]
 layout_mode = 1
 anchors_preset = 7
@@ -64,11 +127,37 @@ color = Color(0, 0, 0, 1)
 antialiased = true
 polygon = PackedVector2Array(-56.5, -27, 117.5, -29, 113.78351, 40.102753, -70.5, 38)
 
-[node name="ProgressBar" type="ProgressBar" parent="BGStar/StatBar/Background" unique_id=137786549]
-offset_left = -54.470825
+[node name="HpBar" type="ProgressBar" parent="BGStar/StatBar/Background" unique_id=137786549]
+offset_left = -56.89175
 offset_top = -16.041103
-offset_right = 111.36258
+offset_right = 108.94165
 offset_bottom = -4.8123283
-theme_override_styles/background = SubResource("StyleBoxFlat_r2hvd")
+theme_override_styles/background = SubResource("StyleBoxFlat_1327d")
 theme_override_styles/fill = SubResource("StyleBoxFlat_8y2u2")
+page = 0.1
+value = 48.01
+exp_edit = true
+show_percentage = false
+
+[node name="MpBar" type="ProgressBar" parent="BGStar/StatBar/Background" unique_id=1464250794]
+offset_left = -53.260365
+offset_right = 112.573044
+offset_bottom = 11.228777
+theme_override_styles/background = SubResource("StyleBoxFlat_6x8fo")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fm4tp")
+page = 0.1
+value = 54.36
+exp_edit = true
+show_percentage = false
+
+[node name="MpBar2" type="ProgressBar" parent="BGStar/StatBar/Background" unique_id=1692351859]
+offset_left = -60.523136
+offset_top = 16.041107
+offset_right = 105.31027
+offset_bottom = 27.269882
+theme_override_styles/background = SubResource("StyleBoxFlat_qew5c")
+theme_override_styles/fill = SubResource("StyleBoxFlat_jjdko")
+page = 0.1
+value = 54.36
+exp_edit = true
 show_percentage = false
