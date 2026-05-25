@@ -2,6 +2,8 @@
 
 [ext_resource type="Texture2D" uid="uid://bfr4fr8vvu02" path="res://Arts/UI/Buttons/MoveSetBtn/Star 2.svg" id="1_nl1om"]
 [ext_resource type="Texture2D" uid="uid://bkseh7sf377wp" path="res://Arts/UI/Buttons/MoveSetBtn/Fire.svg" id="2_ag8le"]
+[ext_resource type="LabelSettings" uid="uid://rcu1toakffpr" path="res://Arts/UI/Buttons/MoveSetBtn/MoveBtnFont.tres" id="3_w5b2q"]
+[ext_resource type="Texture2D" uid="uid://bavmppyfkxmly" path="res://Arts/UI/Buttons/MoveSetBtn/Type Icon_Magic.svg" id="4_5qmsu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nl1om"]
 bg_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
@@ -135,14 +137,32 @@ expand_mode = 1
 [node name="MoveName" type="Label" parent="MarginContainer/HBoxContainer" unique_id=1824997615]
 layout_mode = 2
 text = "Fire attack"
+label_settings = ExtResource("3_w5b2q")
 
 [node name="Spacer" type="Control" parent="MarginContainer/HBoxContainer" unique_id=610823408]
-custom_minimum_size = Vector2(17.495, 0)
+custom_minimum_size = Vector2(25, 0)
 layout_mode = 2
 
 [node name="Cost label" type="Label" parent="MarginContainer/HBoxContainer" unique_id=1920403534]
 layout_mode = 2
 text = "99"
+label_settings = ExtResource("3_w5b2q")
 
-[node name="MoveType" type="TextureRect" parent="MarginContainer/HBoxContainer" unique_id=335289864]
+[node name="MoveType" type="Control" parent="MarginContainer/HBoxContainer" unique_id=1600162649]
 layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="MarginContainer/HBoxContainer/MoveType" unique_id=335289864]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -6.000001
+offset_top = -21.5
+offset_right = 224.0
+offset_bottom = 208.5
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.104, 0.104)
+texture = ExtResource("4_5qmsu")

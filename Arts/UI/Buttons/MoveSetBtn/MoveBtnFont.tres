@@ -1,0 +1,9 @@
+[gd_resource type="LabelSettings" format=3 uid="uid://rcu1toakffpr"]
+
+[ext_resource type="FontFile" uid="uid://clbyjkg6qrio6" path="res://Arts/Fonts/Geom/static/Geom-Light.ttf" id="1_4owcd"]
+
+[sub_resource type="FontVariation" id="FontVariation_yxivf"]
+base_font = ExtResource("1_4owcd")
+
+[resource]
+font = SubResource("FontVariation_yxivf")
