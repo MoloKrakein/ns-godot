@@ -89,6 +89,22 @@ Recommended setup:
 - pass the resulting style into the button's icon slot
 - keep the battle logic separate from the icon rendering logic
 
+### Element and physical icon data
+
+The UI icon library now already knows the asset paths under `Arts/UI/Icons/Icons/` and the shared background at `Arts/UI/Icons/starbg.svg`.
+
+The current element palette is:
+
+- Fire: fill `#D70C0F`, stroke `#ECB726`
+- Earth: fill `#00FF11`, stroke `#007D08`
+- Light: fill `#FFF700`, stroke `#737000`
+- Dark: fill `#270136`, stroke `#600AD6`
+- Physical: fill `#686868`, stroke `#262525`
+
+Use `UIIconLibrary.create_element_style(element)` for elemental icons and `UIIconLibrary.create_physical_style()` for the physical icon.
+
+The slot still controls whether the background is visible, so these styles can be reused in both framed and icon-only scenes.
+
 ## Background rule
 
 The background is optional and scene-driven.

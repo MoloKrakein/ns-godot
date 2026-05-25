@@ -1,13 +1,28 @@
-[gd_scene format=3 uid="uid://m5y3j3x1p4c9a"]
+[gd_scene format=3 uid="uid://bkrhrw7a1ipyy"]
 
-[ext_resource type="Script" path="res://Scripts/UI/icon_system/ui_icon_slot.gd" id="1_ui_icon_slot"]
+[ext_resource type="Script" uid="uid://dx64w7eqlfiw7" path="res://Scripts/UI/icon_system/ui_icon_slot.gd" id="1_ui_icon_slot"]
+[ext_resource type="Texture2D" uid="uid://ylc2gihvgjux" path="res://Arts/UI/Icons/starbg.svg" id="2_bwdao"]
 
-[node name="UIIconSlot" type="Control"]
-custom_minimum_size = Vector2(32, 32)
+[node name="UIIconSlot" type="Control" unique_id=1444521334]
 clip_contents = true
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 3
+anchors_preset = 0
 script = ExtResource("1_ui_icon_slot")
 
-[node name="Background" type="TextureRect" parent="."]
+[node name="BackgroundFill" type="TextureRect" parent="." unique_id=431621516]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_bwdao")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BackgroundStroke" type="TextureRect" parent="." unique_id=1728841158]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -18,13 +33,18 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Icon" type="TextureRect" parent="."]
+[node name="Icon" type="TextureRect" parent="." unique_id=310147886]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 3.0000002
+offset_top = 2.0
+offset_right = 3.0
+offset_bottom = 2.0
 grow_horizontal = 2
 grow_vertical = 2
+scale = Vector2(0.809, 0.809)
 mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5

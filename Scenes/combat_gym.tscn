@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://du0mcmwag1pen" path="res://Resources/Stats.gd" id="4_1bv32"]
 [ext_resource type="Script" uid="uid://xyjeoprc8rta" path="res://Resources/ElementAffinityEntry.gd" id="4_60cw4"]
 [ext_resource type="Script" uid="uid://dwxgehexu25y4" path="res://Resources/PhysicalAffinityEntry.gd" id="5_suehm"]
+[ext_resource type="Texture2D" uid="uid://2s8rwsrox2a8" path="res://Arts/Character/PlaceHolder Char.png" id="6_krc16"]
 [ext_resource type="PackedScene" uid="uid://dikhhlb2frkt5" path="res://Scenes/battler/battler.tscn" id="15_rperh"]
 [ext_resource type="Script" uid="uid://7272tw1kw6cp" path="res://Resources/Equipment.gd" id="16_l4kvx"]
 [ext_resource type="Resource" uid="uid://c0vkoko0p3x2r" path="res://Resources/Moves/Basic atk.tres" id="17_hf1gq"]
@@ -25,6 +26,8 @@ metadata/_custom_type_script = "uid://du0mcmwag1pen"
 script = ExtResource("2_1bv32")
 id = "Phy_Punch"
 move_name = "Punch"
+icon = ExtResource("6_krc16")
+target_type = 1
 physical_type = 2
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
@@ -32,6 +35,7 @@ metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 script = ExtResource("2_1bv32")
 id = "mg_fire"
 move_name = "Fire Ball"
+mp_cost = 15
 is_magic = true
 element = 1
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
@@ -192,7 +196,7 @@ text = "logs"
 layout_mode = 0
 offset_left = 920.0
 offset_top = 70.0
-offset_right = 1346.0
+offset_right = 1144.0
 offset_bottom = 560.0
 
 [node name="PlayerParty" type="VBoxContainer" parent="." unique_id=527507764]

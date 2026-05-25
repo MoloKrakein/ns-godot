@@ -1,9 +1,11 @@
 [gd_scene format=3 uid="uid://nies8luc08by"]
 
-[ext_resource type="Texture2D" uid="uid://bfr4fr8vvu02" path="res://Arts/UI/Buttons/MoveSetBtn/Star 2.svg" id="1_nl1om"]
-[ext_resource type="Texture2D" uid="uid://bkseh7sf377wp" path="res://Arts/UI/Buttons/MoveSetBtn/Fire.svg" id="2_ag8le"]
+[ext_resource type="Script" uid="uid://b8v0jxy860i7a" path="res://Scripts/UI/buttons/movebutton/move_button.gd" id="1_4movebtn"]
+[ext_resource type="PackedScene" uid="uid://bkrhrw7a1ipyy" path="res://Scenes/UI/icon_system/ui_icon_slot.tscn" id="2_ag8le"]
 [ext_resource type="LabelSettings" uid="uid://rcu1toakffpr" path="res://Arts/UI/Buttons/MoveSetBtn/MoveBtnFont.tres" id="3_w5b2q"]
+[ext_resource type="Script" uid="uid://bu4sr4xfr114d" path="res://Scripts/UI/icon_system/ui_icon_style.gd" id="3_x30h1"]
 [ext_resource type="Texture2D" uid="uid://bavmppyfkxmly" path="res://Arts/UI/Buttons/MoveSetBtn/Type Icon_Magic.svg" id="4_5qmsu"]
+[ext_resource type="Texture2D" uid="uid://byaygrdb87ul6" path="res://Arts/UI/Buttons/MoveSetBtn/Type Icon_Phys.svg" id="5_5qmsu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nl1om"]
 bg_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
@@ -26,7 +28,7 @@ content_margin_left = 4.0
 content_margin_top = 4.0
 content_margin_right = 4.0
 content_margin_bottom = 4.0
-bg_color = Color(0.225, 0.225, 0.225, 0.6)
+bg_color = Color(0, 0.6313726, 0.84313726, 1)
 corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
@@ -66,17 +68,34 @@ expand_margin_top = 2.0
 expand_margin_right = 2.0
 expand_margin_bottom = 2.0
 
-[node name="Button" type="Button" unique_id=1373420282]
-custom_minimum_size = Vector2(180, 0)
-offset_right = 150.0
-offset_bottom = 19.0
+[sub_resource type="Resource" id="Resource_s0wak"]
+script = ExtResource("3_x30h1")
+metadata/_custom_type_script = "uid://bu4sr4xfr114d"
+
+[node name="MoveButton" type="Control" unique_id=1373420282]
+custom_minimum_size = Vector2(180, 24)
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 3
+mouse_filter = 2
+script = ExtResource("1_4movebtn")
+
+[node name="Button" type="Button" parent="." unique_id=1373420283]
+custom_minimum_size = Vector2(180, 16)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_nl1om")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_ag8le")
 theme_override_styles/hover = SubResource("StyleBoxFlat_w5b2q")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_5qmsu")
 theme_override_styles/focus = SubResource("StyleBoxFlat_x30h1")
 
-[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1745151746]
+[node name="MarginContainer" type="MarginContainer" parent="Button" unique_id=1745151746]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -84,85 +103,93 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -75.0
-offset_top = -11.5
+offset_top = -16.0
 offset_right = 75.0
-offset_bottom = 11.5
+offset_bottom = 16.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = -14
 theme_override_constants/margin_right = -15
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=31893019]
+[node name="HBoxContainer" type="HBoxContainer" parent="Button/MarginContainer" unique_id=31893019]
 layout_mode = 2
 theme_override_constants/separation = 9
 
-[node name="IconWrapper" type="Control" parent="MarginContainer/HBoxContainer" unique_id=361929198]
-custom_minimum_size = Vector2(18.64, 26.64)
+[node name="IconSpace" type="Control" parent="Button/MarginContainer/HBoxContainer" unique_id=695043876]
+custom_minimum_size = Vector2(12, 0)
 layout_mode = 2
-size_flags_stretch_ratio = 0.0
 
-[node name="BG" type="TextureRect" parent="MarginContainer/HBoxContainer/IconWrapper" unique_id=51467355]
+[node name="MoveName" type="Label" parent="Button/MarginContainer/HBoxContainer" unique_id=1824997615]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Ur Mom Is Gay"
+label_settings = ExtResource("3_w5b2q")
+clip_text = true
+
+[node name="CostBox" type="HBoxContainer" parent="Button/MarginContainer/HBoxContainer" unique_id=655153521]
+custom_minimum_size = Vector2(42, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_constants/separation = 2
+
+[node name="CostType" type="Label" parent="Button/MarginContainer/HBoxContainer/CostBox" unique_id=1773649098]
+visible = false
+layout_mode = 2
+text = "MP"
+label_settings = ExtResource("3_w5b2q")
+
+[node name="CostLabel" type="Label" parent="Button/MarginContainer/HBoxContainer/CostBox" unique_id=1920403534]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = "99"
+label_settings = ExtResource("3_w5b2q")
+horizontal_alignment = 2
+
+[node name="UIIconSlot" parent="." unique_id=1444521334 instance=ExtResource("2_ag8le")]
+layout_mode = 0
+offset_left = -17.0
+offset_top = -7.0
+offset_right = 18.0
+offset_bottom = 28.0
+size_flags_horizontal = 0
+icon_style = SubResource("Resource_s0wak")
+
+[node name="TypeBadge" type="Control" parent="." unique_id=1702030723]
+z_index = 20
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 22.0
+offset_bottom = 22.0
+grow_horizontal = 0
+grow_vertical = 0
+scale = Vector2(0.61, 0.61)
+mouse_filter = 2
+
+[node name="MagicTypeIcon" type="TextureRect" parent="TypeBadge" unique_id=1903183265]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 5.0
-offset_top = 8.0
-offset_right = 5.0
-offset_bottom = 8.0
 grow_horizontal = 2
 grow_vertical = 2
-scale = Vector2(0.055, 0.055)
-texture = ExtResource("1_nl1om")
-expand_mode = 1
-stretch_mode = 3
-
-[node name="Icon" type="TextureRect" parent="MarginContainer/HBoxContainer/IconWrapper/BG" unique_id=1568988456]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -112.5
-offset_top = -195.0
-offset_right = 112.5
-offset_bottom = 195.0
-grow_horizontal = 2
-grow_vertical = 2
-pivot_offset_ratio = Vector2(0.655, 0)
-texture = ExtResource("2_ag8le")
-expand_mode = 1
-
-[node name="MoveName" type="Label" parent="MarginContainer/HBoxContainer" unique_id=1824997615]
-layout_mode = 2
-text = "Fire attack"
-label_settings = ExtResource("3_w5b2q")
-
-[node name="Spacer" type="Control" parent="MarginContainer/HBoxContainer" unique_id=610823408]
-custom_minimum_size = Vector2(25, 0)
-layout_mode = 2
-
-[node name="Cost label" type="Label" parent="MarginContainer/HBoxContainer" unique_id=1920403534]
-layout_mode = 2
-text = "99"
-label_settings = ExtResource("3_w5b2q")
-
-[node name="MoveType" type="Control" parent="MarginContainer/HBoxContainer" unique_id=1600162649]
-layout_mode = 2
-
-[node name="Icon" type="TextureRect" parent="MarginContainer/HBoxContainer/MoveType" unique_id=335289864]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -6.000001
-offset_top = -21.5
-offset_right = 224.0
-offset_bottom = 208.5
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.104, 0.104)
+mouse_filter = 2
 texture = ExtResource("4_5qmsu")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PhysicalTypeIcon" type="TextureRect" parent="TypeBadge" unique_id=1413183188]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5_5qmsu")
+expand_mode = 1
+stretch_mode = 5

@@ -5,7 +5,8 @@ class_name UIIconSlot
 @export var show_icon: bool = true
 @export var icon_style: UIIconStyle = null
 
-@onready var background_rect: TextureRect = $Background
+@onready var background_fill_rect: TextureRect = $BackgroundFill
+@onready var background_stroke_rect: TextureRect = $BackgroundStroke
 @onready var icon_rect: TextureRect = $Icon
 
 func _ready() -> void:
@@ -16,20 +17,26 @@ func set_style(style: UIIconStyle) -> void:
 	refresh()
 
 func refresh() -> void:
-	if background_rect == null or icon_rect == null:
+	if background_fill_rect == null or background_stroke_rect == null or icon_rect == null:
 		return
 
 	var style: UIIconStyle = icon_style
 	if style == null:
-		background_rect.visible = false
-		background_rect.texture = null
+		background_fill_rect.visible = false
+		background_fill_rect.texture = null
+		background_stroke_rect.visible = false
+		background_stroke_rect.texture = null
 		icon_rect.visible = false
 		icon_rect.texture = null
 		return
 
-	background_rect.visible = show_background and style.use_background and style.background_texture != null
-	background_rect.texture = style.background_texture if background_rect.visible else null
-	background_rect.modulate = style.background_modulate
+	background_fill_rect.visible = show_background and style.use_background and style.background_fill_texture != null
+	background_fill_rect.texture = style.background_fill_texture if background_fill_rect.visible else null
+	background_fill_rect.modulate = style.background_fill_color
+
+	background_stroke_rect.visible = show_background and style.use_background and style.background_stroke_texture != null
+	background_stroke_rect.texture = style.background_stroke_texture if background_stroke_rect.visible else null
+	background_stroke_rect.modulate = style.background_stroke_color
 
 	var resolved_icon: Texture2D = style.icon_texture
 	if resolved_icon == null and style.theme_icon_name != &"":

@@ -1,5 +1,7 @@
 extends Control
 
+@export var move_button_scene: PackedScene = preload("res://Scenes/UI/buttons/movebutton/button.tscn")
+
 @export var battle_manager: Node
 @export var damage_label: Label
 @export var button_container: VBoxContainer
@@ -146,23 +148,10 @@ func _on_reload_battle_gym_pressed() -> void:
 	get_tree().reload_current_scene()
 
 func _create_button_for_move(move: BattleMove):
-	var btn = Button.new()
-	btn.text = move.move_name
-	btn.tooltip_text = "%s\n%s" % [move.get_button_label(), move.description]
-	btn.icon = _get_button_icon_for_move(move)
-	
+	var btn: MoveButton = move_button_scene.instantiate()
 	button_container.add_child(btn)
 	btn.pressed.connect(func(): _execute_selected_move(move))
-
-func _get_button_icon_for_move(move: BattleMove) -> Texture2D:
-	if move.icon != null:
-		return move.icon
-
-	var icon_name: StringName = move.get_placeholder_icon_name()
-	if icon_name == &"":
-		return null
-
-	return get_theme_icon(icon_name, "EditorIcons")
+	btn.call_deferred("setup_move", move)
 
 func _execute_selected_move(move: BattleMove):
 	if battle_finished or current_actor == null:

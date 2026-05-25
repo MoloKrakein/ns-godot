@@ -9,8 +9,8 @@ enum MoveTemplate {AUTO, ATTACK, HEAL, STATUS, SUPPORT, UTILITY}
 @export_group("Visual & Info")
 @export var move_name: String = "New Move"
 @export_multiline var description: String = "A new move."
-@export var icon: Texture2D = null
-@export var ui_icon_name: StringName = &""
+@export var icon: Texture2D = null # Direct per-move texture override (highest icon priority)
+@export var ui_icon_name: StringName = &"" # Optional key resolved by UIIconLibrary key map (element_*, template_*, move_*, etc.)
 @export var template_mode: MoveTemplate = MoveTemplate.AUTO
 @export var vfx_scene: PackedScene = null
 

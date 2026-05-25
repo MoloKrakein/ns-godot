@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bavmppyfkxmly"
-path="res://.godot/imported/Type Icon_Magic.svg-fc0a2fd1777989b4cd38c85f6a7d7e8b.ctex"
+uid="uid://de0h4vff14cb6"
+path="res://.godot/imported/Dark.svg-8657764dd36b078c5f94b7a683a9ddc3.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Arts/UI/Buttons/MoveSetBtn/Type Icon_Magic.svg"
-dest_files=["res://.godot/imported/Type Icon_Magic.svg-fc0a2fd1777989b4cd38c85f6a7d7e8b.ctex"]
+source_file="res://Arts/UI/Icons/Icons/Dark.svg"
+dest_files=["res://.godot/imported/Dark.svg-8657764dd36b078c5f94b7a683a9ddc3.ctex"]
 
 [params]
 
