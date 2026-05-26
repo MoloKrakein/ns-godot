@@ -8,6 +8,11 @@ const EARTH_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Icons/Earth.s
 const LIGHT_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Icons/Light.svg")
 const DARK_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Icons/Dark.svg")
 const PHYSICAL_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Icons/Physical.svg")
+const MULTI_FIRE_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Multi_icons/M_Fire.svg")
+const MULTI_EARTH_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Multi_icons/M_Earth.svg")
+const MULTI_LIGHT_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Multi_icons/M_Light.svg")
+const MULTI_DARKNESS_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Multi_icons/M_Darkness.svg")
+const MULTI_PHYSICAL_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Multi_icons/M_Physical.svg")
 
 const FIRE_BACKGROUND_FILL: Color = Color("#D70C0F")
 const FIRE_BACKGROUND_STROKE: Color = Color("#ECB726")
@@ -68,39 +73,72 @@ static func _resolve_move_icon_texture(move: BattleMove) -> Texture2D:
 	if move.icon != null:
 		return move.icon
 
-	for candidate in move.get_icon_candidates():
-		var resolved_from_key: Texture2D = _resolve_texture_from_key(StringName(candidate))
-		if resolved_from_key != null:
-			return resolved_from_key
+	if move.ui_icon_name != &"":
+		var explicit_icon: Texture2D = _resolve_texture_from_key(move.ui_icon_name)
+		if explicit_icon != null:
+			return explicit_icon
 
 	if move.is_magic and move.element != GlobalData.Element.NEUTRAL:
-		match move.element:
-			GlobalData.Element.FIRE:
-				return FIRE_ICON_TEXTURE
-			GlobalData.Element.EARTH:
-				return EARTH_ICON_TEXTURE
-			GlobalData.Element.LIGHT:
-				return LIGHT_ICON_TEXTURE
-			GlobalData.Element.DARK:
-				return DARK_ICON_TEXTURE
+		return _resolve_element_icon(move.element, _is_multi_target(move))
 
 	if not move.is_magic and move.physical_type != GlobalData.PhysicalType.NONE:
-		return PHYSICAL_ICON_TEXTURE
+		return _resolve_physical_icon(_is_multi_target(move))
 
-	match move.get_move_template():
-		BattleMove.MoveTemplate.HEAL, BattleMove.MoveTemplate.SUPPORT:
-			return LIGHT_ICON_TEXTURE
-		BattleMove.MoveTemplate.STATUS:
-			return DARK_ICON_TEXTURE
-		BattleMove.MoveTemplate.UTILITY:
-			return EARTH_ICON_TEXTURE
+	return _resolve_template_icon(move.get_move_template(), _is_multi_target(move))
+
+static func _is_multi_target(move: BattleMove) -> bool:
+	return move.target_type == BattleMove.Target.ALL_ENEMIES or move.target_type == BattleMove.Target.ALL_ALLIES
+
+static func _resolve_element_icon(element: GlobalData.Element, use_multi_icon: bool) -> Texture2D:
+	match element:
+		GlobalData.Element.FIRE:
+			return MULTI_FIRE_ICON_TEXTURE if use_multi_icon else FIRE_ICON_TEXTURE
+		GlobalData.Element.EARTH:
+			return MULTI_EARTH_ICON_TEXTURE if use_multi_icon else EARTH_ICON_TEXTURE
+		GlobalData.Element.LIGHT:
+			return MULTI_LIGHT_ICON_TEXTURE if use_multi_icon else LIGHT_ICON_TEXTURE
+		GlobalData.Element.DARK:
+			return MULTI_DARKNESS_ICON_TEXTURE if use_multi_icon else DARK_ICON_TEXTURE
 		_:
 			return PHYSICAL_ICON_TEXTURE
+
+static func _resolve_physical_icon(use_multi_icon: bool) -> Texture2D:
+	return MULTI_PHYSICAL_ICON_TEXTURE if use_multi_icon else PHYSICAL_ICON_TEXTURE
+
+static func _resolve_template_icon(template: BattleMove.MoveTemplate, use_multi_icon: bool) -> Texture2D:
+	match template:
+		BattleMove.MoveTemplate.HEAL, BattleMove.MoveTemplate.SUPPORT:
+			return _resolve_support_icon(use_multi_icon)
+		BattleMove.MoveTemplate.STATUS:
+			return _resolve_status_icon(use_multi_icon)
+		BattleMove.MoveTemplate.UTILITY:
+			return _resolve_utility_icon(use_multi_icon)
+		_:
+			return _resolve_physical_icon(use_multi_icon)
+
+static func _resolve_support_icon(use_multi_icon: bool) -> Texture2D:
+	return MULTI_LIGHT_ICON_TEXTURE if use_multi_icon else LIGHT_ICON_TEXTURE
+
+static func _resolve_status_icon(use_multi_icon: bool) -> Texture2D:
+	return MULTI_DARKNESS_ICON_TEXTURE if use_multi_icon else DARK_ICON_TEXTURE
+
+static func _resolve_utility_icon(use_multi_icon: bool) -> Texture2D:
+	return MULTI_EARTH_ICON_TEXTURE if use_multi_icon else EARTH_ICON_TEXTURE
 
 static func _resolve_texture_from_key(icon_key: StringName) -> Texture2D:
 	match icon_key:
 		&"custom_texture":
 			return null
+		&"M_Fire", &"element_fire":
+			return MULTI_FIRE_ICON_TEXTURE
+		&"M_Earth", &"element_earth":
+			return MULTI_EARTH_ICON_TEXTURE
+		&"M_Light", &"element_light":
+			return MULTI_LIGHT_ICON_TEXTURE
+		&"M_Darkness", &"element_dark":
+			return MULTI_DARKNESS_ICON_TEXTURE
+		&"M_Physical":
+			return MULTI_PHYSICAL_ICON_TEXTURE
 		&"element_fire":
 			return FIRE_ICON_TEXTURE
 		&"element_earth":
@@ -112,19 +150,19 @@ static func _resolve_texture_from_key(icon_key: StringName) -> Texture2D:
 		&"physical_slash", &"physical_pierce", &"physical_strike", &"physical_bullet", &"physical_none":
 			return PHYSICAL_ICON_TEXTURE
 		&"template_attack_template", &"move_attack":
-			return PHYSICAL_ICON_TEXTURE
+			return MULTI_PHYSICAL_ICON_TEXTURE
 		&"template_heal_template", &"move_heal":
-			return LIGHT_ICON_TEXTURE
+			return MULTI_LIGHT_ICON_TEXTURE
 		&"template_status_template", &"move_status":
-			return DARK_ICON_TEXTURE
+			return MULTI_DARKNESS_ICON_TEXTURE
 		&"template_support_template", &"move_support":
-			return LIGHT_ICON_TEXTURE
+			return MULTI_LIGHT_ICON_TEXTURE
 		&"template_utility_template", &"move_utility":
-			return EARTH_ICON_TEXTURE
+			return MULTI_EARTH_ICON_TEXTURE
 		&"target_aoe":
-			return LIGHT_ICON_TEXTURE
+			return MULTI_LIGHT_ICON_TEXTURE
 		&"target_self":
-			return EARTH_ICON_TEXTURE
+			return MULTI_EARTH_ICON_TEXTURE
 		&"Group":
 			return LIGHT_ICON_TEXTURE
 		&"ColorRect":

@@ -25,17 +25,17 @@ metadata/_custom_type_script = "uid://du0mcmwag1pen"
 script = ExtResource("2_1bv32")
 id = "Phy_Punch"
 move_name = "Punch"
-target_type = 1
-physical_type = 2
+physical_type = 1
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
 [sub_resource type="Resource" id="Resource_l0e8c"]
 script = ExtResource("2_1bv32")
 id = "mg_fireball"
 move_name = "Fire Ball"
+target_type = 1
 mp_cost = 15
 is_magic = true
-element = 2
+element = 1
 chance_applying_element = 1.0
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
