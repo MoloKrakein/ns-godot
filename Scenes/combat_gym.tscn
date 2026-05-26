@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cujtno760tx2" path="res://Scripts/test_combat_gym.gd" id="1_nqkjc"]
 [ext_resource type="Script" uid="uid://d1rfmpj3ie3ip" path="res://Resources/Move.gd" id="2_1bv32"]
 [ext_resource type="PackedScene" uid="uid://vey4iwqmr78t" path="res://Scenes/battle manager/battle_arena.tscn" id="2_wnuto"]
+[ext_resource type="PackedScene" uid="uid://cf76au0kgosye" path="res://Scenes/UI/skill_menu.tscn" id="3_skillmenu"]
 [ext_resource type="Script" uid="uid://du0mcmwag1pen" path="res://Resources/Stats.gd" id="4_1bv32"]
 [ext_resource type="Script" uid="uid://xyjeoprc8rta" path="res://Resources/ElementAffinityEntry.gd" id="4_60cw4"]
 [ext_resource type="Script" uid="uid://dwxgehexu25y4" path="res://Resources/PhysicalAffinityEntry.gd" id="5_suehm"]
@@ -25,6 +26,7 @@ metadata/_custom_type_script = "uid://du0mcmwag1pen"
 script = ExtResource("2_1bv32")
 id = "Phy_Punch"
 move_name = "Punch"
+target_type = 1
 physical_type = 1
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
@@ -140,7 +142,7 @@ move_name = "Punch"
 physical_type = 2
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
-[node name="CombatGYM" type="Control" unique_id=1231679415 node_paths=PackedStringArray("battle_manager", "damage_label", "button_container", "player_party_stats_label", "enemy_party_stats_label", "turn_manipulation_container", "turn_order_container", "last_move_used_label")]
+[node name="CombatGYM" type="Control" unique_id=1231679415 node_paths=PackedStringArray("battle_manager", "damage_label", "button_container", "skill_menu", "target_button_container", "player_party_stats_label", "enemy_party_stats_label", "turn_manipulation_container", "turn_order_container", "last_move_used_label")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -150,7 +152,9 @@ grow_vertical = 0
 script = ExtResource("1_nqkjc")
 battle_manager = NodePath("Battle_arena")
 damage_label = NodePath("Battlelogs")
-button_container = NodePath("BattleMoves")
+button_container = NodePath("TargetButtons")
+skill_menu = NodePath("BattleMoves")
+target_button_container = NodePath("TargetButtons")
 player_party_stats_label = NodePath("PlayerParty/PartyCurrentStats")
 enemy_party_stats_label = NodePath("EnemyParty/PartyCurrentStats")
 turn_manipulation_container = NodePath("TurnManipulator")
@@ -191,11 +195,23 @@ offset_right = 880.0
 offset_bottom = 560.0
 text = "logs"
 
-[node name="BattleMoves" type="VBoxContainer" parent="." unique_id=1497715568]
+[node name="BattleMoves" parent="." unique_id=1497715568 instance=ExtResource("3_skillmenu")]
 layout_mode = 0
-offset_left = 920.0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 900.0
 offset_top = 70.0
-offset_right = 1144.0
+offset_right = 1194.0
+offset_bottom = 560.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="TargetButtons" type="VBoxContainer" parent="." unique_id=1965324103]
+layout_mode = 0
+offset_left = 1210.0
+offset_top = 70.0
+offset_right = 1346.0
 offset_bottom = 560.0
 
 [node name="PlayerParty" type="VBoxContainer" parent="." unique_id=527507764]

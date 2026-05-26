@@ -1,0 +1,57 @@
+[gd_scene format=3 uid="uid://5duydqceduse"]
+
+[ext_resource type="FontFile" uid="uid://dy4ruh0opke57" path="res://Arts/Fonts/Bangers/Bangers-Regular.ttf" id="1_n5rjn"]
+[ext_resource type="Texture2D" uid="uid://cm0xkr0gyqco6" path="res://Arts/UI/Buttons/BackBtn/Back.svg" id="2_3auxq"]
+[ext_resource type="Texture2D" uid="uid://bvpdmd5yr117a" path="res://Arts/UI/Buttons/BackBtn/BackBtnHvr.svg" id="3_3auxq"]
+[ext_resource type="StyleBox" uid="uid://dyr0fpfb621vc" path="res://Scenes/UI/buttons/Backbutton/BackbtnStyle.tres" id="3_xbgi2"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4xv8d"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("2_3auxq")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_xbgi2"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("2_3auxq")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mqg1e"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("3_3auxq")
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_6f6id"]
+load_path = "res://.godot/imported/BackBtnHvr.svg-a8b15c7ceaf30db0b28481a9e000e94c.ctex"
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4fdfg"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+texture = SubResource("CompressedTexture2D_6f6id")
+
+[node name="BackBtn" type="Control" unique_id=430696281]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Button" type="Button" parent="." unique_id=2062888865]
+layout_mode = 0
+offset_right = 87.0
+offset_bottom = 43.0
+theme_override_fonts/font = ExtResource("1_n5rjn")
+theme_override_styles/normal = SubResource("StyleBoxTexture_4xv8d")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_xbgi2")
+theme_override_styles/hover = SubResource("StyleBoxTexture_mqg1e")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_4fdfg")
+theme_override_styles/focus = ExtResource("3_xbgi2")
+text = "Rethink"

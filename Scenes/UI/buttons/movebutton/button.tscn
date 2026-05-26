@@ -73,10 +73,9 @@ script = ExtResource("3_x30h1")
 metadata/_custom_type_script = "uid://bu4sr4xfr114d"
 
 [node name="MoveButton" type="Control" unique_id=1373420282]
-custom_minimum_size = Vector2(180, 24)
+custom_minimum_size = Vector2(180, 28)
 layout_mode = 3
 anchors_preset = 0
-size_flags_horizontal = 3
 mouse_filter = 2
 script = ExtResource("1_4movebtn")
 
@@ -86,7 +85,6 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_nl1om")
@@ -110,33 +108,31 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = -14
 theme_override_constants/margin_right = -15
+mouse_filter = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Button/MarginContainer" unique_id=31893019]
 layout_mode = 2
 theme_override_constants/separation = 9
+mouse_filter = 2
 
 [node name="IconSpace" type="Control" parent="Button/MarginContainer/HBoxContainer" unique_id=695043876]
 custom_minimum_size = Vector2(12, 0)
 layout_mode = 2
+mouse_filter = 2
 
 [node name="MoveName" type="Label" parent="Button/MarginContainer/HBoxContainer" unique_id=1824997615]
 layout_mode = 2
 size_flags_horizontal = 4
-text = "Ur Mom Is Gay"
 label_settings = ExtResource("3_w5b2q")
 clip_text = true
+mouse_filter = 2
 
 [node name="CostBox" type="HBoxContainer" parent="Button/MarginContainer/HBoxContainer" unique_id=655153521]
 custom_minimum_size = Vector2(42, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 theme_override_constants/separation = 2
-
-[node name="CostType" type="Label" parent="Button/MarginContainer/HBoxContainer/CostBox" unique_id=1773649098]
-visible = false
-layout_mode = 2
-text = "MP"
-label_settings = ExtResource("3_w5b2q")
+mouse_filter = 2
 
 [node name="CostLabel" type="Label" parent="Button/MarginContainer/HBoxContainer/CostBox" unique_id=1920403534]
 custom_minimum_size = Vector2(30, 0)
@@ -144,6 +140,7 @@ layout_mode = 2
 text = "99"
 label_settings = ExtResource("3_w5b2q")
 horizontal_alignment = 2
+mouse_filter = 2
 
 [node name="UIIconSlot" parent="." unique_id=1444521334 instance=ExtResource("2_ag8le")]
 layout_mode = 0
@@ -153,6 +150,7 @@ offset_right = 18.0
 offset_bottom = 28.0
 size_flags_horizontal = 0
 icon_style = SubResource("Resource_s0wak")
+mouse_filter = 2
 
 [node name="TypeBadge" type="Control" parent="." unique_id=1702030723]
 z_index = 20

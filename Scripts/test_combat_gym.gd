@@ -5,6 +5,8 @@ extends Control
 @export var battle_manager: Node
 @export var damage_label: Label
 @export var button_container: VBoxContainer
+@export var skill_menu: SkillMenu
+@export var target_button_container: VBoxContainer
 @export var player_party_stats_label: Label
 @export var enemy_party_stats_label: Label
 @export var turn_manipulation_container: HBoxContainer
@@ -26,13 +28,20 @@ var battle_finished: bool = false
 var combat_log: PackedStringArray = []
 
 func _ready():
-	if battle_manager == null or damage_label == null or button_container == null:
-		push_error("Combat gym is missing inspector assignments for battle_manager, damage_label, or button_container.")
+	if battle_manager == null or damage_label == null:
+		push_error("Combat gym is missing inspector assignments for battle_manager or damage_label.")
+		return
+
+	if skill_menu == null and button_container == null:
+		push_error("Combat gym needs either a SkillMenu reference or a legacy button_container.")
 		return
 
 	# 1. Grab the characters from the BattleManager
 	player_party = battle_manager.player_party
 	enemy_party = battle_manager.enemy_party
+
+	if skill_menu != null and not skill_menu.move_selected.is_connected(_on_skill_menu_move_selected):
+		skill_menu.move_selected.connect(_on_skill_menu_move_selected)
 
 	_setup_gym_layout()
 	
@@ -50,7 +59,7 @@ func _ready():
 	_begin_flow()
 
 func _setup_gym_layout() -> void:
-	if damage_label == null or button_container == null:
+	if damage_label == null:
 		return
 
 	damage_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -59,9 +68,15 @@ func _setup_gym_layout() -> void:
 	damage_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	damage_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
 
-	button_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	button_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	button_container.add_theme_constant_override("separation", 6)
+	if button_container != null:
+		button_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		button_container.add_theme_constant_override("separation", 6)
+
+	if target_button_container != null:
+		target_button_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		target_button_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		target_button_container.add_theme_constant_override("separation", 6)
 
 	if turn_manipulation_container != null:
 		turn_manipulation_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -104,10 +119,20 @@ func _create_turn_control_button(container: Container, label: String, callback: 
 # --- BUTTON LOGIC ---
 
 func _build_move_buttons():
-	for c in button_container.get_children():
-		c.queue_free() # Clear out old buttons if they exist
+	_clear_target_buttons()
+
+	if skill_menu != null:
+		skill_menu.clear_moves()
+
+	if button_container != null and skill_menu == null:
+		for c in button_container.get_children():
+			c.queue_free() # Clear out old buttons if they exist
 
 	if current_actor == null or battle_finished:
+		return
+
+	if skill_menu != null:
+		skill_menu.populate_for_battler(current_actor)
 		return
 
 	if current_actor.basic_atk != null:
@@ -122,6 +147,7 @@ func _on_end_turn_pressed():
 		return
 	pending_move = null
 	pending_move_targets.clear()
+	_clear_target_buttons()
 	_advance_turn_flow()
 
 func _on_toggle_player_overdrive_pressed() -> void:
@@ -148,10 +174,15 @@ func _on_reload_battle_gym_pressed() -> void:
 	get_tree().reload_current_scene()
 
 func _create_button_for_move(move: BattleMove):
+	if button_container == null:
+		return
 	var btn: MoveButton = move_button_scene.instantiate()
 	button_container.add_child(btn)
 	btn.pressed.connect(func(): _execute_selected_move(move))
 	btn.call_deferred("setup_move", move)
+
+func _on_skill_menu_move_selected(move: BattleMove) -> void:
+	_execute_selected_move(move)
 
 func _execute_selected_move(move: BattleMove):
 	if battle_finished or current_actor == null:
@@ -166,25 +197,21 @@ func _execute_selected_move(move: BattleMove):
 		_end_current_actor_turn()
 		return
 
-	if move.target_type == BattleMove.Target.ALL_ENEMIES or move.target_type == BattleMove.Target.ALL_ALLIES:
-		battle_manager.execute_move(current_actor, move, null)
-		_update_last_move_label(move, current_actor, "ALL")
-		_end_current_actor_turn()
-		return
-
 	pending_move = move
 	_show_target_buttons(move)
 
 func _show_target_buttons(move: BattleMove) -> void:
-	for child in button_container.get_children():
-		if child is Button and child.text.begins_with("Target:"):
-			child.queue_free()
+	_clear_target_buttons()
+	var target_container: VBoxContainer = _get_target_button_container()
+	if target_container == null:
+		push_warning("No target button container is assigned; cannot show target selection UI.")
+		return
 
 	var valid_targets: Array[Battler] = _get_valid_targets_for_move(move)
 	for target in valid_targets:
 		var target_btn: Button = Button.new()
 		target_btn.text = "Target: %s" % target.stats.character_name
-		button_container.add_child(target_btn)
+		target_container.add_child(target_btn)
 		target_btn.pressed.connect(func(): _execute_move_on_target(target))
 
 func _execute_move_on_target(target: Battler) -> void:
@@ -194,7 +221,22 @@ func _execute_move_on_target(target: Battler) -> void:
 	_update_last_move_label(pending_move, current_actor, target.stats.character_name)
 	pending_move = null
 	pending_move_targets.clear()
+	_clear_target_buttons()
 	_end_current_actor_turn()
+
+func _clear_target_buttons() -> void:
+	var target_container: VBoxContainer = _get_target_button_container()
+	if target_container == null:
+		return
+
+	for child in target_container.get_children():
+		if child is Button and child.text.begins_with("Target:"):
+			child.queue_free()
+
+func _get_target_button_container() -> VBoxContainer:
+	if target_button_container != null:
+		return target_button_container
+	return button_container
 
 func _get_valid_targets_for_move(move: BattleMove) -> Array[Battler]:
 	var targets: Array[Battler] = []
@@ -223,6 +265,9 @@ func _advance_turn_flow() -> void:
 		return
 	current_actor = battler
 	if current_actor in battle_manager.enemy_party:
+		if skill_menu != null:
+			skill_menu.clear_moves()
+		_clear_target_buttons()
 		call_deferred("_auto_resolve_enemy_turn")
 	else:
 		_build_move_buttons()

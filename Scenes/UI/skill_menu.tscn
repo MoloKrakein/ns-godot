@@ -1,0 +1,223 @@
+[gd_scene format=3 uid="uid://cf76au0kgosye"]
+
+[ext_resource type="Script" uid="uid://dv3qkh81p8n6o" path="res://Scripts/UI/skill_menu.gd" id="1_skillmenu"]
+[ext_resource type="PackedScene" uid="uid://nies8luc08by" path="res://Scenes/UI/buttons/movebutton/button.tscn" id="1_twl2r"]
+[ext_resource type="PackedScene" uid="uid://5duydqceduse" path="res://Scenes/UI/buttons/Backbutton/back_btn.tscn" id="3_w3o0p"]
+[ext_resource type="Texture2D" uid="uid://b1pe6y3h742ut" path="res://Arts/UI/ActionMenuHud/Star 1.svg" id="4_12fxv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wbbne"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0, 0.6313726, 0.84313726, 1)
+corner_radius_top_left = 500
+corner_radius_top_right = 500
+corner_radius_bottom_right = 500
+corner_radius_bottom_left = 500
+corner_detail = 15
+
+[sub_resource type="Animation" id="Animation_12fxv"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(193, -5)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Pivot:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_ilow5"]
+resource_name = "StarSpin"
+length = 4.0
+capture_included = true
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(-0.04166666, 0.975, 1.9833333, 3, 4),
+"transitions": PackedFloat32Array(1.0319062, 1.0319062, 1.0319062, 1.0319062, 1.0319062),
+"update": 2,
+"values": [Vector2(193, -5), Vector2(128, -18), Vector2(36.999992, 14.000008), Vector2(128, -18), Vector2(193, -5)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Pivot:rotation")
+tracks/1/interp = 3
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(-0.024999976, 0.98333335, 1.9916667, 3, 4),
+"transitions": PackedFloat32Array(1.0319062, 1.0319062, 1.0319062, 1.0319062, 1.0319062),
+"update": 0,
+"values": [0.0, -2.8483772, -0.74700093, -2.8483772, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_25ed2"]
+_data = {
+&"RESET": SubResource("Animation_12fxv"),
+&"StarSpin": SubResource("Animation_ilow5")
+}
+
+[node name="SkillMenu" type="Control" unique_id=201069723]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_skillmenu")
+
+[node name="MenuRoot" type="Control" parent="." unique_id=526938408]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Bg" type="Panel" parent="MenuRoot" unique_id=193761881]
+layout_mode = 0
+offset_right = 291.0
+offset_bottom = 291.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_wbbne")
+
+[node name="StarRoot" type="Control" parent="MenuRoot/Bg" unique_id=489014377]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+metadata/_edit_lock_ = true
+
+[node name="Pivot" type="Control" parent="MenuRoot/Bg/StarRoot" unique_id=2111058115]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 193.0
+offset_top = -5.0
+offset_right = 193.00009
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(18.152, 18.187)
+
+[node name="Star" type="TextureRect" parent="MenuRoot/Bg/StarRoot/Pivot" unique_id=1861401722]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 495.0
+offset_bottom = 495.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 6.2831855
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("4_12fxv")
+metadata/_edit_lock_ = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="MenuRoot/Bg/StarRoot" unique_id=1425589643]
+libraries/ = SubResource("AnimationLibrary_25ed2")
+
+[node name="Buttons" type="Control" parent="MenuRoot/Bg" unique_id=2101449145]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 27.0
+offset_top = 27.0
+offset_right = 27.0
+offset_bottom = 27.0
+grow_horizontal = 2
+
+[node name="ButtonGroup" type="VBoxContainer" parent="MenuRoot/Bg/Buttons" unique_id=175944674]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 0
+offset_right = 300.0
+offset_bottom = 40.0
+theme_override_constants/separation = 25
+alignment = 2
+
+[node name="Row1" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/ButtonGroup" unique_id=728485782]
+layout_mode = 2
+
+[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row1" unique_id=2138649226]
+layout_mode = 2
+
+[node name="MoveButton" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row1" unique_id=1373420282 instance=ExtResource("1_twl2r")]
+custom_minimum_size = Vector2(180, 24)
+layout_mode = 2
+
+[node name="Row2" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/ButtonGroup" unique_id=2717019]
+layout_mode = 2
+
+[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row2" unique_id=1882757572]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+
+[node name="MoveButton" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row2" unique_id=1607383650 instance=ExtResource("1_twl2r")]
+custom_minimum_size = Vector2(180, 24)
+layout_mode = 2
+
+[node name="Row3" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/ButtonGroup" unique_id=1311547174]
+layout_mode = 2
+
+[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row3" unique_id=1942775367]
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+
+[node name="MoveButton" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row3" unique_id=1629129954 instance=ExtResource("1_twl2r")]
+custom_minimum_size = Vector2(180, 24)
+layout_mode = 2
+
+[node name="Row4" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/ButtonGroup" unique_id=920005389]
+layout_mode = 2
+
+[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row4" unique_id=499572467]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+
+[node name="MoveButton" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row4" unique_id=2037395088 instance=ExtResource("1_twl2r")]
+custom_minimum_size = Vector2(180, 24)
+layout_mode = 2
+
+[node name="Row5" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/ButtonGroup" unique_id=478109068]
+layout_mode = 2
+
+[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row5" unique_id=1547588387]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+
+[node name="MoveButton" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row5" unique_id=2043823848 instance=ExtResource("1_twl2r")]
+custom_minimum_size = Vector2(180, 24)
+layout_mode = 2
+
+[node name="BackBtnRoot" type="Control" parent="." unique_id=110921427]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="BackBtn" parent="BackBtnRoot" unique_id=430696281 instance=ExtResource("3_w3o0p")]
+layout_mode = 1
+offset_left = 12.0
+offset_top = 231.0
+offset_right = 12.0
+offset_bottom = 231.0

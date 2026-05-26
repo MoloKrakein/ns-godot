@@ -159,11 +159,13 @@ func get_placeholder_icon_name() -> StringName:
 				return &"ColorRect"
 			return &"Sword"
 		MoveTemplate.HEAL:
-			return &"Heart"
+			return &"Heal"
 		MoveTemplate.STATUS:
-			return &"NodeInfo"
+			if applied_status != null and applied_status.effect_type == StatusEffect.Type.BUFF:
+				return &"Buff"
+			return &"Debuff"
 		MoveTemplate.SUPPORT:
-			return &"Tools"
+			return &"Heal"
 		MoveTemplate.UTILITY:
 			return &"Node"
 		_:

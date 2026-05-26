@@ -1,20 +1,25 @@
 1. **Time/Date Log:** [Fill in the date/time here]
-2. **Current Focus Area:** UI move icon resolution for single-target vs multi-target spell art.
+2. **Current Focus Area:** Building and polishing the combat UI prototype, especially the skill menu, target selection flow, and move icon presentation.
 3. **What We Just Built:**
-- Updated `Scripts/UI/icon_system/ui_icon_library.gd` so move icons now resolve by default from the move's target type.
-- Single-target moves use the normal `Arts/UI/Icons/Icons/` art.
-- Multi-target moves use the new `Arts/UI/Icons/Multi_icons/` art.
-- Kept explicit move overrides intact: a move's direct `icon` texture or `ui_icon_name` still wins over the default resolver.
-- Added support for the new `M_Fire`, `M_Earth`, `M_Light`, `M_Darkness`, and `M_Physical` assets.
+- Updated `Scripts/UI/icon_system/ui_icon_library.gd` to support the new support icon family: `Heal`, `Buff`, and `Debuff`, plus their multi-target versions `M_Heal`, `M_Buff`, and `M_Debuff`.
+- Added multi-target background color swapping in the icon library, including the fire multi-target special fill color `#FF2626`.
+- Adjusted `Resources/Move.gd` so placeholder icon names now align with the new support icon naming.
+- Cleaned up `Scenes/UI/skill_menu.tscn` and attached `Scripts/UI/skill_menu.gd` so the move list prototype is now built dynamically from battler moves.
+- Wired `Scenes/combat_gym.tscn` and `Scripts/test_combat_gym.gd` to use the skill menu prototype, with a separate target button container so the move list and target list do not overlap.
+- Fixed the move button prefab in `Scenes/UI/buttons/movebutton/button.tscn` so hover and click coverage now matches the visible button instead of being interrupted by child controls.
+- Updated the combat gym flow so multi-target moves still ask the player to pick a target first, instead of executing immediately.
 4. **Current State of Architecture:**
 - `battler.gd` and `stats_manager.gd` were not changed in this session.
-- The UI icon system is centralized in `Scripts/UI/icon_system/ui_icon_library.gd`.
-- `Move.gd` already exposes `icon` and `ui_icon_name`, so designers can override the auto-picked icon from the resource itself.
-5. **Next Immediate Step:** Audit the move resources in `Resources/Moves/` and set `ui_icon_name` or `icon` only where a move needs custom art instead of the default target-based icon.
+- The UI now has a clearer split between the move list prototype, the move button prefab, and the target-selection panel.
+- `Scripts/UI/icon_system/ui_icon_library.gd` remains the central place for icon texture and background resolution.
+- `Resources/Move.gd` still provides the data hooks that let designers override icons when a move needs custom art.
+- The combat prototype logic in `Scripts/test_combat_gym.gd` now matches the battle manager's targeting model by routing multi-target moves through a chosen primary target first.
+5. **Next Immediate Step:** Boot the project on the other PC and test the combat gym flow end to end, focusing on the new target-selection UX for multi-target moves and making sure the move list still lays out correctly.
 6. **Open Questions:**
-- Are there any moves that should intentionally ignore target-based art and always use a custom icon?
-- Do any future move types need their own separate icon family beyond single-target and multi-target?
+- Should the target buttons get a clearer label or styling so it is obvious they are selecting the primary target for an AoE move?
+- Do any remaining move resources need explicit `icon` or `ui_icon_name` overrides now that the support icon family is wired in?
+- Is the current staircase spacing in `Scenes/UI/skill_menu.tscn` good enough for real content, or should it become more data-driven later?
 7. **Additional Notes:**
-- The icon backgrounds were already working correctly before the icon-body fix.
-- The main bug was fallback precedence, not the background palette logic.
-- The current resolver now has a clear precedence order: direct texture override, named override, then automatic target-based default.
+- The battle manager already supports resolving AoE from a selected primary target, so the UX change only needed to happen in the UI flow.
+- The recent hover issue was caused by mouse handling on child controls inside the button prefab, not the button logic itself.
+- The combat gym layout issue was a scene spacing problem, not a bug in the skill menu script.

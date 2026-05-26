@@ -1,0 +1,11 @@
+[gd_resource type="StyleBoxTexture" format=3 uid="uid://dyr0fpfb621vc"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_6f6id"]
+load_path = "res://.godot/imported/BackBtnHvr.svg-a8b15c7ceaf30db0b28481a9e000e94c.ctex"
+
+[resource]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+texture = SubResource("CompressedTexture2D_6f6id")
