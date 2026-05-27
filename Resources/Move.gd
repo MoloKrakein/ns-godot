@@ -26,6 +26,10 @@ enum MoveTemplate {AUTO, ATTACK, HEAL, STATUS, SUPPORT, UTILITY}
 
 @export var physical_type: GlobalData.PhysicalType = GlobalData.PhysicalType.NONE
 
+@export_group("Turn Order")
+@export var action_value_bonus: int = 0
+@export var action_value_speed_scale: float = 10.0
+
 # Healing
 @export_group("Healing & Support")
 @export var heals_hp: int = 0
@@ -185,3 +189,10 @@ func get_button_label() -> String:
 		label_parts.append(GlobalData.PhysicalType.keys()[physical_type].capitalize())
 
 	return "%s [%s]" % [move_name, ", ".join(label_parts)]
+
+func get_action_value(attacker: Battler = null) -> int:
+	var speed_component: float = 0.0
+	if attacker != null and attacker.stats_manager != null:
+		speed_component = float(attacker.stats_manager.get_active_speed()) * action_value_speed_scale
+
+	return max(1, roundi(speed_component + float(action_value_bonus)))

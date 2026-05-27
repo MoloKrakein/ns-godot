@@ -14,6 +14,7 @@ var enemy_active_party: Array[Battler] = []
 var player_reserve_party: Array[Battler] = []
 var enemy_reserve_party: Array[Battler] = []
 var turn_queue: Array[Battler] = []
+var turn_action_values: Dictionary = {}
 var adrenaline_battlers: Array[Battler] = []
 var overdrive_parties: Dictionary = {false: false, true: false}
 var current_turn_battler: Battler = null
@@ -53,18 +54,57 @@ func _ready() -> void:
 #region Turn Queue Logic
 func build_turn_queue() -> void:
 	turn_queue.clear()
+	turn_action_values.clear()
 	turn_queue.append_array(player_active_party)
 	turn_queue.append_array(enemy_active_party)
 
+	for battler in turn_queue:
+		_set_turn_action_value(battler, _calculate_turn_action_value(battler))
+
 	# Sort
-	turn_queue.sort_custom(_sort_by_speed)
+	turn_queue.sort_custom(_sort_by_action_value)
 
 	print("Turn Queue Built! Turn order:")
 	for battler in turn_queue:
-		print("- ", battler.stats.character_name, " (Speed: ", battler.stats.speed, ")")
+		print("- ", battler.stats.character_name, " (AV: ", get_battler_turn_action_value(battler), ")")
 
-func _sort_by_speed(a: Battler, b: Battler) -> bool:
-	return a.stats.speed > b.stats.speed
+func _sort_by_action_value(a: Battler, b: Battler) -> bool:
+	var a_action_value: int = get_battler_turn_action_value(a)
+	var b_action_value: int = get_battler_turn_action_value(b)
+	if a_action_value == b_action_value:
+		return a.stats_manager.get_active_speed() > b.stats_manager.get_active_speed()
+	return a_action_value > b_action_value
+
+func _calculate_turn_action_value(battler: Battler, move: BattleMove = null) -> int:
+	if battler == null:
+		return 0
+
+	var base_value: int = battler.stats_manager.get_active_speed() * 10
+	if move != null:
+		return max(1, move.get_action_value(battler))
+	return max(1, base_value)
+
+func _set_turn_action_value(battler: Battler, value: int) -> void:
+	if battler == null:
+		return
+	turn_action_values[battler.get_instance_id()] = value
+
+func get_battler_turn_action_value(battler: Battler) -> int:
+	if battler == null:
+		return 0
+	var key: int = battler.get_instance_id()
+	if turn_action_values.has(key):
+		return int(turn_action_values[key])
+	return _calculate_turn_action_value(battler)
+
+func reschedule_battler_turn(battler: Battler, move: BattleMove = null) -> void:
+	if battler == null or battler.current_hp <= 0 or not is_battler_active(battler):
+		return
+
+	_set_turn_action_value(battler, _calculate_turn_action_value(battler, move))
+	if battler not in turn_queue:
+		turn_queue.append(battler)
+	turn_queue.sort_custom(_sort_by_action_value)
 
 func get_highest_threat_target(targets: Array[Battler]) -> Battler:
 	var chosen_target: Battler = null
@@ -141,8 +181,9 @@ func swap_party_member(outgoing: Battler, incoming: Battler) -> bool:
 	if outgoing in turn_queue:
 		turn_queue.erase(outgoing)
 	if incoming not in turn_queue and incoming.current_hp > 0:
+		_set_turn_action_value(incoming, _calculate_turn_action_value(incoming))
 		turn_queue.append(incoming)
-	turn_queue.sort_custom(_sort_by_speed)
+	turn_queue.sort_custom(_sort_by_action_value)
 
 	party_member_swapped.emit(outgoing, incoming, is_enemy_party)
 	print("SWAP: ", outgoing.stats.character_name, " -> ", incoming.stats.character_name)
@@ -183,9 +224,6 @@ func start_next_turn() -> Battler:
 	curr_battler.process_turn_start()
 
 	# TODO: Check for skip_turn status effects here later!
-
-	# For now, put them back at the end of the line so the loop can continue later
-	turn_queue.append(curr_battler)
 	return curr_battler
 
 func get_current_turn_battler() -> Battler:

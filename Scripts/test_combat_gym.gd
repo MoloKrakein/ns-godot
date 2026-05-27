@@ -145,6 +145,8 @@ func _build_move_buttons():
 func _on_end_turn_pressed():
 	if battle_finished:
 		return
+	if current_actor != null:
+		battle_manager.reschedule_battler_turn(current_actor)
 	pending_move = null
 	pending_move_targets.clear()
 	_clear_target_buttons()
@@ -193,6 +195,7 @@ func _execute_selected_move(move: BattleMove):
 
 	if move.target_type == BattleMove.Target.SELF:
 		battle_manager.execute_move(current_actor, move, current_actor)
+		battle_manager.reschedule_battler_turn(current_actor, move)
 		_update_last_move_label(move, current_actor, "SELF")
 		_end_current_actor_turn()
 		return
@@ -218,6 +221,7 @@ func _execute_move_on_target(target: Battler) -> void:
 	if battle_finished or current_actor == null or pending_move == null:
 		return
 	battle_manager.execute_move(current_actor, pending_move, target)
+	battle_manager.reschedule_battler_turn(current_actor, pending_move)
 	_update_last_move_label(pending_move, current_actor, target.stats.character_name)
 	pending_move = null
 	pending_move_targets.clear()
@@ -280,11 +284,13 @@ func _auto_resolve_enemy_turn() -> void:
 	if enemy_move == null and current_actor.skills_list.size() > 0:
 		enemy_move = current_actor.skills_list[0]
 	if enemy_move == null:
+		battle_manager.reschedule_battler_turn(current_actor)
 		_end_current_actor_turn()
 		return
 	var target_party: Array[Battler] = battle_manager.get_active_party(false if current_actor in battle_manager.enemy_party else true)
 	var target: Battler = battle_manager.get_highest_threat_target(target_party)
 	battle_manager.execute_move(current_actor, enemy_move, target)
+	battle_manager.reschedule_battler_turn(current_actor, enemy_move)
 	_update_last_move_label(enemy_move, current_actor, target.stats.character_name)
 	_end_current_actor_turn()
 
@@ -353,7 +359,7 @@ func _refresh_turn_order() -> void:
 
 	for battler in battle_manager.turn_queue:
 		var chip := Label.new()
-		chip.text = battler.stats.character_name
+		chip.text = "%s (AV %d)" % [battler.stats.character_name, battle_manager.get_battler_turn_action_value(battler)]
 		turn_order_container.add_child(chip)
 
 # --- UI VISUAL UPDATE ---
