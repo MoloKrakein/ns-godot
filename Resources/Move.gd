@@ -4,6 +4,7 @@ class_name BattleMove
 enum Target {SINGLE_ENEMY, ALL_ENEMIES, SINGLE_ALLY, ALL_ALLIES, SELF}
 enum MoveCategory {OFFENSE, HEALING, STATUS, SUPPORT, UTILITY}
 enum MoveTemplate {AUTO, ATTACK, HEAL, STATUS, SUPPORT, UTILITY}
+enum TurnOrderManipulation {NONE, PLACE_BEFORE_ACTOR, PLACE_AFTER_ACTOR, HASTEN_TARGET, DELAY_TARGET}
 
 @export var id: String="" # Unique identifier for the move, used for referencing in code and data structures
 @export_group("Visual & Info")
@@ -29,6 +30,8 @@ enum MoveTemplate {AUTO, ATTACK, HEAL, STATUS, SUPPORT, UTILITY}
 @export_group("Turn Order")
 @export var action_value_bonus: int = 0
 @export var action_value_speed_scale: float = 10.0
+@export var turn_order_manipulation: TurnOrderManipulation = TurnOrderManipulation.NONE
+@export var turn_order_amount: int = 1
 
 # Healing
 @export_group("Healing & Support")

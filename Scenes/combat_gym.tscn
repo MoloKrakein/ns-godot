@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://cujtno760tx2" path="res://Scripts/test_combat_gym.gd" id="1_nqkjc"]
 [ext_resource type="Script" uid="uid://d1rfmpj3ie3ip" path="res://Resources/Move.gd" id="2_1bv32"]
 [ext_resource type="PackedScene" uid="uid://vey4iwqmr78t" path="res://Scenes/battle manager/battle_arena.tscn" id="2_wnuto"]
-[ext_resource type="PackedScene" uid="uid://cf76au0kgosye" path="res://Scenes/UI/skill_menu.tscn" id="3_skillmenu"]
+[ext_resource type="PackedScene" uid="uid://bss2vlh54x5rb" path="res://Scenes/UI/skill_menu.tscn" id="3_skillmenu"]
 [ext_resource type="Script" uid="uid://du0mcmwag1pen" path="res://Resources/Stats.gd" id="4_1bv32"]
 [ext_resource type="Script" uid="uid://xyjeoprc8rta" path="res://Resources/ElementAffinityEntry.gd" id="4_60cw4"]
 [ext_resource type="Script" uid="uid://dwxgehexu25y4" path="res://Resources/PhysicalAffinityEntry.gd" id="5_suehm"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://7272tw1kw6cp" path="res://Resources/Equipment.gd" id="16_l4kvx"]
 [ext_resource type="Resource" uid="uid://c0vkoko0p3x2r" path="res://Resources/Moves/Basic atk.tres" id="17_hf1gq"]
 [ext_resource type="Resource" uid="uid://ch6djndd7fns0" path="res://Resources/Equipment/test_weapon.tres" id="18_l4kvx"]
+[ext_resource type="Script" uid="uid://j0r7ctwoj6l0" path="res://Resources/StatusEffect.gd" id="19_statfx"]
 
 [sub_resource type="Resource" id="Resource_ukifm"]
 script = ExtResource("4_1bv32")
@@ -142,6 +143,145 @@ move_name = "Punch"
 physical_type = 2
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
+[sub_resource type="Resource" id="Resource_buff_strength"]
+script = ExtResource("19_statfx")
+id = "buff_strength"
+effect_name = "Rally Strength"
+description = "Increase ally strength for 2 turns."
+effect_type = 0
+duration_turns = 2
+stat_mult_strength = 0.35
+metadata/_custom_type_script = "uid://j0r7ctwoj6l0"
+
+[sub_resource type="Resource" id="Resource_buff_speed"]
+script = ExtResource("19_statfx")
+id = "buff_speed"
+effect_name = "Quick Step"
+description = "Increase ally speed for 2 turns."
+effect_type = 0
+duration_turns = 2
+stat_mult_speed = 0.4
+metadata/_custom_type_script = "uid://j0r7ctwoj6l0"
+
+[sub_resource type="Resource" id="Resource_mv_fire_single"]
+script = ExtResource("2_1bv32")
+id = "mv_fire_single"
+move_name = "Flame Test"
+power = 10
+mp_cost = 2
+is_magic = true
+element = 1
+chance_applying_element = 1.0
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_earth_single"]
+script = ExtResource("2_1bv32")
+id = "mv_earth_single"
+move_name = "Stone Test"
+power = 10
+mp_cost = 2
+is_magic = true
+element = 2
+chance_applying_element = 1.0
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_dark_single"]
+script = ExtResource("2_1bv32")
+id = "mv_dark_single"
+move_name = "Shade Test"
+power = 10
+mp_cost = 2
+is_magic = true
+element = 3
+chance_applying_element = 1.0
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_light_single"]
+script = ExtResource("2_1bv32")
+id = "mv_light_single"
+move_name = "Radiant Test"
+power = 10
+mp_cost = 2
+is_magic = true
+element = 4
+chance_applying_element = 1.0
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_fire_all"]
+script = ExtResource("2_1bv32")
+id = "mv_fire_all"
+move_name = "Ignite Field"
+target_type = 1
+power = 7
+mp_cost = 4
+is_magic = true
+element = 1
+chance_applying_element = 1.0
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_earth_trigger"]
+script = ExtResource("2_1bv32")
+id = "mv_earth_trigger"
+move_name = "Seismic Trigger"
+power = 8
+mp_cost = 3
+is_magic = true
+element = 2
+chance_applying_element = 1.0
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_relay"]
+script = ExtResource("2_1bv32")
+id = "mv_relay"
+move_name = "Tactical Relay"
+target_type = 2
+mp_cost = 3
+template_mode = 4
+turn_order_manipulation = 2
+turn_order_amount = 4
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_haste"]
+script = ExtResource("2_1bv32")
+id = "mv_haste"
+move_name = "Quick Order"
+target_type = 2
+mp_cost = 3
+template_mode = 4
+turn_order_manipulation = 3
+turn_order_amount = 5
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_delay"]
+script = ExtResource("2_1bv32")
+id = "mv_delay"
+move_name = "Order Jam"
+mp_cost = 3
+template_mode = 3
+turn_order_manipulation = 4
+turn_order_amount = 5
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_buff_strength"]
+script = ExtResource("2_1bv32")
+id = "mv_buff_strength"
+move_name = "Rally Strength"
+target_type = 2
+mp_cost = 3
+template_mode = 4
+applied_status = SubResource("Resource_buff_strength")
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_buff_speed"]
+script = ExtResource("2_1bv32")
+id = "mv_buff_speed"
+move_name = "Quick Step"
+target_type = 2
+mp_cost = 3
+template_mode = 4
+applied_status = SubResource("Resource_buff_speed")
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
 [node name="CombatGYM" type="Control" unique_id=1231679415 node_paths=PackedStringArray("battle_manager", "damage_label", "button_container", "skill_menu", "target_button_container", "player_party_stats_label", "enemy_party_stats_label", "turn_manipulation_container", "turn_order_container", "last_move_used_label")]
 layout_mode = 3
 anchors_preset = 15
@@ -168,12 +308,12 @@ max_active_enemies = 2
 [node name="Hero" parent="Battle_arena/PlayerParty" parent_id_path=PackedInt32Array(143384498, 704442100) index="0" unique_id=1167692167]
 stats = SubResource("Resource_ukifm")
 basic_atk = SubResource("Resource_c5se7")
-skills_list = Array[ExtResource("2_1bv32")]([SubResource("Resource_l0e8c")])
+skills_list = Array[ExtResource("2_1bv32")]([SubResource("Resource_mv_fire_single"), SubResource("Resource_mv_earth_single"), SubResource("Resource_mv_dark_single"), SubResource("Resource_mv_light_single"), SubResource("Resource_mv_fire_all"), SubResource("Resource_mv_earth_trigger"), SubResource("Resource_mv_relay"), SubResource("Resource_mv_haste"), SubResource("Resource_mv_delay"), SubResource("Resource_mv_buff_strength"), SubResource("Resource_mv_buff_speed")])
 
 [node name="Hero2" parent="Battle_arena/PlayerParty" parent_id_path=PackedInt32Array(143384498, 704442100) index="1" unique_id=97719253 instance=ExtResource("15_rperh")]
 stats = SubResource("Resource_pg5ye")
 basic_atk = SubResource("Resource_ed0pe")
-skills_list = Array[ExtResource("2_1bv32")]([SubResource("Resource_jguxb")])
+skills_list = Array[ExtResource("2_1bv32")]([SubResource("Resource_mv_fire_single"), SubResource("Resource_mv_earth_single"), SubResource("Resource_mv_dark_single"), SubResource("Resource_mv_light_single"), SubResource("Resource_mv_fire_all"), SubResource("Resource_mv_earth_trigger"), SubResource("Resource_mv_relay"), SubResource("Resource_mv_haste"), SubResource("Resource_mv_delay"), SubResource("Resource_mv_buff_strength"), SubResource("Resource_mv_buff_speed")])
 equipped_weapon = SubResource("Resource_a8fv2")
 equipped_armor = SubResource("Resource_pl0bs")
 equipped_shoe = SubResource("Resource_v2qia")

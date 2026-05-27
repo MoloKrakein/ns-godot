@@ -87,6 +87,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_skillmenu")
+button_group_path = NodePath("MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup")
 
 [node name="MenuRoot" type="Control" parent="." unique_id=526938408]
 anchors_preset = 0
@@ -144,69 +145,76 @@ anchor_left = 0.5
 anchor_right = 0.5
 offset_left = 27.0
 offset_top = 27.0
-offset_right = 27.0
-offset_bottom = 27.0
+offset_right = 307.0
+offset_bottom = 247.0
 grow_horizontal = 2
 
-[node name="ButtonGroup" type="VBoxContainer" parent="MenuRoot/Bg/Buttons" unique_id=175944674]
+[node name="MoveScroll" type="ScrollContainer" parent="MenuRoot/Bg/Buttons" unique_id=1677000001]
+custom_minimum_size = Vector2(280, 205)
+layout_mode = 0
+offset_right = 280.0
+offset_bottom = 205.0
+scroll_horizontal_enabled = false
+
+[node name="ButtonGroup" type="VBoxContainer" parent="MenuRoot/Bg/Buttons/MoveScroll" unique_id=175944674]
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 0
-offset_right = 300.0
+offset_right = 280.0
 offset_bottom = 40.0
-theme_override_constants/separation = 25
+theme_override_constants/separation = 14
 alignment = 2
 
-[node name="Row1" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/ButtonGroup" unique_id=728485782]
+[node name="Row1" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup" unique_id=728485782]
 layout_mode = 2
 
-[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row1" unique_id=2138649226]
+[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup/Row1" unique_id=2138649226]
 layout_mode = 2
 
-[node name="MoveButton" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row1" unique_id=1373420282 instance=ExtResource("1_twl2r")]
+[node name="MoveButton" parent="MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup/Row1" unique_id=1373420282 instance=ExtResource("1_twl2r")]
 custom_minimum_size = Vector2(180, 24)
 layout_mode = 2
 
-[node name="Row2" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/ButtonGroup" unique_id=2717019]
+[node name="Row2" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup" unique_id=2717019]
 layout_mode = 2
 
-[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row2" unique_id=1882757572]
+[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup/Row2" unique_id=1882757572]
 custom_minimum_size = Vector2(12, 0)
 layout_mode = 2
 
-[node name="MoveButton" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row2" unique_id=1607383650 instance=ExtResource("1_twl2r")]
+[node name="MoveButton" parent="MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup/Row2" unique_id=1607383650 instance=ExtResource("1_twl2r")]
 custom_minimum_size = Vector2(180, 24)
 layout_mode = 2
 
-[node name="Row3" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/ButtonGroup" unique_id=1311547174]
+[node name="Row3" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup" unique_id=1311547174]
 layout_mode = 2
 
-[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row3" unique_id=1942775367]
+[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup/Row3" unique_id=1942775367]
 custom_minimum_size = Vector2(24, 0)
 layout_mode = 2
 
-[node name="MoveButton" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row3" unique_id=1629129954 instance=ExtResource("1_twl2r")]
+[node name="MoveButton" parent="MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup/Row3" unique_id=1629129954 instance=ExtResource("1_twl2r")]
 custom_minimum_size = Vector2(180, 24)
 layout_mode = 2
 
-[node name="Row4" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/ButtonGroup" unique_id=920005389]
+[node name="Row4" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup" unique_id=920005389]
 layout_mode = 2
 
-[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row4" unique_id=499572467]
+[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup/Row4" unique_id=499572467]
 custom_minimum_size = Vector2(36, 0)
 layout_mode = 2
 
-[node name="MoveButton" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row4" unique_id=2037395088 instance=ExtResource("1_twl2r")]
+[node name="MoveButton" parent="MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup/Row4" unique_id=2037395088 instance=ExtResource("1_twl2r")]
 custom_minimum_size = Vector2(180, 24)
 layout_mode = 2
 
-[node name="Row5" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/ButtonGroup" unique_id=478109068]
+[node name="Row5" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup" unique_id=478109068]
 layout_mode = 2
 
-[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row5" unique_id=1547588387]
+[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup/Row5" unique_id=1547588387]
 custom_minimum_size = Vector2(48, 0)
 layout_mode = 2
 
-[node name="MoveButton" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row5" unique_id=2043823848 instance=ExtResource("1_twl2r")]
+[node name="MoveButton" parent="MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup/Row5" unique_id=2043823848 instance=ExtResource("1_twl2r")]
 custom_minimum_size = Vector2(180, 24)
 layout_mode = 2
 

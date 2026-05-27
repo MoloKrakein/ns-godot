@@ -1,6 +1,7 @@
 extends Control
 
 @export var move_button_scene: PackedScene = preload("res://Scenes/UI/buttons/movebutton/button.tscn")
+@export var party_panel_scene: PackedScene = preload("res://Scenes/UI/party_panel.tscn")
 
 @export var battle_manager: Node
 @export var damage_label: Label
@@ -16,6 +17,8 @@ extends Control
 
 var player_party: Array[Battler] = []
 var enemy_party: Array[Battler] = []
+var player_party_panel: PartyPanel = null
+var enemy_party_panel: PartyPanel = null
 var current_actor: Battler = null
 var pending_move: BattleMove = null
 var pending_move_targets: Array[Battler] = []
@@ -44,6 +47,7 @@ func _ready():
 		skill_menu.move_selected.connect(_on_skill_menu_move_selected)
 
 	_setup_gym_layout()
+	_setup_party_panels()
 	
 	# 2. Connect the UI Label to the Slime's damage signal
 	for battler in battle_manager.player_party + battle_manager.enemy_party:
@@ -97,6 +101,32 @@ func _setup_gym_layout() -> void:
 		enemy_party_stats_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		enemy_party_stats_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 		enemy_party_stats_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+
+
+func _setup_party_panels() -> void:
+	if party_panel_scene == null:
+		push_warning("Combat gym has no party_panel_scene assigned.")
+		return
+
+	if player_party.size() > 0:
+		player_party_panel = _create_party_panel(player_party[0], Vector2(20.0, 560.0), "PlayerPartyPanel")
+
+
+func _create_party_panel(bound_battler: Battler, panel_position: Vector2, panel_name: String) -> PartyPanel:
+	if bound_battler == null:
+		return null
+
+	var panel: PartyPanel = party_panel_scene.instantiate() as PartyPanel
+	if panel == null:
+		return null
+
+	panel.name = panel_name
+	add_child(panel)
+	panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	panel.position = panel_position
+	panel.size = Vector2(191.0, 181.0)
+	panel.bind_battler(bound_battler)
+	return panel
 
 func _build_turn_controls() -> void:
 	if turn_manipulation_container == null:
@@ -309,6 +339,8 @@ func _on_turn_started(active_battler: Battler) -> void:
 	_refresh_combat_ui()
 
 func _on_party_member_swapped(_outgoing: Battler, _incoming: Battler, _is_enemy_party: bool) -> void:
+	if player_party.size() > 0 and player_party_panel != null:
+		player_party_panel.bind_battler(player_party[0])
 	_refresh_combat_ui()
 
 func _on_any_battler_damage_taken(_amount: int, _is_crit: bool, _is_weakness: bool, battler: Battler) -> void:
@@ -317,7 +349,7 @@ func _on_any_battler_damage_taken(_amount: int, _is_crit: bool, _is_weakness: bo
 	else:
 		_refresh_combat_ui()
 
-func _refresh_combat_ui() -> void:
+func _refresh_combat_ui(_unused: Variant = null) -> void:
 	if enemy_party.size() == 0:
 		return
 	_refresh_party_labels()

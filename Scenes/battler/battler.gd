@@ -49,6 +49,7 @@ func _ready():
 	# Initialize stats based on the manager (which includes equipment)
 	current_hp = stats_manager.get_active_max_hp()
 	current_mp = stats.max_mp
+	down_manager.reset_meter()
 
 	# Connect signals from StatusManager
 	status_manager.tick_damage_taken.connect(_on_tick_damage_taken)
@@ -254,6 +255,7 @@ func take_damage(power: int, is_magic: bool, element: GlobalData.Element = Globa
 	final_damage = max(1, final_damage)
 
 	current_hp -= final_damage
+	current_hp = max(0, current_hp)
 	emit_signal("health_changed", current_hp)
 	emit_signal("damage_taken", final_damage, final_crit, is_weakness)
 	print(stats.character_name, " took ", final_damage, " damage!")

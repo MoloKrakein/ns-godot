@@ -15,6 +15,9 @@ var player_reserve_party: Array[Battler] = []
 var enemy_reserve_party: Array[Battler] = []
 var turn_queue: Array[Battler] = []
 var turn_action_values: Dictionary = {}
+var next_round_action_values: Dictionary = {}
+var has_built_initial_turn_queue: bool = false
+var has_resolved_all_out_attack: bool = false
 var adrenaline_battlers: Array[Battler] = []
 var overdrive_parties: Dictionary = {false: false, true: false}
 var current_turn_battler: Battler = null
@@ -52,21 +55,28 @@ func _ready() -> void:
 	# 2. Run the Test Simulation!
 
 #region Turn Queue Logic
-func build_turn_queue() -> void:
+func build_turn_queue(use_action_value: bool = false) -> void:
 	turn_queue.clear()
 	turn_action_values.clear()
 	turn_queue.append_array(player_active_party)
 	turn_queue.append_array(enemy_active_party)
 
 	for battler in turn_queue:
-		_set_turn_action_value(battler, _calculate_turn_action_value(battler))
+		if use_action_value and next_round_action_values.has(battler.get_instance_id()):
+			_set_turn_action_value(battler, int(next_round_action_values[battler.get_instance_id()]))
+		else:
+			_set_turn_action_value(battler, _calculate_turn_action_value(battler))
 
 	# Sort
 	turn_queue.sort_custom(_sort_by_action_value)
+	next_round_action_values.clear()
+	has_built_initial_turn_queue = true
 
 	print("Turn Queue Built! Turn order:")
 	for battler in turn_queue:
 		print("- ", battler.stats.character_name, " (AV: ", get_battler_turn_action_value(battler), ")")
+	if turn_queue.size() > 0:
+		current_turn_battler = turn_queue[0]
 
 func _sort_by_action_value(a: Battler, b: Battler) -> bool:
 	var a_action_value: int = get_battler_turn_action_value(a)
@@ -89,6 +99,50 @@ func _set_turn_action_value(battler: Battler, value: int) -> void:
 		return
 	turn_action_values[battler.get_instance_id()] = value
 
+
+func _set_next_round_action_value(battler: Battler, value: int) -> void:
+	if battler == null:
+		return
+	next_round_action_values[battler.get_instance_id()] = value
+
+
+func _set_turn_value_for_rounds(battler: Battler, value: int, affect_current_round: bool = true, affect_next_round: bool = true) -> void:
+	if battler == null:
+		return
+	if affect_current_round:
+		_set_turn_action_value(battler, value)
+	if affect_next_round:
+		_set_next_round_action_value(battler, value)
+
+
+func _shift_turn_value(battler: Battler, delta: int, affect_current_round: bool = true, affect_next_round: bool = true) -> void:
+	if battler == null:
+		return
+	var current_value: int = get_battler_turn_action_value(battler)
+	_set_turn_value_for_rounds(battler, max(1, current_value + delta), affect_current_round, affect_next_round)
+	if affect_current_round and battler in turn_queue:
+		turn_queue.sort_custom(_sort_by_action_value)
+
+
+func _place_battler_before(reference: Battler, target: Battler, amount: int = 1, affect_current_round: bool = true, affect_next_round: bool = true) -> void:
+	if reference == null or target == null:
+		return
+	var reference_value: int = get_battler_turn_action_value(reference)
+	var new_value: int = max(1, reference_value + maxi(1, amount))
+	_set_turn_value_for_rounds(target, new_value, affect_current_round, affect_next_round)
+	if affect_current_round and target in turn_queue:
+		turn_queue.sort_custom(_sort_by_action_value)
+
+
+func _place_battler_after(reference: Battler, target: Battler, amount: int = 1, affect_current_round: bool = true, affect_next_round: bool = true) -> void:
+	if reference == null or target == null:
+		return
+	var reference_value: int = get_battler_turn_action_value(reference)
+	var new_value: int = max(1, reference_value - maxi(1, amount))
+	_set_turn_value_for_rounds(target, new_value, affect_current_round, affect_next_round)
+	if affect_current_round and target in turn_queue:
+		turn_queue.sort_custom(_sort_by_action_value)
+
 func get_battler_turn_action_value(battler: Battler) -> int:
 	if battler == null:
 		return 0
@@ -101,10 +155,39 @@ func reschedule_battler_turn(battler: Battler, move: BattleMove = null) -> void:
 	if battler == null or battler.current_hp <= 0 or not is_battler_active(battler):
 		return
 
-	_set_turn_action_value(battler, _calculate_turn_action_value(battler, move))
-	if battler not in turn_queue:
-		turn_queue.append(battler)
-	turn_queue.sort_custom(_sort_by_action_value)
+	_set_next_round_action_value(battler, _calculate_turn_action_value(battler, move))
+
+
+func _rebuild_turn_queue_if_needed() -> bool:
+	if not _has_active_battlers():
+		return false
+	build_turn_queue(has_built_initial_turn_queue)
+	return not turn_queue.is_empty()
+
+
+func apply_turn_order_manipulation(source: Battler, target: Battler, manipulation: BattleMove.TurnOrderManipulation, amount: int = 1) -> void:
+	if source == null or target == null:
+		return
+
+	var clamped_amount: int = maxi(1, amount)
+	match manipulation:
+		BattleMove.TurnOrderManipulation.PLACE_BEFORE_ACTOR:
+			_place_battler_before(source, target, clamped_amount, true, true)
+		BattleMove.TurnOrderManipulation.PLACE_AFTER_ACTOR:
+			_place_battler_after(source, target, clamped_amount, true, true)
+		BattleMove.TurnOrderManipulation.HASTEN_TARGET:
+			_shift_turn_value(target, clamped_amount, true, true)
+		BattleMove.TurnOrderManipulation.DELAY_TARGET:
+			_shift_turn_value(target, -clamped_amount, true, true)
+		_:
+			return
+
+
+func _has_active_battlers() -> bool:
+	for battler in player_active_party + enemy_active_party:
+		if battler != null and battler.current_hp > 0:
+			return true
+	return false
 
 func get_highest_threat_target(targets: Array[Battler]) -> Battler:
 	var chosen_target: Battler = null
@@ -194,6 +277,7 @@ func _initialize_battle_formations() -> void:
 	player_reserve_party.clear()
 	enemy_active_party.clear()
 	enemy_reserve_party.clear()
+	has_resolved_all_out_attack = false
 
 	_split_party_into_active_and_reserve(player_party, player_active_party, player_reserve_party, max_active_players)
 	_split_party_into_active_and_reserve(enemy_party, enemy_active_party, enemy_reserve_party, max_active_enemies)
@@ -212,6 +296,8 @@ func _split_party_into_active_and_reserve(full_party: Array[Battler], active_par
 
 func start_next_turn() -> Battler:
 	if turn_queue.is_empty():
+		if _rebuild_turn_queue_if_needed():
+			return start_next_turn()
 		print("Queue Empty !")
 		current_turn_battler = null
 		return null
@@ -247,10 +333,12 @@ func check_party_downs() -> bool:
 
 	if player_all_down:
 		print("PLAYER PARTY ALL DOWN! Enemy Overdrive triggered!")
+		_trigger_all_out_attack(enemy_party, player_party, true)
 		set_party_overdrive(true, true)
 
 	if enemy_all_down:
 		print("ENEMY PARTY ALL DOWN! Battle won!")
+		_trigger_all_out_attack(player_party, enemy_party, false)
 		set_party_overdrive(false, true)
 
 	return player_all_down or enemy_all_down
@@ -274,6 +362,56 @@ func _get_full_party(is_enemy_party: bool) -> Array[Battler]:
 func _on_battler_downed(battler: Battler) -> void:
 	print(battler.stats.character_name, " has entered DOWN STATE!")
 	check_party_downs()
+
+
+func _grant_extra_turn(attacker: Battler) -> void:
+	if attacker == null or attacker.current_hp <= 0 or not is_battler_active(attacker):
+		return
+
+	var highest_action_value: int = 0
+	for queued_battler in turn_queue:
+		highest_action_value = max(highest_action_value, get_battler_turn_action_value(queued_battler))
+
+	var boosted_value: int = max(highest_action_value + 1, get_battler_turn_action_value(attacker) + 1)
+	_set_turn_action_value(attacker, boosted_value)
+
+	if attacker not in turn_queue:
+		turn_queue.append(attacker)
+
+	turn_queue.sort_custom(_sort_by_action_value)
+	print(attacker.stats.character_name, " gained an EXTRA TURN from Down!")
+
+
+func _trigger_all_out_attack(attacking_party: Array[Battler], defending_party: Array[Battler], attackers_are_enemy: bool) -> void:
+	if has_resolved_all_out_attack:
+		return
+	has_resolved_all_out_attack = true
+
+	var active_attackers: Array[Battler] = []
+	for attacker in attacking_party:
+		if attacker != null and attacker.current_hp > 0:
+			active_attackers.append(attacker)
+
+	if active_attackers.is_empty():
+		return
+
+	var offense_sum: int = 0
+	for attacker in active_attackers:
+		offense_sum += max(attacker.stats_manager.get_active_strength(), attacker.stats_manager.get_active_magic())
+
+	var offense_average: float = float(offense_sum) / float(active_attackers.size())
+	var all_out_damage: int = max(30, roundi(offense_average * 2.4))
+	var attacker_party_name: String = "Enemy" if attackers_are_enemy else "Player"
+	print(attacker_party_name, " party triggers ALL-OUT ATTACK!")
+
+	for target in defending_party:
+		if target == null or target.current_hp <= 0:
+			continue
+		var burst_damage: int = max(1, all_out_damage + randi_range(-6, 6))
+		target.current_hp = max(0, target.current_hp - burst_damage)
+		target.emit_signal("health_changed", target.current_hp)
+		target.emit_signal("damage_taken", burst_damage, true, true)
+		print("ALL-OUT hits ", target.stats.character_name, " for ", burst_damage, " (def/affinity bypass)")
 
 func _on_battler_adrenaline_changed(is_active: bool, stacks: int, battler: Battler) -> void:
 	if is_active:
@@ -357,7 +495,12 @@ func _apply_move_effects(attacker: Battler, move: BattleMove, target: Battler) -
 	if move.applied_status != null:
 		_apply_move_status(attacker, move, target)
 
+	# --- D) TURN ORDER MANIPULATION ---
+	if move.turn_order_manipulation != BattleMove.TurnOrderManipulation.NONE:
+		apply_turn_order_manipulation(attacker, target, move.turn_order_manipulation, move.turn_order_amount)
+
 func _apply_move_damage(attacker: Battler, move: BattleMove, target: Battler) -> void:
+	var was_downed_before_hit: bool = target.down_manager.is_downed
 	var total_power: int = move.power
 	var scaling_stat: int = attacker.stats_manager.get_active_magic() if move.is_magic else attacker.stats_manager.get_active_strength()
 	var stat_bonus: int = roundi(float(scaling_stat) * 0.2)
@@ -391,6 +534,9 @@ func _apply_move_damage(attacker: Battler, move: BattleMove, target: Battler) ->
 	var was_weakness_hit: bool = target.take_damage(total_power, move.is_magic, move.element, move.physical_type, is_crit, 1.0, attacker)
 	if was_weakness_hit:
 		attacker.enter_adrenaline_state()
+
+	if not was_downed_before_hit and target.down_manager.is_downed:
+		_grant_extra_turn(attacker)
 
 func _apply_move_healing(target: Battler, heal_amount: int) -> void:
 	target.current_hp += heal_amount
@@ -463,7 +609,13 @@ func _apply_conductive_spread(attacker: Battler, initial_targets: Array[Battler]
 	var potential_targets = enemy_active_party if attacker_is_player else player_active_party
 	if initial_targets.is_empty():
 		return
-	var source_primer: GlobalData.Element = initial_targets[0].elemental_primer
+	var source_primer: GlobalData.Element = GlobalData.Element.NEUTRAL
+	if reaction.reaction_primer != int(GlobalData.Element.NEUTRAL):
+		source_primer = reaction.reaction_primer
+	elif reaction.reaction_recipes.size() > 0:
+		source_primer = reaction.reaction_recipes[0].x
+	else:
+		source_primer = initial_targets[0].elemental_primer
 	var jump_index: int = 1
 
 	print("CONDUCTIVE SPREAD triggered for ", reaction.effect_name)
