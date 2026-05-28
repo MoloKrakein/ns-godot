@@ -43,6 +43,12 @@ enum TurnOrderManipulation {NONE, PLACE_BEFORE_ACTOR, PLACE_AFTER_ACTOR, HASTEN_
 @export var applied_status: StatusEffect = null
 @export var status_chance: float = 1.0
 
+@export_group("Move Stat Modifiers")
+# Flat bonuses applied to stats while this move is equipped. Keys: "strength","magic","speed","luck","physical_def","magic_def","crit_chance","crit_dmg","max_hp","max_mp"
+@export var stat_flat_bonus: Dictionary = {}
+# Percent bonuses (0.15 == +15%) applied multiplicatively alongside status multipliers. Keys same as stat_flat_bonus.
+@export var stat_pct_bonus: Dictionary = {}
+
 func get_move_category() -> MoveCategory:
 	if power > 0:
 		return MoveCategory.OFFENSE

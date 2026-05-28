@@ -1,0 +1,221 @@
+[gd_scene format=3 uid="uid://dodod127opv28"]
+
+[ext_resource type="Script" path="res://Scripts/UI/damage_value_popups.gd" id="1_0dmgv"]
+[ext_resource type="LabelSettings" uid="uid://gsfcftcu68a" path="res://Arts/UI/DmgValueUI/DmgValLabel.tres" id="1_hdj2b"]
+[ext_resource type="LabelSettings" uid="uid://tuk30trd4rc" path="res://Arts/UI/DmgValueUI/DamageTypeLable_Base.tres" id="2_brw4h"]
+[ext_resource type="LabelSettings" uid="uid://pawsarv51fbs" path="res://Arts/UI/DmgValueUI/DamageTypeLable_Outline.tres" id="3_4e2gf"]
+[ext_resource type="LabelSettings" uid="uid://tqbb7mxxi6bj" path="res://Arts/UI/DmgValueUI/DamageTypeLable_Shadow.tres" id="4_ns0to"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gm3wk"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0, 0.41343415, 0.28402492, 1)
+skew = Vector2(0.145, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.0504, 0.22148001, 0.84, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ll0rd"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.039215688, 0.8392157, 0.6, 1)
+skew = Vector2(0.145, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(0.050980393, 0.21960784, 0.8392157, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vgr7d"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.53, 0.53, 0.53, 1)
+skew = Vector2(0.145, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.0504, 0.22148001, 0.84, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4a00r"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.84, 0.84, 0.84, 1)
+skew = Vector2(0.145, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(0.050980393, 0.21960784, 0.8392157, 1)
+corner_detail = 1
+
+[node name="DamageValueUI" type="Control" unique_id=525153592]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0dmgv")
+
+[node name="Root" type="Control" parent="." unique_id=1944020655]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="dmg_value" type="Label" parent="Root" unique_id=457544947]
+layout_mode = 0
+offset_right = 74.0
+offset_bottom = 57.0
+text = "999"
+label_settings = ExtResource("1_hdj2b")
+horizontal_alignment = 2
+vertical_alignment = 3
+uppercase = true
+
+[node name="StatsBar_Root" type="Control" parent="Root" unique_id=51909800]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Bg" type="Polygon2D" parent="Root/StatsBar_Root" unique_id=1408752458]
+z_index = -1
+position = Vector2(-50.40949, 3)
+scale = Vector2(1.6066898, 1)
+color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+polygon = PackedVector2Array(70, 39, 79.140884, 25, 121, 25, 116, 39)
+
+[node name="Bars_Root" type="Control" parent="Root/StatsBar_Root/Bg" unique_id=231268155]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 79.140884
+offset_top = 26.0
+offset_right = 110.10516
+offset_bottom = 39.0
+
+[node name="Target_current_health" type="ProgressBar" parent="Root/StatsBar_Root/Bg/Bars_Root" unique_id=1730149705]
+layout_mode = 0
+offset_left = -1.0863082
+offset_right = 41.236736
+offset_bottom = 5.0
+theme_override_styles/background = SubResource("StyleBoxFlat_gm3wk")
+theme_override_styles/fill = SubResource("StyleBoxFlat_ll0rd")
+value = 100.0
+show_percentage = false
+
+[node name="Target_current_DownMeter" type="ProgressBar" parent="Root/StatsBar_Root/Bg/Bars_Root" unique_id=547708906]
+layout_mode = 0
+offset_left = -0.46390986
+offset_top = 5.0
+offset_right = 41.859135
+offset_bottom = 10.0
+theme_override_styles/background = SubResource("StyleBoxFlat_vgr7d")
+theme_override_styles/fill = SubResource("StyleBoxFlat_4a00r")
+value = 82.68
+show_percentage = false
+
+[node name="DamageType_Root" type="Control" parent="Root" unique_id=441833688]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Weak_Root" type="Control" parent="Root/DamageType_Root" unique_id=1598820451]
+visible = false
+anchors_preset = 0
+
+[node name="Weak_Base" type="Label" parent="Root/DamageType_Root/Weak_Root" unique_id=1674235526]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "WEAK !"
+label_settings = ExtResource("2_brw4h")
+
+[node name="Weak_Outline" type="Label" parent="Root/DamageType_Root/Weak_Root" unique_id=1581750898]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "WEAK !"
+label_settings = ExtResource("3_4e2gf")
+
+[node name="Weak_Shadow" type="Label" parent="Root/DamageType_Root/Weak_Root" unique_id=343599277]
+z_index = -2
+layout_mode = 0
+offset_left = 7.999997
+offset_top = -40.0
+offset_right = 180.0
+offset_bottom = 46.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "WEAK !"
+label_settings = ExtResource("4_ns0to")
+
+[node name="Critical_Root" type="Control" parent="Root/DamageType_Root" unique_id=1102782083]
+visible = false
+anchors_preset = 0
+offset_left = -22.0
+offset_top = 1.0
+offset_right = -22.0
+offset_bottom = 1.0
+
+[node name="Critical_Base" type="Label" parent="Root/DamageType_Root/Critical_Root" unique_id=4235834]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "CRITICAL !"
+label_settings = ExtResource("2_brw4h")
+horizontal_alignment = 1
+
+[node name="Critical_Outline" type="Label" parent="Root/DamageType_Root/Critical_Root" unique_id=633028734]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "CRITICAL !"
+label_settings = ExtResource("3_4e2gf")
+horizontal_alignment = 1
+
+[node name="Critical_Shadow" type="Label" parent="Root/DamageType_Root/Critical_Root" unique_id=330523979]
+z_index = -2
+layout_mode = 0
+offset_left = 7.999997
+offset_top = -40.0
+offset_right = 180.0
+offset_bottom = 46.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "CRITICAL !"
+label_settings = ExtResource("4_ns0to")
+horizontal_alignment = 1

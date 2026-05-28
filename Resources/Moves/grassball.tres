@@ -10,3 +10,5 @@ is_magic = true
 element = 4
 chance_applying_element = 100.0
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+stat_flat_bonus = {"magic": 1}
+stat_pct_bonus = {"magic": 0.08}

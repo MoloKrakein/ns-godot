@@ -24,6 +24,7 @@ signal ui_state_changed
 @export var equipped_necktie: Equipment
 @export var equipped_shoe: Equipment
 @export var equipped_pant: Equipment
+@export var equipped_moves: Array[BattleMove] = [] # Player-selected moves (max 5 recommended)
 #endregion
 
 #region Runtime State
@@ -51,6 +52,11 @@ func _ready():
 	current_mp = stats.max_mp
 	down_manager.reset_meter()
 
+	# Enforce equipped moves slot limit (max 5)
+	if equipped_moves != null and equipped_moves.size() > 5:
+		while equipped_moves.size() > 5:
+			equipped_moves.pop_back()
+
 	# Connect signals from StatusManager
 	status_manager.tick_damage_taken.connect(_on_tick_damage_taken)
 	status_manager.tick_down_meter_increased.connect(_on_tick_down_meter_increased)
@@ -64,6 +70,21 @@ func _ready():
 		emit_signal("downed", battler))
 
 	emit_signal("ui_state_changed")
+
+
+func set_equipped_moves(new_moves: Array[BattleMove]) -> void:
+	equipped_moves.clear()
+	for move in new_moves:
+		if move == null:
+			continue
+		if equipped_moves.size() >= 5:
+			break
+		equipped_moves.append(move)
+	emit_signal("ui_state_changed")
+
+
+func get_equipped_moves() -> Array[BattleMove]:
+	return equipped_moves
 
 func _on_tick_damage_taken(amount: int, effect_name: String):
 	current_hp -= amount

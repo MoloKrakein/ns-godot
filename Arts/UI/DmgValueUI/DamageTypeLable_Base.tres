@@ -1,0 +1,8 @@
+[gd_resource type="LabelSettings" format=3 uid="uid://tuk30trd4rc"]
+
+[ext_resource type="FontFile" uid="uid://dy4ruh0opke57" path="res://Arts/Fonts/Bangers/Bangers-Regular.ttf" id="1_h6d60"]
+
+[resource]
+font = ExtResource("1_h6d60")
+font_size = 75
+font_color = Color(0, 0.63, 0.84, 1)

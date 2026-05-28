@@ -1,0 +1,14 @@
+[gd_resource type="LabelSettings" format=3 uid="uid://gsfcftcu68a"]
+
+[ext_resource type="FontFile" uid="uid://62hjevw2jfrg" path="res://Arts/Fonts/Saira/static/Saira-SemiBoldItalic.ttf" id="1_7h0xq"]
+
+[sub_resource type="FontVariation" id="FontVariation_nb0kd"]
+base_font = ExtResource("1_7h0xq")
+
+[resource]
+font = SubResource("FontVariation_nb0kd")
+font_size = 36
+outline_size = 2
+outline_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+shadow_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+shadow_offset = Vector2(2, 1.5)

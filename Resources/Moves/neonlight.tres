@@ -11,3 +11,5 @@ is_magic = true
 element = 0
 chance_applying_element = 100.0
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+stat_flat_bonus = {"speed": 2}
+stat_pct_bonus = {"crit_chance": 0.05}

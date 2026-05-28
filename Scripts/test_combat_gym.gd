@@ -336,7 +336,37 @@ func _end_current_actor_turn() -> void:
 
 func _on_turn_started(active_battler: Battler) -> void:
 	current_actor = active_battler
+	# For the combat gym test: randomize each battler's equipped moves each turn (temporary)
+	_randomize_equipped_moves()
 	_refresh_combat_ui()
+
+
+func _randomize_equipped_moves() -> void:
+	# Randomly pick up to 5 moves from each battler's skills_list and assign to equipped_moves
+	var all_battlers = battle_manager.player_party + battle_manager.enemy_party
+	for b in all_battlers:
+		if b == null:
+			continue
+		var pool: Array = []
+		for m in b.skills_list:
+			if m != null:
+				pool.append(m)
+		# also allow basic attack as a candidate
+		if b.basic_atk != null:
+			pool.append(b.basic_atk)
+		if pool.size() == 0:
+			b.equipped_moves = []
+			continue
+		var picks: Array = []
+		var max_slots: int = min(5, pool.size())
+		while picks.size() < max_slots and pool.size() > 0:
+			var idx: int = int(randi()) % pool.size()
+			picks.append(pool[idx])
+			pool.remove_at(idx)
+		b.set_equipped_moves(picks)
+		# notify UI/state
+		if b.has_method("emit_signal"):
+			b.emit_signal("ui_state_changed")
 
 func _on_party_member_swapped(_outgoing: Battler, _incoming: Battler, _is_enemy_party: bool) -> void:
 	if player_party.size() > 0 and player_party_panel != null:
