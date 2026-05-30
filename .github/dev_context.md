@@ -1,32 +1,28 @@
 1. **Time/Date Log:** [Fill in the date/time here]
 
-2. **Current Focus Area:** Revamping the combat build system so players choose a 5-move loadout before battle, while keeping the combat gym useful for quick balance testing.
+2. **Current Focus Area:** Locking down the combat build/loadout flow so the UI shows the moves the battler actually uses, while the gym stays useful for fast balance checks.
 
 3. **What We Just Built:**
-- Added move-level stat modifier fields to `Resources/Move.gd` so a move can contribute flat and percent bonuses while equipped.
+- Added move-level stat modifier fields to `Resources/Move.gd` so equipped moves can contribute flat and percent bonuses.
 - Added `equipped_moves` support to `Scenes/battler/battler.gd` with a safe setter that clamps the active loadout to 5 moves.
 - Updated `Scripts/Battler/stats_manager.gd` so equipped move bonuses affect active strength, magic, defense, luck, speed, crit chance, crit damage, and max HP.
-- Updated `Scripts/test_combat_gym.gd` so battlers temporarily randomize their equipped moves each turn for testing the new build system.
-- Fixed the combat gym runtime error caused by assigning an `Array` directly to `equipped_moves` by switching to the Battler setter.
-- Prepared `Scenes/UI/damage_value_popups.tscn` and attached `Scripts/UI/damage_value_popups.gd` so the damage popup can receive damage value, target HP, down meter, and weak/critical state later.
-- Added example stat bonuses to a few move resources in `Resources/Moves/` to test the new system quickly.
-- Ran syntax/error checks on the touched files and cleared the recent battle gym / popup script errors.
+- Added a live debug readout to `Scripts/UI/party_panel.gd` and `Scenes/UI/party_panel.tscn` showing stat breakdowns as base, equipment, move, multiplier, and active value.
+- Updated `Scripts/UI/skill_menu.gd` so the move list shows equipped moves as the primary actionable set, with a fallback to the learned pool when no loadout exists.
+- Added a visible 5-slot equipped display to `Scenes/UI/skill_menu.tscn` so the current loadout can be seen beside the move list.
+- Updated `Scripts/test_combat_gym.gd` so battlers can still randomize equipped moves for testing, but that randomizer is now gated by a toggle.
+- Fixed the combat gym runtime error caused by assigning an untyped `Array` directly to `equipped_moves` by routing through `set_equipped_moves()`.
+- Added consistent element-based test bonuses to the combat gym move templates in `Scenes/combat_gym.tscn` so fire, earth, dark, light, and utility moves are easier to verify.
+- Ran syntax/error checks on the touched files and cleared the recent battle gym, skill menu, and HUD debug script errors.
 
 4. **Current State of Architecture:**
-- `battler.gd` now owns the equipped-move loadout and exposes a setter for clamped 5-slot assignment.
-- `stats_manager.gd` now combines base stats, equipment, status multipliers, and equipped-move modifiers in its active stat getters.
-- `Scripts/test_combat_gym.gd` is still the temporary test harness and currently randomizes each battler's equipped moves every turn.
-- `Scenes/UI/damage_value_popups.tscn` exists as a dedicated popup layout with separate nodes for damage value, health bar, down meter, and weak/critical labels so each piece can be animated independently later.
+- `battler.gd` owns the equipped-move loadout and exposes a setter for clamped 5-slot assignment.
+- `stats_manager.gd` combines base stats, equipment, status multipliers, equipped-move modifiers, and now also provides a stat debug breakdown helper for the UI.
+- `Scripts/UI/skill_menu.gd` is now the visible combat move UI, showing usable equipped moves first instead of the raw learned pool.
+- `Scripts/UI/party_panel.gd` now exposes live debug values for active stats, including a source-based breakdown that makes move bonuses easy to verify.
+- `Scripts/test_combat_gym.gd` remains the temporary test harness for randomized loadouts, but it is now optional rather than always on.
+- `Scenes/combat_gym.tscn` contains the test move templates with explicit stat bonuses for loadout verification.
 
-5. **Next Immediate Step:** Build the actual pre-battle move loadout UI in `SkillMenu` so the player can choose and swap their 5 moves intentionally instead of relying on the temporary randomizer in the combat gym. and there is still error with the E 0:00:00:731   _randomize_equipped_moves: Invalid type in function 'set_equipped_moves' in base 'CharacterBody2D (Battler)'. The array of argument 1 (Array) does not have the same element type as the expected typed array argument.
-  <GDScript Source>test_combat_gym.gd:366 @ _randomize_equipped_moves()
-  <Stack Trace> test_combat_gym.gd:366 @ _randomize_equipped_moves()
-                test_combat_gym.gd:340 @ _on_turn_started()
-                battlemanager.gd:309 @ start_next_turn()
-                test_combat_gym.gd:296 @ _advance_turn_flow()
-                test_combat_gym.gd:291 @ _begin_flow()
-                test_combat_gym.gd:63 @ _ready()
-from the looks of it, it has something to do with the skill list and equipped Moves
+5. **Next Immediate Step:** Finish the actual pre-battle move loadout UI in `SkillMenu` so the player can intentionally assign and swap their 5 equipped moves instead of relying on the temporary gym randomizer.
 
 6. **Open Questions:**
 - Should move bonuses stack additively, multiplicatively, or with a hybrid rule for specific stats?

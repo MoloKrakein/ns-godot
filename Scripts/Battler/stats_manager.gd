@@ -197,4 +197,81 @@ func get_active_crit_dmg() -> float:
 	# move pct
 	var move_pct = 1.0 + _sum_move_pct("crit_dmg")
 	return total_crit_dmg * status_mult * move_pct
+
+func get_stat_debug_breakdown(stat_key: String) -> Dictionary:
+	var base_value: float = 0.0
+	var equipment_bonus: float = 0.0
+	var move_flat_bonus: float = _sum_move_flat(stat_key)
+	var move_pct_bonus: float = _sum_move_pct(stat_key)
+	var status_multiplier: float = 1.0
+	var extra_multiplier: float = 1.0
+	var active_value: float = 0.0
+
+	match stat_key:
+		"max_hp":
+			base_value = float(battler.stats.max_hp)
+			equipment_bonus = float(get_eq_bonus_max_hp())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("max_hp")
+			active_value = float(get_active_max_hp())
+		"strength":
+			base_value = float(battler.stats.strength)
+			equipment_bonus = float(get_eq_bonus_strength())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("strength")
+			active_value = float(get_active_strength())
+		"magic":
+			base_value = float(battler.stats.magic)
+			equipment_bonus = float(get_eq_bonus_magic())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("magic")
+			active_value = float(get_active_magic())
+		"physical_def":
+			base_value = float(battler.stats.physical_def)
+			equipment_bonus = float(get_eq_bonus_physical_def())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("defense")
+			extra_multiplier = battler.get_adrenaline_defense_multiplier()
+			active_value = float(get_active_def(false))
+		"magic_def":
+			base_value = float(battler.stats.magic_def)
+			equipment_bonus = float(get_eq_bonus_magic_def())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("defense")
+			extra_multiplier = battler.get_adrenaline_defense_multiplier()
+			active_value = float(get_active_def(true))
+		"luck":
+			base_value = float(battler.stats.luck)
+			equipment_bonus = float(get_eq_bonus_luck())
+			active_value = float(get_active_luck())
+		"speed":
+			base_value = float(battler.stats.speed)
+			equipment_bonus = float(get_eq_bonus_speed())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("speed")
+			active_value = float(get_active_speed())
+		"crit_chance":
+			base_value = float(battler.stats.crit_rate)
+			equipment_bonus = float(get_eq_bonus_crit_chance())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("crit_chance")
+			active_value = float(get_active_crit_chance())
+		"crit_dmg":
+			base_value = 1.5 + float(battler.stats.crit_dmg)
+			equipment_bonus = float(get_eq_bonus_crit_dmg())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("crit_dmg")
+			active_value = float(get_active_crit_dmg())
+		_:
+			active_value = 0.0
+
+	return {
+		"base": base_value,
+		"equipment": equipment_bonus,
+		"move_flat": move_flat_bonus,
+		"move_pct": move_pct_bonus,
+		"status_mult": status_multiplier,
+		"extra_mult": extra_multiplier,
+		"active": active_value,
+	}
 #endregion

@@ -14,6 +14,7 @@ signal move_selected(move: BattleMove)
 var _bound_moves: Array[BattleMove] = []
 
 @onready var _button_group: VBoxContainer = get_node_or_null(button_group_path) as VBoxContainer
+@onready var _equip_slot_group: HBoxContainer = get_node_or_null("MenuRoot/Bg/EquipDisplay/SlotGroup") as HBoxContainer
 
 func _ready() -> void:
 	if _button_group == null:
@@ -29,14 +30,40 @@ func populate_for_battler(battler: Battler) -> void:
 		set_moves(moves)
 		return
 
-	if include_basic_attack and battler.basic_atk != null:
-		moves.append(battler.basic_atk)
-
-	for skill: BattleMove in battler.skills_list:
-		if skill != null:
-			moves.append(skill)
+	# Show only the equipped moves (the moves the battler will actually use).
+	# If no equipped moves are assigned, fall back to showing the full learned pool
+	# so the designer can equip moves manually.
+	var equipped: Array[BattleMove] = battler.get_equipped_moves()
+	if equipped != null and equipped.size() > 0:
+		# Use equipped order as the actionable move list
+		for m in equipped:
+			if m != null:
+				moves.append(m)
+	else:
+		# Fallback: show basic attack + learned skills so the player/ designer can equip
+		if include_basic_attack and battler.basic_atk != null:
+			moves.append(battler.basic_atk)
+		for skill: BattleMove in battler.skills_list:
+			if skill != null:
+				moves.append(skill)
 
 	set_moves(moves)
+	# Update equipped slots display
+	if _equip_slot_group != null:
+		set_equipped_slots(battler.get_equipped_moves())
+
+
+func set_equipped_slots(equipped: Array[BattleMove]) -> void:
+	if _equip_slot_group == null:
+		return
+	for i in range(_equip_slot_group.get_child_count()):
+		var child = _equip_slot_group.get_child(i)
+		if child is Label:
+			var lbl: Label = child as Label
+			if i < equipped.size() and equipped[i] != null:
+				lbl.text = equipped[i].move_name
+			else:
+				lbl.text = "Empty"
 
 func set_moves(moves: Array[BattleMove]) -> void:
 	_bound_moves.clear()

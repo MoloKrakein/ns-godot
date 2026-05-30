@@ -7,6 +7,7 @@ extends Control
 @export var damage_label: Label
 @export var button_container: VBoxContainer
 @export var skill_menu: SkillMenu
+@export var randomize_moves_per_turn: bool = true
 @export var target_button_container: VBoxContainer
 @export var player_party_stats_label: Label
 @export var enemy_party_stats_label: Label
@@ -337,7 +338,8 @@ func _end_current_actor_turn() -> void:
 func _on_turn_started(active_battler: Battler) -> void:
 	current_actor = active_battler
 	# For the combat gym test: randomize each battler's equipped moves each turn (temporary)
-	_randomize_equipped_moves()
+	if randomize_moves_per_turn:
+		_randomize_equipped_moves()
 	_refresh_combat_ui()
 
 
@@ -347,7 +349,7 @@ func _randomize_equipped_moves() -> void:
 	for b in all_battlers:
 		if b == null:
 			continue
-		var pool: Array = []
+		var pool: Array[BattleMove] = []
 		for m in b.skills_list:
 			if m != null:
 				pool.append(m)
@@ -355,9 +357,10 @@ func _randomize_equipped_moves() -> void:
 		if b.basic_atk != null:
 			pool.append(b.basic_atk)
 		if pool.size() == 0:
-			b.equipped_moves = []
+			var empty_picks: Array[BattleMove] = []
+			b.set_equipped_moves(empty_picks)
 			continue
-		var picks: Array = []
+		var picks: Array[BattleMove] = []
 		var max_slots: int = min(5, pool.size())
 		while picks.size() < max_slots and pool.size() > 0:
 			var idx: int = int(randi()) % pool.size()
@@ -367,6 +370,9 @@ func _randomize_equipped_moves() -> void:
 		# notify UI/state
 		if b.has_method("emit_signal"):
 			b.emit_signal("ui_state_changed")
+		# If this battler is the currently displayed actor, refresh the skill menu so equipped slots update
+		if skill_menu != null and b == current_actor:
+			skill_menu.populate_for_battler(current_actor)
 
 func _on_party_member_swapped(_outgoing: Battler, _incoming: Battler, _is_enemy_party: bool) -> void:
 	if player_party.size() > 0 and player_party_panel != null:

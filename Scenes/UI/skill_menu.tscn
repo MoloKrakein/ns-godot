@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bss2vlh54x5rb"]
 
-[ext_resource type="Script" path="res://Scripts/UI/skill_menu.gd" id="1_skillmenu"]
+[ext_resource type="Script" uid="uid://dv3qkh81p8n6o" path="res://Scripts/UI/skill_menu.gd" id="1_skillmenu"]
 [ext_resource type="PackedScene" uid="uid://nies8luc08by" path="res://Scenes/UI/buttons/movebutton/button.tscn" id="1_twl2r"]
 [ext_resource type="PackedScene" uid="uid://5duydqceduse" path="res://Scenes/UI/buttons/Backbutton/back_btn.tscn" id="3_w3o0p"]
 [ext_resource type="Texture2D" uid="uid://b1pe6y3h742ut" path="res://Arts/UI/ActionMenuHud/Star 1.svg" id="4_12fxv"]
@@ -87,7 +87,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_skillmenu")
-button_group_path = NodePath("MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup")
 
 [node name="MenuRoot" type="Control" parent="." unique_id=526938408]
 anchors_preset = 0
@@ -99,6 +98,46 @@ layout_mode = 0
 offset_right = 291.0
 offset_bottom = 291.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_wbbne")
+
+[node name="EquipDisplay" type="Control" parent="MenuRoot/Bg" unique_id=999000001]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 16.0
+offset_top = 196.0
+offset_right = 275.0
+offset_bottom = 236.0
+grow_horizontal = 2
+
+[node name="SlotGroup" type="HBoxContainer" parent="MenuRoot/Bg/EquipDisplay" unique_id=999000002]
+layout_mode = 0
+
+[node name="Slot1" type="Label" parent="MenuRoot/Bg/EquipDisplay/SlotGroup" unique_id=999000011]
+custom_minimum_size = Vector2(48, 24)
+layout_mode = 2
+text = "Empty"
+
+[node name="Slot2" type="Label" parent="MenuRoot/Bg/EquipDisplay/SlotGroup" unique_id=999000012]
+custom_minimum_size = Vector2(48, 24)
+layout_mode = 2
+text = "Empty"
+
+[node name="Slot3" type="Label" parent="MenuRoot/Bg/EquipDisplay/SlotGroup" unique_id=999000013]
+custom_minimum_size = Vector2(48, 24)
+layout_mode = 2
+text = "Empty"
+
+[node name="Slot4" type="Label" parent="MenuRoot/Bg/EquipDisplay/SlotGroup" unique_id=999000014]
+custom_minimum_size = Vector2(48, 24)
+layout_mode = 2
+text = "Empty"
+
+[node name="Slot5" type="Label" parent="MenuRoot/Bg/EquipDisplay/SlotGroup" unique_id=999000015]
+custom_minimum_size = Vector2(48, 24)
+layout_mode = 2
+text = "Empty"
 
 [node name="StarRoot" type="Control" parent="MenuRoot/Bg" unique_id=489014377]
 anchors_preset = 0
@@ -154,13 +193,10 @@ custom_minimum_size = Vector2(280, 205)
 layout_mode = 0
 offset_right = 280.0
 offset_bottom = 205.0
-scroll_horizontal_enabled = false
 
 [node name="ButtonGroup" type="VBoxContainer" parent="MenuRoot/Bg/Buttons/MoveScroll" unique_id=175944674]
 custom_minimum_size = Vector2(280, 0)
-layout_mode = 0
-offset_right = 280.0
-offset_bottom = 40.0
+layout_mode = 2
 theme_override_constants/separation = 14
 alignment = 2
 
