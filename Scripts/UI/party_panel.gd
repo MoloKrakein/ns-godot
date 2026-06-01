@@ -5,6 +5,8 @@ class_name PartyPanel
 	set(value):
 		bind_battler(value)
 
+@export var show_active_stats_debug: bool = false
+
 @onready var hp_value_label: Label = $BGStar/NumVal/HpVal
 @onready var mana_value_label: Label = $BGStar/NumVal/ManaVal
 @onready var hp_bar: ProgressBar = $BGStar/StatBar/Background/HpBar
@@ -85,17 +87,22 @@ func _refresh_panel() -> void:
 	down_meter_bar.max_value = float(max_down_meter)
 	down_meter_bar.value = float(current_down_meter)
 
-	var lines: PackedStringArray = PackedStringArray()
-	lines.append(_format_stat_debug_line("HP", _bound_battler.stats_manager.get_stat_debug_breakdown("max_hp"), false, false))
-	lines.append(_format_stat_debug_line("STR", _bound_battler.stats_manager.get_stat_debug_breakdown("strength"), false, false))
-	lines.append(_format_stat_debug_line("MAG", _bound_battler.stats_manager.get_stat_debug_breakdown("magic"), false, false))
-	lines.append(_format_stat_debug_line("PDEF", _bound_battler.stats_manager.get_stat_debug_breakdown("physical_def"), true, false))
-	lines.append(_format_stat_debug_line("MDEF", _bound_battler.stats_manager.get_stat_debug_breakdown("magic_def"), true, false))
-	lines.append(_format_stat_debug_line("SPD", _bound_battler.stats_manager.get_stat_debug_breakdown("speed"), false, false))
-	lines.append(_format_stat_debug_line("LCK", _bound_battler.stats_manager.get_stat_debug_breakdown("luck"), false, false))
-	lines.append(_format_stat_debug_line("CRT", _bound_battler.stats_manager.get_stat_debug_breakdown("crit_chance"), false, true))
-	lines.append(_format_stat_debug_line("CDMG", _bound_battler.stats_manager.get_stat_debug_breakdown("crit_dmg"), false, true))
-	active_stats_label.text = "\n".join(lines)
+	if show_active_stats_debug:
+		var lines: PackedStringArray = PackedStringArray()
+		lines.append(_format_stat_debug_line("HP", _bound_battler.stats_manager.get_stat_debug_breakdown("max_hp"), false, false))
+		lines.append(_format_stat_debug_line("STR", _bound_battler.stats_manager.get_stat_debug_breakdown("strength"), false, false))
+		lines.append(_format_stat_debug_line("MAG", _bound_battler.stats_manager.get_stat_debug_breakdown("magic"), false, false))
+		lines.append(_format_stat_debug_line("PDEF", _bound_battler.stats_manager.get_stat_debug_breakdown("physical_def"), true, false))
+		lines.append(_format_stat_debug_line("MDEF", _bound_battler.stats_manager.get_stat_debug_breakdown("magic_def"), true, false))
+		lines.append(_format_stat_debug_line("SPD", _bound_battler.stats_manager.get_stat_debug_breakdown("speed"), false, false))
+		lines.append(_format_stat_debug_line("LCK", _bound_battler.stats_manager.get_stat_debug_breakdown("luck"), false, false))
+		lines.append(_format_stat_debug_line("CRT", _bound_battler.stats_manager.get_stat_debug_breakdown("crit_chance"), false, true))
+		lines.append(_format_stat_debug_line("CDMG", _bound_battler.stats_manager.get_stat_debug_breakdown("crit_dmg"), false, true))
+		active_stats_label.visible = true
+		active_stats_label.text = "\n".join(lines)
+	else:
+		active_stats_label.visible = false
+		active_stats_label.text = ""
 
 
 func _on_battler_health_changed(_new_hp: int) -> void:

@@ -34,3 +34,34 @@
 - The combat gym randomizer is temporary and only exists to test the build concept quickly.
 - The damage popup scene already has the layout needed for future animation work, but it is not yet wired into combat damage events.
 - Existing reaction and turn-order systems are still intact; the new build work was added on top of the current combat engine rather than replacing it.
+
+8. **Continuation / Sprint Notes (2026-06-01):**
+- Goal: Finish the pre-battle loadout UI so players can intentionally assign and reorder their 5 equipped moves.
+- Scope: UI for equip/unequip, drag-to-swap, save/load preset, and optional gym-randomizer toggle for testing.
+- Acceptance: SkillMenu shows equipped 5-slot display; `battler.gd` `equipped_moves` setter is used for all assignments; changes persist to player preset resource.
+
+9. **Decisions:**
+- Move bonuses will be additive for flat bonuses and multiplicative for percent modifiers (hybrid rule). This keeps flat tuning intuitive while preserving meaningful percent scaling.
+- The pre-battle loadout will be editable both in the gym (dev/test) and via the SkillMenu pre-battle screen in normal gameplay; presets will be saved as a simple `.tres` resource per player.
+- Damage popup will animate as layered elements (value, bar, hit-type) to allow easier incremental improvements.
+- Keep the combat gym randomizer as a dev-only toggle behind a project `DEBUG_GYM_RANDOMIZER` flag.
+
+10. **Next Immediate Tasks:**
+- Wire UI: implement drag/drop equip slots in `Scenes/UI/skill_menu.tscn` and `Scripts/UI/skill_menu.gd`.
+- Persistence: add `res://Resources/player_presets/` and a simple `PlayerPreset.tres` resource type for saving equipped moves.
+- Tests: add a small runtime test in `Scripts/test_combat_gym.gd` that verifies equip flow and persistence when the toggle is disabled.
+
+11. **Notes For Implementation:**
+- Use `set_equipped_moves()` on `battler.gd` for all programmatic assignments to preserve clamping and typing.
+- Keep the UI changes minimal and use existing 5-slot visuals added earlier to avoid art work.
+- Add a simple confirmation toast when saving/loading presets to help testers know persistence worked.
+
+12. **Who/When:**
+- Assigned: Current sprint owner (you). Target: first pass by 2026-06-05, polish by 2026-06-12.
+
+13. **Progress Log:**
+- 2026-06-01: Added move bonuses, equipped-moves setter, stat debug, and gym toggle (see earlier entries). Current focus: implement SkillMenu equip UI.
+
+14. **Follow-ups:**
+- After UI work, run a short pass of playtests in `combat_gym.tscn` with sample presets to validate swap/persist behavior.
+- Revisit open questions if balancing tests show unexpected scaling.

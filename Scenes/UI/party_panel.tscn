@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://4lpuiuambayr"]
 
-[ext_resource type="Script" path="res://Scripts/UI/party_panel.gd" id="1_party_panel"]
+[ext_resource type="Script" uid="uid://u1sqqxkoiugb" path="res://Scripts/UI/party_panel.gd" id="1_party_panel"]
 [ext_resource type="Texture2D" uid="uid://ckfhvvh3exle4" path="res://Arts/UI/PlayerPartyHud/Star 3.png" id="1_saspk"]
 [ext_resource type="Texture2D" uid="uid://dixn6kwj4pyr1" path="res://Unity Old Code/Assets/Assets/UI/Player HUD/FINAL.png" id="2_hp5b6"]
 [ext_resource type="FontFile" uid="uid://dy4ruh0opke57" path="res://Arts/Fonts/Bangers/Bangers-Regular.ttf" id="3_hp5b6"]
@@ -55,7 +55,7 @@ font = ExtResource("3_hp5b6")
 font_size = 14
 font_color = Color(0.95, 0.95, 0.95, 1)
 outline_size = 2
-outline_color = Color(0.0, 0.0, 0.0, 1)
+outline_color = Color(0, 0, 0, 1)
 
 [node name="PartyPanel" type="Control" unique_id=1976608536]
 layout_mode = 3
@@ -64,8 +64,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-metadata/_edit_lock_ = true
 script = ExtResource("1_party_panel")
+metadata/_edit_lock_ = true
 
 [node name="BGStar" type="TextureRect" parent="." unique_id=808295796]
 layout_mode = 0
@@ -172,9 +172,11 @@ exp_edit = true
 show_percentage = false
 
 [node name="ActiveStats" type="Label" parent="BGStar" unique_id=300000001]
+layout_mode = 0
 offset_left = 8.0
 offset_top = 126.0
 offset_right = 186.0
 offset_bottom = 175.0
-text = "ATK: --\nMAG: --"
+text = "ATK: --
+MAG: --"
 label_settings = SubResource("LabelSettings_debug_stats")

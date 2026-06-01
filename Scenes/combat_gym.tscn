@@ -40,7 +40,10 @@ mp_cost = 2
 is_magic = true
 element = 1
 chance_applying_element = 1.0
-stat_flat_bonus = {"strength": 4, "magic": 4}
+stat_flat_bonus = {
+"magic": 4,
+"strength": 4
+}
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
 [sub_resource type="Resource" id="Resource_mv_earth_single"]
@@ -52,7 +55,10 @@ mp_cost = 2
 is_magic = true
 element = 2
 chance_applying_element = 1.0
-stat_flat_bonus = {"physical_def": 4, "magic_def": 4}
+stat_flat_bonus = {
+"magic_def": 4,
+"physical_def": 4
+}
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
 [sub_resource type="Resource" id="Resource_mv_dark_single"]
@@ -64,7 +70,10 @@ mp_cost = 2
 is_magic = true
 element = 3
 chance_applying_element = 1.0
-stat_flat_bonus = {"luck": 3, "crit_chance": 0.08}
+stat_flat_bonus = {
+"crit_chance": 0.08,
+"luck": 3
+}
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
 [sub_resource type="Resource" id="Resource_mv_light_single"]
@@ -76,7 +85,10 @@ mp_cost = 2
 is_magic = true
 element = 4
 chance_applying_element = 1.0
-stat_flat_bonus = {"speed": 3, "max_hp": 10}
+stat_flat_bonus = {
+"max_hp": 10,
+"speed": 3
+}
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
 [sub_resource type="Resource" id="Resource_mv_fire_all"]
@@ -89,7 +101,10 @@ mp_cost = 4
 is_magic = true
 element = 1
 chance_applying_element = 1.0
-stat_flat_bonus = {"strength": 2, "magic": 2}
+stat_flat_bonus = {
+"magic": 2,
+"strength": 2
+}
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
 [sub_resource type="Resource" id="Resource_mv_earth_trigger"]
@@ -101,7 +116,10 @@ mp_cost = 3
 is_magic = true
 element = 2
 chance_applying_element = 1.0
-stat_flat_bonus = {"physical_def": 2, "magic_def": 2}
+stat_flat_bonus = {
+"magic_def": 2,
+"physical_def": 2
+}
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
 [sub_resource type="Resource" id="Resource_mv_relay"]
@@ -113,7 +131,9 @@ target_type = 2
 mp_cost = 3
 turn_order_manipulation = 2
 turn_order_amount = 4
-stat_flat_bonus = {"speed": 2}
+stat_flat_bonus = {
+"speed": 2
+}
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
 [sub_resource type="Resource" id="Resource_mv_haste"]
@@ -125,7 +145,10 @@ target_type = 2
 mp_cost = 3
 turn_order_manipulation = 3
 turn_order_amount = 5
-stat_flat_bonus = {"speed": 4, "crit_chance": 0.03}
+stat_flat_bonus = {
+"crit_chance": 0.03,
+"speed": 4
+}
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
 [sub_resource type="Resource" id="Resource_mv_delay"]
@@ -136,7 +159,10 @@ template_mode = 3
 mp_cost = 3
 turn_order_manipulation = 4
 turn_order_amount = 5
-stat_flat_bonus = {"physical_def": 2, "magic_def": 2}
+stat_flat_bonus = {
+"magic_def": 2,
+"physical_def": 2
+}
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
 [sub_resource type="Resource" id="Resource_buff_strength"]
@@ -157,7 +183,9 @@ template_mode = 4
 target_type = 2
 mp_cost = 3
 applied_status = SubResource("Resource_buff_strength")
-stat_flat_bonus = {"strength": 5}
+stat_flat_bonus = {
+"strength": 5
+}
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
 [sub_resource type="Resource" id="Resource_buff_speed"]
@@ -178,7 +206,9 @@ template_mode = 4
 target_type = 2
 mp_cost = 3
 applied_status = SubResource("Resource_buff_speed")
-stat_flat_bonus = {"speed": 5}
+stat_flat_bonus = {
+"speed": 5
+}
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
 [sub_resource type="Resource" id="Resource_0mfjd"]
@@ -330,19 +360,19 @@ layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_left = 888.0
-offset_top = 30.0
-offset_right = 1182.0
-offset_bottom = 520.0
+offset_left = 882.0
+offset_top = 96.0
+offset_right = 1176.0
+offset_bottom = 586.0
 grow_horizontal = 1
 grow_vertical = 1
 
 [node name="TargetButtons" type="VBoxContainer" parent="." unique_id=1965324103]
 layout_mode = 0
-offset_left = 860.0
-offset_top = 11.0
-offset_right = 996.0
-offset_bottom = 501.0
+offset_left = 1126.0
+offset_top = 335.0
+offset_right = 1331.0
+offset_bottom = 433.0
 
 [node name="PlayerParty" type="VBoxContainer" parent="." unique_id=527507764]
 layout_mode = 0
@@ -376,10 +406,10 @@ offset_bottom = 60.0
 
 [node name="TurnOrder" type="HBoxContainer" parent="." unique_id=2057287998]
 layout_mode = 0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 900.0
-offset_bottom = 60.0
+offset_left = 30.0
+offset_top = 3.0
+offset_right = 910.0
+offset_bottom = 43.0
 
 [node name="Turn" type="Label" parent="TurnOrder" unique_id=1291834396]
 layout_mode = 2

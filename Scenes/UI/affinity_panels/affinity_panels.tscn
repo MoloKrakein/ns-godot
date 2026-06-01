@@ -1,0 +1,154 @@
+[gd_scene format=3 uid="uid://ufat5lxbhulb"]
+
+[ext_resource type="Texture2D" uid="uid://eyd1gvgdcv4m" path="res://Arts/UI/AffinitiesPanelHud/BgFill.svg" id="1_0kvla"]
+[ext_resource type="Texture2D" uid="uid://c7ub5b5tjgpq6" path="res://Arts/UI/AffinitiesPanelHud/BgStroke.svg" id="2_28jop"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_0urh6"]
+texture = ExtResource("1_0kvla")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_pt7yy"]
+texture = ExtResource("2_28jop")
+
+[node name="AffinityPanels" type="Control" unique_id=233493983]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Root" type="Control" parent="." unique_id=1183829746]
+layout_mode = 1
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="FireRootIcons" type="Control" parent="Root" unique_id=1852706245]
+anchors_preset = 0
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 30.0
+offset_bottom = 30.0
+
+[node name="BgFill" type="Panel" parent="Root/FireRootIcons" unique_id=1188041571]
+layout_mode = 0
+offset_right = 40.225
+offset_bottom = 40.0
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_0urh6")
+metadata/_edit_lock_ = true
+
+[node name="BgStroke" type="Panel" parent="Root/FireRootIcons" unique_id=1590437605]
+layout_mode = 0
+offset_right = 40.225
+offset_bottom = 40.0
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_pt7yy")
+metadata/_edit_lock_ = true
+
+[node name="IconRoot" type="Control" parent="Root/FireRootIcons" unique_id=570294576]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -13.0
+offset_top = -10.0
+offset_right = 27.0
+offset_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="EarthRootIcons" type="Control" parent="Root" unique_id=1251807593]
+anchors_preset = 0
+offset_left = 19.0
+offset_top = 19.0
+offset_right = 59.0
+offset_bottom = 59.0
+
+[node name="BgFill" type="Panel" parent="Root/EarthRootIcons" unique_id=864059078]
+layout_mode = 0
+offset_right = 40.225
+offset_bottom = 40.0
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_0urh6")
+metadata/_edit_lock_ = true
+
+[node name="BgStroke" type="Panel" parent="Root/EarthRootIcons" unique_id=2026575918]
+layout_mode = 0
+offset_right = 40.225
+offset_bottom = 40.0
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_pt7yy")
+metadata/_edit_lock_ = true
+
+[node name="LightRootIcons" type="Control" parent="Root" unique_id=1587723110]
+anchors_preset = 0
+offset_left = 48.0
+offset_top = -10.0
+offset_right = 88.0
+offset_bottom = 30.0
+
+[node name="BgFill" type="Panel" parent="Root/LightRootIcons" unique_id=366827902]
+layout_mode = 0
+offset_right = 40.225
+offset_bottom = 40.0
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_0urh6")
+metadata/_edit_lock_ = true
+
+[node name="BgStroke" type="Panel" parent="Root/LightRootIcons" unique_id=1265271469]
+layout_mode = 0
+offset_right = 40.225
+offset_bottom = 40.0
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_pt7yy")
+metadata/_edit_lock_ = true
+
+[node name="DarkRootIcons" type="Control" parent="Root" unique_id=205540447]
+anchors_preset = 0
+offset_left = 19.0
+offset_top = -39.0
+offset_right = 59.0
+offset_bottom = 1.0
+
+[node name="BgFill" type="Panel" parent="Root/DarkRootIcons" unique_id=1472053431]
+layout_mode = 0
+offset_right = 40.225
+offset_bottom = 40.0
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_0urh6")
+metadata/_edit_lock_ = true
+
+[node name="BgStroke" type="Panel" parent="Root/DarkRootIcons" unique_id=570914658]
+layout_mode = 0
+offset_right = 40.225
+offset_bottom = 40.0
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_pt7yy")
+metadata/_edit_lock_ = true
+
+[node name="DarkRootIcons2" type="Control" parent="Root" unique_id=1480011520]
+anchors_preset = 0
+offset_left = 26.0
+offset_top = 1.0000002
+offset_right = 66.0
+offset_bottom = 41.0
+scale = Vector2(0.74, 0.74)
+
+[node name="BgFill" type="Panel" parent="Root/DarkRootIcons2" unique_id=515745066]
+layout_mode = 0
+offset_right = 40.225
+offset_bottom = 40.0
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_0urh6")
+metadata/_edit_lock_ = true
+
+[node name="BgStroke" type="Panel" parent="Root/DarkRootIcons2" unique_id=1558247934]
+layout_mode = 0
+offset_right = 40.225
+offset_bottom = 40.0
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_pt7yy")
+metadata/_edit_lock_ = true

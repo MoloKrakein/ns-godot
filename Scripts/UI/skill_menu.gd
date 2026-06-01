@@ -4,7 +4,7 @@ class_name SkillMenu
 signal move_selected(move: BattleMove)
 
 @export var move_button_scene: PackedScene = preload("res://Scenes/UI/buttons/movebutton/button.tscn")
-@export var button_group_path: NodePath = NodePath("MenuRoot/Bg/Buttons/MoveScroll/ButtonGroup")
+@export var button_group_path: NodePath = NodePath("MenuRoot/Bg/Buttons/ButtonGroup")
 @export var include_basic_attack: bool = true
 @export var left_staircase_margins: PackedFloat32Array = PackedFloat32Array([0.0, 12.0, 24.0, 36.0, 48.0])
 @export var overflow_margin_step: float = 12.0
