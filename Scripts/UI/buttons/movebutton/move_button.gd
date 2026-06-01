@@ -26,6 +26,9 @@ func setup_move(move: BattleMove) -> void:
 	# move_name_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	# cost_type_label.visible = move.is_magic
 	cost_label.text = str(move.mp_cost)
-	magic_type_icon.visible = move.is_magic
+	# Show magic/type icon for moves that are magical or that consume MP (e.g., support moves using MP).
+	var move_cat = move.get_move_category()
+	magic_type_icon.visible = move.is_magic or (move.mp_cost > 0 and move_cat == move.MoveCategory.SUPPORT)
+	# Show physical icon when the move is explicitly physical.
 	physical_type_icon.visible = not move.is_magic and move.physical_type != GlobalData.PhysicalType.NONE
 	icon_slot.set_style(UIIconLibrary.create_move_style(move))

@@ -8,7 +8,7 @@ enum Affinity {WEAK, NORMAL, RESIST, BLOCK}
 
 @export_group("Affinities")
 @export var elemental_affinities: Array[ElementAffinityEntry] = []
-@export var physical_affinities: Array[PhysicalAffinityEntry] = []
+@export var physical_affinity: BattlerStats.Affinity = BattlerStats.Affinity.NORMAL
 
 func get_elemental_affinity(element_type: GlobalData.Element) -> Affinity:
 	for entry in elemental_affinities:
@@ -17,10 +17,8 @@ func get_elemental_affinity(element_type: GlobalData.Element) -> Affinity:
 	return Affinity.NORMAL
 
 func get_physical_affinity(physical_type: GlobalData.PhysicalType) -> Affinity:
-	for entry in physical_affinities:
-		if entry != null and entry.physical_type == physical_type:
-			return entry.affinity
-	return Affinity.NORMAL
+	# Physical type is consolidated; return the single configured physical affinity.
+	return physical_affinity
 
 func get_elemental_affinity_map() -> Dictionary:
 	var result: Dictionary = {}
@@ -31,9 +29,8 @@ func get_elemental_affinity_map() -> Dictionary:
 
 func get_physical_affinity_map() -> Dictionary:
 	var result: Dictionary = {}
-	for entry in physical_affinities:
-		if entry != null:
-			result[entry.physical_type] = entry.affinity
+	# Map the consolidated physical affinity to the PHYSICAL enum key
+	result[GlobalData.PhysicalType.PHYSICAL] = physical_affinity
 	return result
 
 @export_group("Base Stats")

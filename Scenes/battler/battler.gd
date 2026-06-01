@@ -87,10 +87,8 @@ func get_equipped_moves() -> Array[BattleMove]:
 	return equipped_moves
 
 func _on_tick_damage_taken(amount: int, effect_name: String):
-	current_hp -= amount
-	current_hp = max(0, current_hp)
+	take_hp_damage(amount)
 	print(stats.character_name, " took ", amount, " damage from ", effect_name)
-	emit_signal("health_changed", current_hp)
 	emit_signal("ui_state_changed")
 
 func _on_tick_down_meter_increased(amount: int):
@@ -275,9 +273,7 @@ func take_damage(power: int, is_magic: bool, element: GlobalData.Element = Globa
 	var final_damage = roundi((randomized_power * final_multiplier) - defense)
 	final_damage = max(1, final_damage)
 
-	current_hp -= final_damage
-	current_hp = max(0, current_hp)
-	emit_signal("health_changed", current_hp)
+	take_hp_damage(final_damage)
 	emit_signal("damage_taken", final_damage, final_crit, is_weakness)
 	print(stats.character_name, " took ", final_damage, " damage!")
 
@@ -406,18 +402,36 @@ func heal_hp(amount: int):
 		print(stats.character_name, " is affected by a heal block and cannot be healed!")
 		return
 		
-	current_hp += amount
-	current_hp = min(current_hp, stats_manager.get_active_max_hp())
-	emit_signal("health_changed", current_hp)
+	set_current_hp(current_hp + amount)
 	emit_signal("ui_state_changed")
 	print(stats.character_name, " healed for ", amount, " HP!")
 
+func take_hp_damage(amount: int) -> void:
+	if amount <= 0:
+		return
+	set_current_hp(current_hp - amount)
+
+func set_current_hp(value: int) -> void:
+	current_hp = clampi(value, 0, stats_manager.get_active_max_hp())
+	emit_signal("health_changed", current_hp)
+
 func heal_mp(amount: int):
-	current_mp += amount
-	current_mp = min(current_mp, stats.max_mp)
+	if amount <= 0:
+		return
+	set_current_mp(current_mp + amount)
+	print(stats.character_name, " healed for ", amount, " MP!")
+
+func spend_mp(amount: int) -> int:
+	if amount <= 0:
+		return 0
+	var spent: int = min(current_mp, amount)
+	set_current_mp(current_mp - spent)
+	return spent
+
+func set_current_mp(value: int) -> void:
+	current_mp = clampi(value, 0, stats.max_mp)
 	emit_signal("mana_changed", current_mp)
 	emit_signal("ui_state_changed")
-	print(stats.character_name, " healed for ", amount, " MP!")
 	
 func consume_item(item: Consumable):
 	print(stats.character_name, " Used ", item.item_name)

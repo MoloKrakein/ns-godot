@@ -408,8 +408,7 @@ func _trigger_all_out_attack(attacking_party: Array[Battler], defending_party: A
 		if target == null or target.current_hp <= 0:
 			continue
 		var burst_damage: int = max(1, all_out_damage + randi_range(-6, 6))
-		target.current_hp = max(0, target.current_hp - burst_damage)
-		target.emit_signal("health_changed", target.current_hp)
+		target.take_hp_damage(burst_damage)
 		target.emit_signal("damage_taken", burst_damage, true, true)
 		print("ALL-OUT hits ", target.stats.character_name, " for ", burst_damage, " (def/affinity bypass)")
 
@@ -428,6 +427,10 @@ func _on_battler_adrenaline_changed(is_active: bool, stacks: int, battler: Battl
 #region Move
 func execute_move(attacker: Battler, move: BattleMove, primary_target: Battler = null) -> void:
 	print("\n>>> ", attacker.stats.character_name, " uses ", move.move_name, "! <<<")
+
+	# Spend MP once per move execution. Validation happens earlier in Battler.can_use_move().
+	if move.mp_cost > 0:
+		attacker.spend_mp(move.mp_cost)
 
 	# Check if attacker is brainwashed and redirect targets
 	if attacker.status_manager.is_brainwashed():
@@ -539,18 +542,14 @@ func _apply_move_damage(attacker: Battler, move: BattleMove, target: Battler) ->
 		_grant_extra_turn(attacker)
 
 func _apply_move_healing(target: Battler, heal_amount: int) -> void:
-	target.current_hp += heal_amount
-	target.current_hp = min(target.current_hp, target.stats_manager.get_active_max_hp())
-	target.emit_signal("health_changed", target.current_hp)
+	target.heal_hp(heal_amount)
 	print(target.stats.character_name, " healed for ", heal_amount, " HP!")
 
 func _apply_move_mana_restore(attacker: Battler, target: Battler, mana_amount: int) -> void:
 	var mp_restore: int = mana_amount
 	if attacker.is_in_adrenaline_state():
 		mp_restore = roundi(float(mp_restore) * attacker.get_adrenaline_mp_gain_multiplier())
-	target.current_mp += mp_restore
-	target.current_mp = min(target.current_mp, target.stats_manager.get_active_max_mp())
-	target.emit_signal("mana_changed", target.current_mp)
+	target.set_current_mp(target.current_mp + mp_restore)
 	print(target.stats.character_name, " restored ", mp_restore, " MP!")
 
 func _apply_move_status(_attacker: Battler, move: BattleMove, target: Battler) -> void:
@@ -658,9 +657,7 @@ func _on_battler_request_ally_heal(amount: int, is_enemy: bool) -> void:
 				lowest_hp_battler = battler
 
 	if lowest_hp_battler != null:
-		lowest_hp_battler.current_hp += amount
-		lowest_hp_battler.current_hp = min(lowest_hp_battler.current_hp, lowest_hp_battler.stats.max_hp)
-		lowest_hp_battler.emit_signal("health_changed", lowest_hp_battler.current_hp)
+		lowest_hp_battler.heal_hp(amount)
 		print("MUTATION TRIGGERED: ", lowest_hp_battler.stats.character_name, " was healed for ", amount, " HP!")
 
 #endregion

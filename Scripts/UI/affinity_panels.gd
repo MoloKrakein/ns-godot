@@ -8,7 +8,7 @@ class_name AffinityPanels
 @export var weak_color: Color = Color("#00BDF2")
 @export var normal_color: Color = Color("#29388A")
 @export var resist_color: Color = Color("#771717")
-@export var block_color: Color = Color("#57555B")
+@export var block_color: Color = Color("#1a083d")
 
 @onready var fire_bg_fill: Panel = $Root/FireRootIcons/BgFill
 @onready var fire_bg_stroke: Panel = $Root/FireRootIcons/BgStroke

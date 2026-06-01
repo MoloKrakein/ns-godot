@@ -2,7 +2,9 @@ extends Node
 
 # Element Diagram Reference : https://app.diagrams.net/#G1aOTtExOuKytT-BcfikGi5PLnJVyz7wpg#%7B%22pageId%22%3A%220KW8x6qtRERvc5qper4m%22%7D
 enum Element {NEUTRAL,FIRE,EARTH,DARK,LIGHT}
-enum PhysicalType {NONE, SLASH, PIERCE, TRAUMA}
+# PhysicalType simplified to a single `PHYSICAL` type; specific physical subtypes
+# (SLASH/PIERCE/TRAUMA) are folded into this single category to simplify UI.
+enum PhysicalType {NONE, PHYSICAL}
 
 # Minimal element interaction table for the 5-element system.
 # Values are multipliers applied when attacker element hits defender element.

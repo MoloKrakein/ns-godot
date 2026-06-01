@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://bss2vlh54x5rb" path="res://Scenes/UI/skill_menu.tscn" id="3_skillmenu"]
 [ext_resource type="Script" uid="uid://du0mcmwag1pen" path="res://Resources/Stats.gd" id="4_1bv32"]
 [ext_resource type="Script" uid="uid://xyjeoprc8rta" path="res://Resources/ElementAffinityEntry.gd" id="4_60cw4"]
-[ext_resource type="Script" uid="uid://dwxgehexu25y4" path="res://Resources/PhysicalAffinityEntry.gd" id="5_suehm"]
 [ext_resource type="PackedScene" uid="uid://dikhhlb2frkt5" path="res://Scenes/battler/battler.tscn" id="15_rperh"]
 [ext_resource type="Script" uid="uid://7272tw1kw6cp" path="res://Resources/Equipment.gd" id="16_l4kvx"]
 [ext_resource type="Resource" uid="uid://c0vkoko0p3x2r" path="res://Resources/Moves/Basic atk.tres" id="17_hf1gq"]
@@ -30,6 +29,7 @@ script = ExtResource("4_1bv32")
 id = "ply_mc"
 character_name = "Null Tester"
 elemental_affinities = Array[ExtResource("4_60cw4")]([SubResource("Resource_l0e8c"), SubResource("Resource_60cw4")])
+physical_affinity = 3
 max_hp = 100
 max_mp = 100
 speed = 3
@@ -142,6 +142,7 @@ move_name = "Tactical Relay"
 template_mode = 4
 target_type = 2
 mp_cost = 3
+is_magic = true
 turn_order_manipulation = 2
 turn_order_amount = 4
 stat_flat_bonus = {
@@ -156,6 +157,7 @@ move_name = "Quick Order"
 template_mode = 4
 target_type = 2
 mp_cost = 3
+is_magic = true
 turn_order_manipulation = 3
 turn_order_amount = 5
 stat_flat_bonus = {
@@ -170,6 +172,7 @@ id = "mv_delay"
 move_name = "Order Jam"
 template_mode = 3
 mp_cost = 3
+is_magic = true
 turn_order_manipulation = 4
 turn_order_amount = 5
 stat_flat_bonus = {
@@ -195,6 +198,7 @@ move_name = "Rally Strength"
 template_mode = 4
 target_type = 2
 mp_cost = 3
+is_magic = true
 applied_status = SubResource("Resource_buff_strength")
 stat_flat_bonus = {
 "strength": 5
@@ -218,6 +222,7 @@ move_name = "Quick Step"
 template_mode = 4
 target_type = 2
 mp_cost = 3
+is_magic = true
 applied_status = SubResource("Resource_buff_speed")
 stat_flat_bonus = {
 "speed": 5

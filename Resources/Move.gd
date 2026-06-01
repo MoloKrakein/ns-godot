@@ -142,8 +142,13 @@ func get_icon_candidates() -> PackedStringArray:
 		var element_key: String = "element_%s" % GlobalData.Element.keys()[element].to_lower()
 		_append_icon_candidate(candidates, StringName(element_key))
 	elif not is_magic and physical_type != GlobalData.PhysicalType.NONE:
-		var physical_key: String = "physical_%s" % GlobalData.PhysicalType.keys()[physical_type].to_lower()
-		_append_icon_candidate(candidates, StringName(physical_key))
+		# PhysicalType enum was simplified to a single PHYSICAL value.
+		# Guard against old serialized numeric values that may be out of range.
+		var phys_keys := GlobalData.PhysicalType.keys()
+		var phys_name: String = "physical_physical"
+		if physical_type >= 0 and physical_type < phys_keys.size():
+			phys_name = "physical_%s" % phys_keys[physical_type].to_lower()
+		_append_icon_candidate(candidates, StringName(phys_name))
 
 	match target_type:
 		Target.ALL_ENEMIES, Target.ALL_ALLIES:
@@ -195,7 +200,13 @@ func get_button_label() -> String:
 	if is_magic and element != GlobalData.Element.NEUTRAL:
 		label_parts.append(GlobalData.Element.keys()[element].capitalize())
 	elif not is_magic and physical_type != GlobalData.PhysicalType.NONE:
-		label_parts.append(GlobalData.PhysicalType.keys()[physical_type].capitalize())
+		# Use a stable, human-friendly label for physical moves.
+		# If serialized data contains old enum indices, default to "Physical".
+		var phys_label := "Physical"
+		var phys_keys := GlobalData.PhysicalType.keys()
+		if physical_type >= 0 and physical_type < phys_keys.size():
+			phys_label = phys_keys[physical_type].capitalize()
+		label_parts.append(phys_label)
 
 	return "%s [%s]" % [move_name, ", ".join(label_parts)]
 
