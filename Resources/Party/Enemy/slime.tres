@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://xyjeoprc8rta" path="res://Resources/ElementAffinityEntry.gd" id="1_6afuj"]
 [ext_resource type="Script" uid="uid://du0mcmwag1pen" path="res://Resources/Stats.gd" id="1_7tuev"]
-[ext_resource type="Script" uid="uid://dwxgehexu25y4" path="res://Resources/PhysicalAffinityEntry.gd" id="2_3fv0q"]
 
 [sub_resource type="Resource" id="Resource_kwgu1"]
 script = ExtResource("1_6afuj")

@@ -1,10 +1,11 @@
 [gd_scene format=3 uid="uid://dodod127opv28"]
 
-[ext_resource type="Script" path="res://Scripts/UI/damage_value_popups.gd" id="1_0dmgv"]
+[ext_resource type="Script" uid="uid://5oxvpyqfqcdb" path="res://Scripts/UI/damage_value_popups.gd" id="1_0dmgv"]
 [ext_resource type="LabelSettings" uid="uid://gsfcftcu68a" path="res://Arts/UI/DmgValueUI/DmgValLabel.tres" id="1_hdj2b"]
 [ext_resource type="LabelSettings" uid="uid://tuk30trd4rc" path="res://Arts/UI/DmgValueUI/DamageTypeLable_Base.tres" id="2_brw4h"]
 [ext_resource type="LabelSettings" uid="uid://pawsarv51fbs" path="res://Arts/UI/DmgValueUI/DamageTypeLable_Outline.tres" id="3_4e2gf"]
 [ext_resource type="LabelSettings" uid="uid://tqbb7mxxi6bj" path="res://Arts/UI/DmgValueUI/DamageTypeLable_Shadow.tres" id="4_ns0to"]
+[ext_resource type="FontFile" uid="uid://dy4ruh0opke57" path="res://Arts/Fonts/Bangers/Bangers-Regular.ttf" id="6_ns0to"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gm3wk"]
 content_margin_left = 2.0
@@ -59,6 +60,40 @@ border_width_top = 1
 border_width_bottom = 1
 border_color = Color(0.050980393, 0.21960784, 0.8392157, 1)
 corner_detail = 1
+
+[sub_resource type="LabelSettings" id="LabelSettings_vgr7d"]
+font = ExtResource("6_ns0to")
+font_size = 75
+font_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_4a00r"]
+font = ExtResource("6_ns0to")
+font_size = 75
+font_color = Color(0, 0.63, 0.84, 0)
+outline_size = 1
+outline_color = Color(0, 0.6313726, 0.8392157, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_fj1xk"]
+font = ExtResource("6_ns0to")
+font_size = 75
+font_color = Color(0, 0.6313726, 0.8392157, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_skmp6"]
+font = ExtResource("6_ns0to")
+font_size = 75
+font_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_mcesn"]
+font = ExtResource("6_ns0to")
+font_size = 75
+font_color = Color(0, 0.63, 0.84, 0)
+outline_size = 1
+outline_color = Color(0.047058824, 0, 0.84313726, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_qtv03"]
+font = ExtResource("6_ns0to")
+font_size = 75
+font_color = Color(0.047058824, 0, 0.84313726, 1)
 
 [node name="DamageValueUI" type="Control" unique_id=525153592]
 layout_mode = 3
@@ -218,4 +253,99 @@ rotation = -0.06981317
 pivot_offset = Vector2(86, 45)
 text = "CRITICAL !"
 label_settings = ExtResource("4_ns0to")
+horizontal_alignment = 1
+
+[node name="Resist_Root" type="Control" parent="Root/DamageType_Root" unique_id=749482203]
+visible = false
+anchors_preset = 0
+offset_left = -22.0
+offset_top = 1.0
+offset_right = -22.0
+offset_bottom = 1.0
+
+[node name="Resist_Base" type="Label" parent="Root/DamageType_Root/Resist_Root" unique_id=1163225107]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "RESIST"
+label_settings = SubResource("LabelSettings_vgr7d")
+horizontal_alignment = 1
+
+[node name="Resist_Outline" type="Label" parent="Root/DamageType_Root/Resist_Root" unique_id=98947945]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "RESIST"
+label_settings = SubResource("LabelSettings_4a00r")
+horizontal_alignment = 1
+
+[node name="Resist_Shadow" type="Label" parent="Root/DamageType_Root/Resist_Root" unique_id=204211639]
+z_index = -2
+layout_mode = 0
+offset_left = 7.999996
+offset_top = -40.0
+offset_right = 180.0
+offset_bottom = 46.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "RESIST"
+label_settings = SubResource("LabelSettings_fj1xk")
+horizontal_alignment = 1
+
+[node name="Block_Root" type="Control" parent="Root/DamageType_Root" unique_id=1169070652]
+visible = false
+anchors_preset = 0
+offset_left = -22.0
+offset_top = -7.0
+offset_right = -22.0
+offset_bottom = -7.0
+
+[node name="Block_Base" type="Label" parent="Root/DamageType_Root/Block_Root" unique_id=745760448]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "BLOCK"
+label_settings = SubResource("LabelSettings_skmp6")
+horizontal_alignment = 1
+
+[node name="Block_Outline" type="Label" parent="Root/DamageType_Root/Block_Root" unique_id=513468424]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "BLOCK"
+label_settings = SubResource("LabelSettings_mcesn")
+horizontal_alignment = 1
+
+[node name="Block_Shadow" type="Label" parent="Root/DamageType_Root/Block_Root" unique_id=1609532260]
+z_index = -2
+layout_mode = 0
+offset_left = 7.999996
+offset_top = -40.0
+offset_right = 180.0
+offset_bottom = 46.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "BLOCK
+"
+label_settings = SubResource("LabelSettings_qtv03")
 horizontal_alignment = 1

@@ -409,7 +409,7 @@ func _trigger_all_out_attack(attacking_party: Array[Battler], defending_party: A
 			continue
 		var burst_damage: int = max(1, all_out_damage + randi_range(-6, 6))
 		target.take_hp_damage(burst_damage)
-		target.emit_signal("damage_taken", burst_damage, true, true)
+		target.emit_signal("damage_resolved", burst_damage, target.current_hp, target.stats_manager.get_active_max_hp(), target.down_manager.current_meter, true, true, false, false, null)
 		print("ALL-OUT hits ", target.stats.character_name, " for ", burst_damage, " (def/affinity bypass)")
 
 func _on_battler_adrenaline_changed(is_active: bool, stacks: int, battler: Battler) -> void:

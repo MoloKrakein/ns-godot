@@ -7,6 +7,7 @@ signal downed(battler)
 signal request_ally_heal(amount: int, is_enemy: bool)
 signal request_item_broadcast(item: Consumable, scope: int)
 signal damage_taken(amount: int, is_crit: bool, is_weakness: bool)
+signal damage_resolved(amount: int, current_hp: int, max_hp: int, down_meter: int, is_weakness: bool, is_crit: bool, is_resist: bool, is_block: bool, attacker: Battler)
 signal adrenaline_changed(is_active: bool, stacks: int)
 signal threat_changed(value: int)
 signal primer_changed(new_primer: int)
@@ -245,8 +246,10 @@ func take_damage(power: int, is_magic: bool, element: GlobalData.Element = Globa
 	var affinity_multiplier: float = affinity_manager.get_damage_multiplier(is_magic, element, phys_type)
 	var is_weakness: bool = affinity_manager.is_weakness_hit(is_magic, element, phys_type)
 
+	var is_resist: bool = affinity_manager.get_current_affinity(is_magic, element, phys_type) == BattlerStats.Affinity.RESIST
 	if affinity_manager.is_blocked(is_magic, element, phys_type):
 		print(stats.character_name, " NULLIFIED the attack! (0 Damage)")
+		emit_signal("damage_resolved", 0, current_hp, stats_manager.get_active_max_hp(), down_manager.current_meter, false, false, false, true, null)
 		return false
 
 	# 3. Strict Crit Logic (Physical Only)
@@ -276,6 +279,9 @@ func take_damage(power: int, is_magic: bool, element: GlobalData.Element = Globa
 	take_hp_damage(final_damage)
 	emit_signal("damage_taken", final_damage, final_crit, is_weakness)
 	print(stats.character_name, " took ", final_damage, " damage!")
+	# Emit a post-calculation UI-friendly signal so UI logic can react without being
+	# tightly coupled to the combat flow. Provide affinity info for resist/block.
+	emit_signal("damage_resolved", final_damage, current_hp, stats_manager.get_active_max_hp(), down_manager.current_meter, is_weakness, final_crit, is_resist, false, attacker)
 
 	# 5. Down Meter Math
 	if not down_manager.is_downed:

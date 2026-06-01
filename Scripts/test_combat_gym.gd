@@ -5,6 +5,8 @@ extends Control
 
 @export var battle_manager: Node
 @export var damage_label: Label
+@export var damage_popup_scene: PackedScene = preload("res://Scenes/UI/damage_value_popups.tscn")
+@export var damage_popup_container: Control
 @export var button_container: VBoxContainer
 @export var skill_menu: SkillMenu
 @export var randomize_moves_per_turn: bool = true
@@ -50,9 +52,9 @@ func _ready():
 	_setup_gym_layout()
 	_setup_party_panels()
 	
-	# 2. Connect the UI Label to the Slime's damage signal
+	# 2. Connect the UI Label to the Battler's post-damage resolved signal
 	for battler in battle_manager.player_party + battle_manager.enemy_party:
-		battler.damage_taken.connect(_on_any_battler_damage_taken.bind(battler))
+		battler.damage_resolved.connect(_on_any_battler_damage_resolved.bind(battler))
 		battler.health_changed.connect(_refresh_combat_ui)
 		battler.primer_changed.connect(_refresh_combat_ui)
 		battler.ui_state_changed.connect(_refresh_combat_ui)
@@ -379,11 +381,57 @@ func _on_party_member_swapped(_outgoing: Battler, _incoming: Battler, _is_enemy_
 		player_party_panel.bind_battler(player_party[0])
 	_refresh_combat_ui()
 
-func _on_any_battler_damage_taken(_amount: int, _is_crit: bool, _is_weakness: bool, battler: Battler) -> void:
+func _on_any_battler_damage_resolved(amount: int, current_hp: int, max_hp: int, down_meter: int, is_weakness: bool, is_crit: bool, is_resist: bool, is_block: bool, attacker: Battler, battler: Battler) -> void:
+	_spawn_damage_popup(battler, amount, is_crit, is_weakness, is_resist, is_block, attacker)
 	if battler == enemy_party[0]:
-		_update_ui_text("Slime took damage.", 0, _is_crit, _is_weakness)
+		_update_ui_text("Slime took damage.", 0, is_crit, is_weakness)
 	else:
 		_refresh_combat_ui()
+
+func _spawn_damage_popup(battler: Battler, amount: int, is_crit: bool, is_weakness: bool, is_resist: bool = false, is_block: bool = false, attacker: Battler = null) -> void:
+	if battler == null or damage_popup_scene == null:
+		return
+
+	var popup: DamageValuePopups = damage_popup_scene.instantiate() as DamageValuePopups
+	if popup == null:
+		return
+
+	var popup_parent: Node = damage_popup_container if damage_popup_container != null else self
+	popup_parent.add_child(popup)
+	var popup_position: Vector2 = Vector2.ZERO
+	# Prefer using the attacker's party UI node when available so damage appears on the side doing the damage.
+	if attacker != null:
+		if attacker in player_party:
+			var player_node := get_node_or_null("PlayerParty/PartyCurrentStats")
+			if player_node != null:
+				popup_position = player_node.get_global_transform_with_canvas().origin
+			else:
+				popup_position = attacker.get_global_transform_with_canvas().origin
+		elif attacker in enemy_party:
+			var enemy_node := get_node_or_null("EnemyParty/PartyCurrentStats")
+			if enemy_node != null:
+				popup_position = enemy_node.get_global_transform_with_canvas().origin
+			else:
+				popup_position = attacker.get_global_transform_with_canvas().origin
+	# Fallback to an explicit Popup Pos node or the target's world position
+	if popup_position == Vector2.ZERO:
+		var popup_pos_node := get_node_or_null("Popup Pos")
+		if popup_pos_node != null:
+			popup_position = popup_pos_node.get_global_transform_with_canvas().origin
+		elif battler != null:
+			popup_position = battler.get_global_transform_with_canvas().origin
+	popup.play_popup(
+		amount,
+		battler.current_hp,
+		battler.stats_manager.get_active_max_hp(),
+		battler.down_manager.current_meter,
+		100,
+		is_weakness,
+		is_crit,
+		is_resist,
+		is_block,
+		popup_position
+	)
 
 func _refresh_combat_ui(_unused: Variant = null) -> void:
 	if enemy_party.size() == 0:

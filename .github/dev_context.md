@@ -1,67 +1,32 @@
-1. **Time/Date Log:** [Fill in the date/time here]
+1. **Time/Date Log:** (____________________)
 
-2. **Current Focus Area:** Locking down the combat build/loadout flow so the UI shows the moves the battler actually uses, while the gym stays useful for fast balance checks.
+2. **Current Focus Area:** Damage UI decoupling and post-calculation events (ensuring UI only reacts to finalized damage results and not internal combat logic).
 
 3. **What We Just Built:**
-- Added move-level stat modifier fields to `Resources/Move.gd` so equipped moves can contribute flat and percent bonuses.
-- Added `equipped_moves` support to `Scenes/battler/battler.gd` with a safe setter that clamps the active loadout to 5 moves.
-- Updated `Scripts/Battler/stats_manager.gd` so equipped move bonuses affect active strength, magic, defense, luck, speed, crit chance, crit damage, and max HP.
-- Added a live debug readout to `Scripts/UI/party_panel.gd` and `Scenes/UI/party_panel.tscn` showing stat breakdowns as base, equipment, move, multiplier, and active value.
-- Updated `Scripts/UI/skill_menu.gd` so the move list shows equipped moves as the primary actionable set, with a fallback to the learned pool when no loadout exists.
-- Added a visible 5-slot equipped display to `Scenes/UI/skill_menu.tscn` so the current loadout can be seen beside the move list.
-- Updated `Scripts/test_combat_gym.gd` so battlers can still randomize equipped moves for testing, but that randomizer is now gated by a toggle.
-- Fixed the combat gym runtime error caused by assigning an untyped `Array` directly to `equipped_moves` by routing through `set_equipped_moves()`.
-- Added consistent element-based test bonuses to the combat gym move templates in `Scenes/combat_gym.tscn` so fire, earth, dark, light, and utility moves are easier to verify.
-- Ran syntax/error checks on the touched files and cleared the recent battle gym, skill menu, and HUD debug script errors.
+- Added a post-calculation `damage_resolved` signal to `Scenes/battler/battler.gd` and emitted it after damage math (and on blocked hits).
+- Centralized HP/MP mutation APIs on `Battler`: `set_current_hp`, `take_hp_damage`, `set_current_mp`, `spend_mp`, and related emitters (`health_changed`, `mana_changed`, `ui_state_changed`).
+- Updated `Scenes/battle manager/battlemanager.gd` to use `spend_mp` and to emit `damage_resolved` for AoE/all-out attacks instead of directly emitting older signals.
+- Wired `Scripts/test_combat_gym.gd` to listen to `damage_resolved` and spawn `DamageValuePopups` instances; popup positioning now prefers the attacker's party node, then a `Popup Pos` test node, then the target battler's world position.
+- Extended `Scripts/UI/damage_value_popups.gd` to accept `is_resist` and `is_block` flags and show corresponding visuals.
+- Implemented the Affinity diamond UI (`Scenes/UI/affinity_panels.tscn` + `Scripts/UI/affinity_panels.gd`) and consolidated physical affinity (collapsed multiple physical types into a single `physical_affinity` in `Resources/Stats.gd`).
+- Fixed move enum/indexing issues and showed correct type icons for Support moves in `Scripts/UI/buttons/movebutton/move_button.gd`.
+- Implemented a static 5-slot `SkillMenu` UI and removed ScrollContainer; added `PartyPanel` inspector toggle to show `ActiveStats` for debugging.
 
 4. **Current State of Architecture:**
-- `battler.gd` owns the equipped-move loadout and exposes a setter for clamped 5-slot assignment.
-- `stats_manager.gd` combines base stats, equipment, status multipliers, equipped-move modifiers, and now also provides a stat debug breakdown helper for the UI.
-- `Scripts/UI/skill_menu.gd` is now the visible combat move UI, showing usable equipped moves first instead of the raw learned pool.
-- `Scripts/UI/party_panel.gd` now exposes live debug values for active stats, including a source-based breakdown that makes move bonuses easy to verify.
-- `Scripts/test_combat_gym.gd` remains the temporary test harness for randomized loadouts, but it is now optional rather than always on.
-- `Scenes/combat_gym.tscn` contains the test move templates with explicit stat bonuses for loadout verification.
+- `battler.gd`: now exposes `damage_resolved` (post-calculation UI event) and central mutation helpers. Elemental primer + reaction system remains in `battler.gd` (priming, triggering, reaction cooldowns), but UI now subscribes to `damage_resolved` instead of raw combat internals.
+- `Stats.gd` / resources: physical affinity consolidated to one `physical_affinity` value and `get_physical_affinity_map()` abstracts mapping; existing `.tres` resources may still serialize old numeric enum values (migration advised).
+- UI: `DamageValuePopups` updated to support resist/block; `test_combat_gym` is the temporary harness for spawning popups and verifying flow; affinity panels and party/skill UIs have been updated as described.
 
-5. **Next Immediate Step:** Finish the actual pre-battle move loadout UI in `SkillMenu` so the player can intentionally assign and swap their 5 equipped moves instead of relying on the temporary gym randomizer.
+5. **Next Immediate Step:**
+- Run or create a migration script to update existing `.tres` resources to the new `PhysicalType` enum (map any non-NONE values to `PHYSICAL`) — this avoids silent affinity mismatches.
+- After migration: implement equip/unequip persistence and drag/drop swap for `SkillMenu` (store presets or write to player save resource).
 
 6. **Open Questions:**
-- Should move bonuses stack additively, multiplicatively, or with a hybrid rule for specific stats?
-- Should the pre-battle loadout be edited in the gym only, or also stored as a persistent player preset/resource?
-- Should the damage popup animate as one grouped card or as separate layered elements for value, bars, and hit-type text?
-- Should the temporary combat gym move randomizer stay available as a debug toggle after the real equip UI exists?
+- Do you prefer per-battler popup anchors (each battler's UI node) or party-level anchors (current implementation)?
+- Should `damage_resolved` include additional context (e.g., attack source id, move id, hit location) for richer UI behavior?
+- Do you want me to create and run the automatic `.tres` migration now or leave it for manual review?
 
 7. **Additional Notes:**
-- The combat gym randomizer is temporary and only exists to test the build concept quickly.
-- The damage popup scene already has the layout needed for future animation work, but it is not yet wired into combat damage events.
-- Existing reaction and turn-order systems are still intact; the new build work was added on top of the current combat engine rather than replacing it.
-
-8. **Continuation / Sprint Notes (2026-06-01):**
-- Goal: Finish the pre-battle loadout UI so players can intentionally assign and reorder their 5 equipped moves.
-- Scope: UI for equip/unequip, drag-to-swap, save/load preset, and optional gym-randomizer toggle for testing.
-- Acceptance: SkillMenu shows equipped 5-slot display; `battler.gd` `equipped_moves` setter is used for all assignments; changes persist to player preset resource.
-
-9. **Decisions:**
-- Move bonuses will be additive for flat bonuses and multiplicative for percent modifiers (hybrid rule). This keeps flat tuning intuitive while preserving meaningful percent scaling.
-- The pre-battle loadout will be editable both in the gym (dev/test) and via the SkillMenu pre-battle screen in normal gameplay; presets will be saved as a simple `.tres` resource per player.
-- Damage popup will animate as layered elements (value, bar, hit-type) to allow easier incremental improvements.
-- Keep the combat gym randomizer as a dev-only toggle behind a project `DEBUG_GYM_RANDOMIZER` flag.
-
-10. **Next Immediate Tasks:**
-- Wire UI: implement drag/drop equip slots in `Scenes/UI/skill_menu.tscn` and `Scripts/UI/skill_menu.gd`.
-- Persistence: add `res://Resources/player_presets/` and a simple `PlayerPreset.tres` resource type for saving equipped moves.
-- Tests: add a small runtime test in `Scripts/test_combat_gym.gd` that verifies equip flow and persistence when the toggle is disabled.
-
-11. **Notes For Implementation:**
-- Use `set_equipped_moves()` on `battler.gd` for all programmatic assignments to preserve clamping and typing.
-- Keep the UI changes minimal and use existing 5-slot visuals added earlier to avoid art work.
-- Add a simple confirmation toast when saving/loading presets to help testers know persistence worked.
-
-12. **Who/When:**
-- Assigned: Current sprint owner (you). Target: first pass by 2026-06-05, polish by 2026-06-12.
-
-13. **Progress Log:**
-- 2026-06-01: Added move bonuses, equipped-moves setter, stat debug, and gym toggle (see earlier entries). Current focus: implement SkillMenu equip UI.
-
-14. **Follow-ups:**
-- After UI work, run a short pass of playtests in `combat_gym.tscn` with sample presets to validate swap/persist behavior.
-- Revisit open questions if balancing tests show unexpected scaling.
+- File paths edited recently: `Scenes/battler/battler.gd`, `Scenes/battle manager/battlemanager.gd`, `Scripts/test_combat_gym.gd`, `Scripts/UI/damage_value_popups.gd`, `Resources/Stats.gd`, `Scenes/UI/affinity_panels.tscn`, `Scripts/UI/affinity_panels.gd`, `Scripts/UI/buttons/movebutton/move_button.gd`, and `Scenes/UI/skill_menu.tscn`.
+- To verify on another machine: open the project, load `Scenes/combat_gym.tscn`, ensure `DamagePopupLayer` and `Popup Pos` nodes are assigned in the inspector, then run and trigger damage to see popups.
+- Pending work: resource migration, SkillMenu equip persistence, drag/drop, tests, and docs.

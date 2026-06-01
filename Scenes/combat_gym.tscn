@@ -319,7 +319,7 @@ move_name = "Punch"
 physical_type = 2
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
-[node name="CombatGYM" type="Control" unique_id=1231679415 node_paths=PackedStringArray("battle_manager", "damage_label", "button_container", "skill_menu", "target_button_container", "player_party_stats_label", "enemy_party_stats_label", "turn_manipulation_container", "turn_order_container", "last_move_used_label")]
+[node name="CombatGYM" type="Control" unique_id=1231679415 node_paths=PackedStringArray("battle_manager", "damage_label", "damage_popup_container", "button_container", "skill_menu", "target_button_container", "player_party_stats_label", "enemy_party_stats_label", "turn_manipulation_container", "turn_order_container", "last_move_used_label")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -329,6 +329,7 @@ grow_vertical = 0
 script = ExtResource("1_nqkjc")
 battle_manager = NodePath("Battle_arena")
 damage_label = NodePath("Battlelogs")
+damage_popup_container = NodePath("DamagePopupLayer")
 button_container = NodePath("TargetButtons")
 skill_menu = NodePath("BattleMoves")
 target_button_container = NodePath("TargetButtons")
@@ -441,6 +442,28 @@ offset_right = 690.0
 offset_bottom = 27.0
 text = "Move"
 horizontal_alignment = 1
+
+[node name="Popup Pos(Player Party)" type="Control" parent="." unique_id=937287994]
+anchors_preset = 0
+offset_left = 470.0
+offset_top = 337.0
+offset_right = 510.0
+offset_bottom = 377.0
+
+[node name="Popup Pos(Enemy Party)" type="Control" parent="." unique_id=366448827]
+anchors_preset = 0
+offset_left = 1188.0
+offset_top = 512.0
+offset_right = 1228.0
+offset_bottom = 552.0
+
+[node name="DamagePopupLayer" type="Control" parent="." unique_id=2055511227]
+anchors_preset = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [editable path="Battle_arena"]
 [editable path="Battle_arena/PlayerParty/Hero"]
