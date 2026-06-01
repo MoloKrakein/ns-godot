@@ -13,10 +13,23 @@
 [ext_resource type="Resource" uid="uid://ch6djndd7fns0" path="res://Resources/Equipment/test_weapon.tres" id="18_l4kvx"]
 [ext_resource type="Script" uid="uid://j0r7ctwoj6l0" path="res://Resources/StatusEffect.gd" id="19_statfx"]
 
+[sub_resource type="Resource" id="Resource_l0e8c"]
+script = ExtResource("4_60cw4")
+element = 1
+affinity = 0
+metadata/_custom_type_script = "uid://xyjeoprc8rta"
+
+[sub_resource type="Resource" id="Resource_60cw4"]
+script = ExtResource("4_60cw4")
+element = 4
+affinity = 2
+metadata/_custom_type_script = "uid://xyjeoprc8rta"
+
 [sub_resource type="Resource" id="Resource_ukifm"]
 script = ExtResource("4_1bv32")
 id = "ply_mc"
 character_name = "Null Tester"
+elemental_affinities = Array[ExtResource("4_60cw4")]([SubResource("Resource_l0e8c"), SubResource("Resource_60cw4")])
 max_hp = 100
 max_mp = 100
 speed = 3

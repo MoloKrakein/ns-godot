@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://ckfhvvh3exle4" path="res://Arts/UI/PlayerPartyHud/Star 3.png" id="1_saspk"]
 [ext_resource type="Texture2D" uid="uid://dixn6kwj4pyr1" path="res://Unity Old Code/Assets/Assets/UI/Player HUD/FINAL.png" id="2_hp5b6"]
 [ext_resource type="FontFile" uid="uid://dy4ruh0opke57" path="res://Arts/Fonts/Bangers/Bangers-Regular.ttf" id="3_hp5b6"]
+[ext_resource type="PackedScene" uid="uid://ufat5lxbhulb" path="res://Scenes/UI/affinity_panels/affinity_panels.tscn" id="5_8y2u2"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_r2hvd"]
 font = ExtResource("3_hp5b6")
@@ -115,6 +116,19 @@ offset_bottom = 84.5
 text = "999
 "
 label_settings = SubResource("LabelSettings_8y2u2")
+
+[node name="AffinityRoot" type="Control" parent="BGStar/NumVal" unique_id=1364792326]
+anchors_preset = 0
+offset_left = -154.0
+offset_top = 13.500002
+offset_right = -114.0
+offset_bottom = 53.5
+rotation = 0.08552113
+
+[node name="AffinityPanels" parent="BGStar/NumVal/AffinityRoot" unique_id=233493983 instance=ExtResource("5_8y2u2")]
+layout_mode = 1
+scale = Vector2(0.77, 0.77)
+metadata/_edit_lock_ = true
 
 [node name="StatBar" type="Control" parent="BGStar" unique_id=236436834]
 layout_mode = 1

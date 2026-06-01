@@ -13,6 +13,7 @@ class_name PartyPanel
 @onready var mana_bar: ProgressBar = $BGStar/StatBar/Background/MpBar
 @onready var down_meter_bar: ProgressBar = $BGStar/StatBar/Background/MpBar2
 @onready var active_stats_label: Label = $BGStar/ActiveStats
+@onready var affinity_panels: AffinityPanels = $BGStar/NumVal/AffinityRoot/AffinityPanels
 
 var _bound_battler: Battler = null
 
@@ -29,6 +30,10 @@ func bind_battler(new_battler: Battler) -> void:
 	_unbind_battler()
 	_bound_battler = new_battler
 	battler = new_battler
+
+	# Update affinity panel binding
+	if affinity_panels != null:
+		affinity_panels.battler = _bound_battler
 
 	if _bound_battler != null:
 		if not _bound_battler.health_changed.is_connected(_on_battler_health_changed):
@@ -55,6 +60,10 @@ func _unbind_battler() -> void:
 		_bound_battler.ui_state_changed.disconnect(_on_battler_ui_state_changed)
 	if _bound_battler.downed.is_connected(_on_battler_downed):
 		_bound_battler.downed.disconnect(_on_battler_downed)
+
+	# Clear affinity panel binding
+	if affinity_panels != null:
+		affinity_panels.battler = null
 
 	_bound_battler = null
 
