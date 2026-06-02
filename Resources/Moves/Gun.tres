@@ -7,5 +7,5 @@ script = ExtResource("1_81sh2")
 id = "phy_gun"
 move_name = "Gun"
 description = "Gun"
-physical_type = 2
+physical_type = 1
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"

@@ -250,7 +250,7 @@ metadata/_custom_type_script = "uid://du0mcmwag1pen"
 script = ExtResource("2_1bv32")
 id = "Phy_Punch"
 move_name = "Punch"
-physical_type = 2
+physical_type = 1
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
 [sub_resource type="Resource" id="Resource_a8fv2"]
@@ -316,7 +316,7 @@ metadata/_custom_type_script = "uid://du0mcmwag1pen"
 [sub_resource type="Resource" id="Resource_lu6nk"]
 script = ExtResource("2_1bv32")
 move_name = "Punch"
-physical_type = 2
+physical_type = 1
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
 
 [node name="CombatGYM" type="Control" unique_id=1231679415 node_paths=PackedStringArray("battle_manager", "damage_label", "damage_popup_container", "button_container", "skill_menu", "target_button_container", "player_party_stats_label", "enemy_party_stats_label", "turn_manipulation_container", "turn_order_container", "last_move_used_label")]

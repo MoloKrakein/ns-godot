@@ -1,0 +1,149 @@
+[gd_scene format=3 uid="uid://bqjrcn7hjvtor"]
+
+[ext_resource type="StyleBox" uid="uid://cs2pk7rtwcr6a" path="res://Arts/UI/PlayerPartyHud/Bg_HP_Bar.tres" id="1_kss7v"]
+[ext_resource type="StyleBox" uid="uid://bfif76logtsnb" path="res://Arts/UI/PlayerPartyHud/Fill_HP_Bar.tres" id="2_nmeq5"]
+[ext_resource type="StyleBox" uid="uid://csbji5lmloixa" path="res://Arts/UI/PlayerPartyHud/Bg_Down_Bar.tres" id="3_vcy0h"]
+[ext_resource type="StyleBox" uid="uid://oc4k6gwrn6xj" path="res://Arts/UI/PlayerPartyHud/Fill_Down_Bar.tres" id="4_ogwhb"]
+[ext_resource type="LabelSettings" uid="uid://caoex6oxewdwv" path="res://Arts/UI/EnemyStatsBarHud/EnemyStatsNameSettings.tres" id="5_ynff2"]
+[ext_resource type="PackedScene" uid="uid://ufat5lxbhulb" path="res://Scenes/UI/affinity_panels/affinity_panels.tscn" id="6_yvmop"]
+[ext_resource type="PackedScene" uid="uid://bkrhrw7a1ipyy" path="res://Scenes/UI/icon_system/ui_icon_slot.tscn" id="7_nmeq5"]
+
+[node name="EnemyStatsPanel" type="Control" unique_id=1776729931]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelRoot" type="Control" parent="." unique_id=1209622514]
+layout_mode = 1
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="StatusBar" type="Polygon2D" parent="PanelRoot" unique_id=1223326672]
+position = Vector2(27.30769, 0)
+scale = Vector2(1.3846153, 1)
+color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-64, -27, 72, -23, 67, 13, -71, 10)
+
+[node name="BarsRoot" type="Control" parent="PanelRoot/StatusBar" unique_id=1452637940]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -24.0
+offset_top = -9.0
+offset_right = 24.0
+offset_bottom = -1.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.465, 0.465)
+
+[node name="HpBar" type="ProgressBar" parent="PanelRoot/StatusBar/BarsRoot" unique_id=376640]
+layout_mode = 0
+offset_left = -77.111534
+offset_top = -4.3010736
+offset_right = 147.4313
+offset_bottom = 6.9277015
+theme_override_styles/background = ExtResource("1_kss7v")
+theme_override_styles/fill = ExtResource("2_nmeq5")
+page = 0.1
+value = 48.01
+exp_edit = true
+show_percentage = false
+
+[node name="MpBar2" type="ProgressBar" parent="PanelRoot/StatusBar/BarsRoot" unique_id=729696065]
+layout_mode = 0
+offset_left = -85.54362
+offset_top = 12.903226
+offset_right = 139.66547
+offset_bottom = 24.132
+theme_override_styles/background = ExtResource("3_vcy0h")
+theme_override_styles/fill = ExtResource("4_ogwhb")
+page = 0.1
+value = 54.36
+exp_edit = true
+show_percentage = false
+
+[node name="NameRoot" type="Control" parent="PanelRoot" unique_id=240757903]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Name" type="Label" parent="PanelRoot/NameRoot" unique_id=517946860]
+layout_mode = 0
+offset_left = -62.0
+offset_top = -40.0
+offset_right = 93.0
+offset_bottom = -13.0
+text = "Monster"
+label_settings = ExtResource("5_ynff2")
+horizontal_alignment = 2
+text_overrun_behavior = 3
+uppercase = true
+
+[node name="AffinityPanelRoot" type="Control" parent="." unique_id=119812485]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="AffinityPanels" parent="AffinityPanelRoot" unique_id=233493983 instance=ExtResource("6_yvmop")]
+layout_mode = 1
+offset_left = 131.0
+offset_top = -29.999992
+offset_right = 107.0
+offset_bottom = -55.999992
+rotation = 0.17278759
+scale = Vector2(0.54, 0.54)
+
+[node name="StatsPanelRoot" type="Control" parent="." unique_id=859466794]
+layout_mode = 1
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="StatusBar" type="Polygon2D" parent="StatsPanelRoot" unique_id=355393551]
+z_index = -1
+position = Vector2(22, 9)
+scale = Vector2(1.3846153, 1)
+color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+polygon = PackedVector2Array(-68.611115, -8, 52.000004, -6, 45.5, 23, -74.38889, 20)
+
+[node name="ElementalRoot" type="Control" parent="." unique_id=1396400736]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="PrimerIconSlot" type="Control" parent="ElementalRoot" unique_id=194149858]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="UIIconSlot" parent="ElementalRoot/PrimerIconSlot" unique_id=1444521334 instance=ExtResource("7_nmeq5")]
+layout_mode = 0
+offset_left = 67.0
+offset_top = 22.999994
+offset_right = 99.0
+offset_bottom = 54.999992
+rotation = -0.6894051
+scale = Vector2(1.54, 1.54)
+
+[node name="TriggerIconSlot" type="Control" parent="ElementalRoot" unique_id=1857538814]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="UIIconSlot" parent="ElementalRoot/TriggerIconSlot" unique_id=52813138 instance=ExtResource("7_nmeq5")]
+layout_mode = 0
+offset_left = 104.0
+offset_top = 28.999998
+offset_right = 136.0
+offset_bottom = 61.0
+rotation = -0.6894051
+scale = Vector2(1.54, 1.54)

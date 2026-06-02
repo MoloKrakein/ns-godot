@@ -5,5 +5,5 @@
 [resource]
 script = ExtResource("1_v6jey")
 move_name = "Punch"
-physical_type = 2
+physical_type = 1
 metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
