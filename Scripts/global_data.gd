@@ -24,4 +24,3 @@ func get_mult(attk_element: Element, deff_element: Element) -> float:
 
 func get_reaction_id(primer: Element, trigger: Element) -> String:
 	return ItemDatabase.get_reaction_id(primer, trigger)
-

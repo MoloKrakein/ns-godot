@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 GlobalData="*uid://c66wjo4t0ne5f"
 ItemDatabase="*uid://cm6hooy6t6e5p"
+PartyManager="res://Scripts/party_manager.gd"
 
 [display]
 

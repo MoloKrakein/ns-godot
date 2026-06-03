@@ -43,6 +43,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("10_enemyhud")
+battler_path = null
+follow_target = null
+screen_offset = null
+show_active_stats_debug = null
 
 [node name="PanelRoot" type="Control" parent="." unique_id=1209622514]
 layout_mode = 1
@@ -84,7 +88,7 @@ value = 48.01
 exp_edit = true
 show_percentage = false
 
-[node name="MpBar2" type="ProgressBar" parent="PanelRoot/StatusBar/BarsRoot" unique_id=729696065]
+[node name="DownBar" type="ProgressBar" parent="PanelRoot/StatusBar/BarsRoot" unique_id=729696065]
 layout_mode = 0
 offset_left = -85.54362
 offset_top = 12.903226

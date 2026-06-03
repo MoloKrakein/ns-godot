@@ -78,6 +78,12 @@ func _ready():
 
 	emit_signal("ui_state_changed")
 
+	# Register with PartyManager autoload (if present)
+	if get_tree().get_root().has_node("PartyManager"):
+		var pm = get_tree().get_root().get_node("PartyManager")
+		if pm != null and pm.has_method("register_battler"):
+			pm.register_battler(self)
+
 
 func set_equipped_moves(new_moves: Array[BattleMove]) -> void:
 	equipped_moves.clear()
@@ -493,3 +499,10 @@ func process_turn_start():
 	emit_signal("ui_state_changed")
 
 #endregion
+
+func _exit_tree() -> void:
+	# Unregister from PartyManager (if present)
+	if get_tree().get_root().has_node("PartyManager"):
+		var pm = get_tree().get_root().get_node("PartyManager")
+		if pm != null and pm.has_method("unregister_battler"):
+			pm.unregister_battler(self)

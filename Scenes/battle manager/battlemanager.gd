@@ -30,26 +30,8 @@ var conductive_targets: Array[Battler] = [] # Targets to spread conductive damag
 func _ready() -> void:
 	print("Battle Scene Ready!")
 
-	# 1. Grab the children from the Node2D folders and put them in our Arrays
-	# $NodeName is Godot's shorthand for get_node("NodeName")
-	for child in $PlayerParty.get_children():
-		if child is Battler:
-			player_party.append(child)
-			child.request_ally_heal.connect(_on_battler_request_ally_heal)
-			child.adrenaline_changed.connect(_on_battler_adrenaline_changed.bind(child))
-
-	for child in $EnemyParty.get_children():
-		if child is Battler:
-			enemy_party.append(child)
-			child.request_ally_heal.connect(_on_battler_request_ally_heal)
-			child.adrenaline_changed.connect(_on_battler_adrenaline_changed.bind(child))
-
-	# Connect down state observers
-	for battler in player_party:
-		battler.down_manager.character_downed.connect(_on_battler_downed)
-	for battler in enemy_party:
-		battler.down_manager.character_downed.connect(_on_battler_downed)
-
+	_populate_party_lists()
+	_connect_party_signals()
 	_initialize_battle_formations()
 
 	# 2. Run the Test Simulation!
@@ -284,6 +266,53 @@ func _initialize_battle_formations() -> void:
 
 	print("Player active: ", player_active_party.size(), " reserve: ", player_reserve_party.size())
 	print("Enemy active: ", enemy_active_party.size(), " reserve: ", enemy_reserve_party.size())
+
+func _populate_party_lists() -> void:
+	var party_manager = _get_party_manager()
+	if party_manager != null:
+		player_party = _collect_party_by_container(party_manager.get_player_party(), $PlayerParty)
+		enemy_party = _collect_party_by_container(party_manager.get_enemy_party(), $EnemyParty)
+
+	# Fallback to node scanning for any missing side.
+	if player_party.is_empty() or enemy_party.is_empty():
+		_populate_party_lists_from_nodes()
+
+func _collect_party_by_container(source_list: Array, container: Node) -> Array:
+	var result: Array[Battler] = []
+	for battler in source_list:
+		if battler == null:
+			continue
+		if container != null and container.is_ancestor_of(battler):
+			result.append(battler)
+	return result
+
+func _populate_party_lists_from_nodes() -> void:
+	player_party.clear()
+	enemy_party.clear()
+
+	for child in $PlayerParty.get_children():
+		if child is Battler:
+			player_party.append(child)
+
+	for child in $EnemyParty.get_children():
+		if child is Battler:
+			enemy_party.append(child)
+
+func _connect_party_signals() -> void:
+	for battler in player_party + enemy_party:
+		if battler == null:
+			continue
+		battler.request_ally_heal.connect(_on_battler_request_ally_heal)
+		battler.adrenaline_changed.connect(_on_battler_adrenaline_changed.bind(battler))
+		battler.down_manager.character_downed.connect(_on_battler_downed)
+
+func _get_party_manager() -> Node:
+	if get_tree() == null:
+		return null
+	var root = get_tree().root
+	if root.has_node("PartyManager"):
+		return root.get_node("PartyManager")
+	return null
 
 func _split_party_into_active_and_reserve(full_party: Array[Battler], active_party: Array[Battler], reserve_party: Array[Battler], max_active: int) -> void:
 	var clamped_max_active: int = maxi(1, max_active)

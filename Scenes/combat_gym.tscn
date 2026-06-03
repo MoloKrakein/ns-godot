@@ -369,6 +369,7 @@ equipped_armor = SubResource("Resource_pl0bs")
 equipped_shoe = SubResource("Resource_v2qia")
 
 [node name="Slime" parent="Battle_arena/EnemyParty" parent_id_path=PackedInt32Array(143384498, 1938227301) index="0" unique_id=1094677972]
+battler_type = 1
 skills_list = Array[ExtResource("2_1bv32")]([SubResource("Resource_8ow6m")])
 
 [node name="EnemyStatsPanel" parent="Battle_arena/EnemyParty/Slime" index="4" unique_id=1388621674 instance=ExtResource("3_enemyhud")]
@@ -384,6 +385,7 @@ grow_vertical = 1
 follow_target = false
 
 [node name="Slime2" parent="Battle_arena/EnemyParty" parent_id_path=PackedInt32Array(143384498, 1938227301) index="1" unique_id=540048331 instance=ExtResource("15_rperh")]
+battler_type = 1
 stats = SubResource("Resource_hf1gq")
 basic_atk = SubResource("Resource_lu6nk")
 skills_list = Array[ExtResource("2_1bv32")]([SubResource("Resource_8ow6m")])
