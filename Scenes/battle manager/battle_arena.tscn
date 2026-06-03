@@ -27,3 +27,4 @@ equipped_shoe = ExtResource("10_tmkku")
 stats = ExtResource("8_jgk8b")
 basic_atk = ExtResource("4_3lcit")
 equipped_armor = ExtResource("8_mmcye")
+

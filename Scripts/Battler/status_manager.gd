@@ -266,6 +266,7 @@ func _get_val_from_status(status: StatusEffect, stat_type: String) -> float:
 		"crit_dmg": return status.stat_mult_crit_dmg
 		"down_meter_fill": return status.stat_mult_down_meter_fill
 	return 0.0
+	
 
 func _handle_conductor_reaction(reaction: StatusEffect): pass
 

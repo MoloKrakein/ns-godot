@@ -1,6 +1,11 @@
 extends CharacterBody2D
 class_name Battler
 
+enum BattlerType {
+	PLAYER,
+	ENEMY
+}
+
 signal health_changed(new_hp)
 signal mana_changed(new_mp)
 signal downed(battler)
@@ -14,6 +19,7 @@ signal primer_changed(new_primer: int)
 signal ui_state_changed
 
 #region Exports
+@export var battler_type: BattlerType
 @export var stats: BattlerStats
 @export var basic_atk: BattleMove
 @export var skills_list: Array[BattleMove] = []

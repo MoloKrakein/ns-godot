@@ -2,6 +2,7 @@ extends Control
 
 @export var move_button_scene: PackedScene = preload("res://Scenes/UI/buttons/movebutton/button.tscn")
 @export var party_panel_scene: PackedScene = preload("res://Scenes/UI/party_panel.tscn")
+@export var enemy_stats_panel_scene: PackedScene = preload("res://Scenes/UI/EnemyHud/enemy_stats_panel.tscn")
 
 @export var battle_manager: Node
 @export var damage_label: Label
@@ -21,7 +22,7 @@ extends Control
 var player_party: Array[Battler] = []
 var enemy_party: Array[Battler] = []
 var player_party_panel: PartyPanel = null
-var enemy_party_panel: PartyPanel = null
+var enemy_party_panels: Array = []
 var current_actor: Battler = null
 var pending_move: BattleMove = null
 var pending_move_targets: Array[Battler] = []
@@ -114,12 +115,48 @@ func _setup_party_panels() -> void:
 	if player_party.size() > 0:
 		player_party_panel = _create_party_panel(player_party[0], Vector2(20.0, 560.0), "PlayerPartyPanel")
 
+	if enemy_stats_panel_scene == null:
+		push_warning("Combat gym has no enemy_stats_panel_scene assigned.")
+		return
+
+	for child in enemy_party_panels:
+		if is_instance_valid(child):
+			child.queue_free()
+	enemy_party_panels.clear()
+
+	for index in enemy_party.size():
+		var enemy_battler: Battler = enemy_party[index]
+		if enemy_battler == null:
+			continue
+		var panel_position: Vector2 = enemy_battler.get_global_transform_with_canvas().origin + Vector2(-96.0, -170.0)
+		var panel_name: String = "EnemyStatsPanel_%d" % index
+		var enemy_panel = _create_enemy_stats_panel(enemy_battler, panel_position, panel_name)
+		if enemy_panel != null:
+			enemy_party_panels.append(enemy_panel)
+
 
 func _create_party_panel(bound_battler: Battler, panel_position: Vector2, panel_name: String) -> PartyPanel:
 	if bound_battler == null:
 		return null
 
 	var panel: PartyPanel = party_panel_scene.instantiate() as PartyPanel
+	if panel == null:
+		return null
+
+	panel.name = panel_name
+	add_child(panel)
+	panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	panel.position = panel_position
+	panel.size = Vector2(191.0, 181.0)
+	panel.bind_battler(bound_battler)
+	return panel
+
+
+func _create_enemy_stats_panel(bound_battler: Battler, panel_position: Vector2, panel_name: String):
+	if bound_battler == null:
+		return null
+
+	var panel = enemy_stats_panel_scene.instantiate()
 	if panel == null:
 		return null
 

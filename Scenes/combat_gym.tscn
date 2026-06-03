@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cujtno760tx2" path="res://Scripts/test_combat_gym.gd" id="1_nqkjc"]
 [ext_resource type="Script" uid="uid://d1rfmpj3ie3ip" path="res://Resources/Move.gd" id="2_1bv32"]
 [ext_resource type="PackedScene" uid="uid://vey4iwqmr78t" path="res://Scenes/battle manager/battle_arena.tscn" id="2_wnuto"]
+[ext_resource type="PackedScene" uid="uid://bqjrcn7hjvtor" path="res://Scenes/UI/EnemyHud/enemy_stats_panel.tscn" id="3_enemyhud"]
 [ext_resource type="PackedScene" uid="uid://bss2vlh54x5rb" path="res://Scenes/UI/skill_menu.tscn" id="3_skillmenu"]
 [ext_resource type="Script" uid="uid://du0mcmwag1pen" path="res://Resources/Stats.gd" id="4_1bv32"]
 [ext_resource type="Script" uid="uid://xyjeoprc8rta" path="res://Resources/ElementAffinityEntry.gd" id="4_60cw4"]
@@ -327,6 +328,7 @@ anchor_bottom = 1.0
 grow_horizontal = 0
 grow_vertical = 0
 script = ExtResource("1_nqkjc")
+move_button_scene = ExtResource("3_skillmenu")
 battle_manager = NodePath("Battle_arena")
 damage_label = NodePath("Battlelogs")
 damage_popup_container = NodePath("DamagePopupLayer")
@@ -338,6 +340,15 @@ enemy_party_stats_label = NodePath("EnemyParty/PartyCurrentStats")
 turn_manipulation_container = NodePath("TurnManipulator")
 turn_order_container = NodePath("TurnOrder")
 last_move_used_label = NodePath("LastUsedMove")
+
+[node name="DamagePopupLayer" type="Control" parent="." unique_id=2055511227]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="Battle_arena" parent="." unique_id=143384498 instance=ExtResource("2_wnuto")]
 max_active_players = 2
@@ -359,6 +370,18 @@ equipped_shoe = SubResource("Resource_v2qia")
 
 [node name="Slime" parent="Battle_arena/EnemyParty" parent_id_path=PackedInt32Array(143384498, 1938227301) index="0" unique_id=1094677972]
 skills_list = Array[ExtResource("2_1bv32")]([SubResource("Resource_8ow6m")])
+
+[node name="EnemyStatsPanel" parent="Battle_arena/EnemyParty/Slime" index="4" unique_id=1388621674 instance=ExtResource("3_enemyhud")]
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 171.0
+offset_top = 77.0
+offset_right = 171.0
+offset_bottom = 77.0
+grow_horizontal = 1
+grow_vertical = 1
+follow_target = false
 
 [node name="Slime2" parent="Battle_arena/EnemyParty" parent_id_path=PackedInt32Array(143384498, 1938227301) index="1" unique_id=540048331 instance=ExtResource("15_rperh")]
 stats = SubResource("Resource_hf1gq")
@@ -456,14 +479,6 @@ offset_left = 1188.0
 offset_top = 512.0
 offset_right = 1228.0
 offset_bottom = 552.0
-
-[node name="DamagePopupLayer" type="Control" parent="." unique_id=2055511227]
-anchors_preset = 0
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
 
 [editable path="Battle_arena"]
 [editable path="Battle_arena/PlayerParty/Hero"]

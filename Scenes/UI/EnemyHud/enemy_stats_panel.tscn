@@ -7,6 +7,33 @@
 [ext_resource type="LabelSettings" uid="uid://caoex6oxewdwv" path="res://Arts/UI/EnemyStatsBarHud/EnemyStatsNameSettings.tres" id="5_ynff2"]
 [ext_resource type="PackedScene" uid="uid://ufat5lxbhulb" path="res://Scenes/UI/affinity_panels/affinity_panels.tscn" id="6_yvmop"]
 [ext_resource type="PackedScene" uid="uid://bkrhrw7a1ipyy" path="res://Scenes/UI/icon_system/ui_icon_slot.tscn" id="7_nmeq5"]
+[ext_resource type="Texture2D" uid="uid://cg8bu25bo5wjw" path="res://Arts/UI/EnemyStatsBarHud/Buff.svg" id="7_ynff2"]
+[ext_resource type="Texture2D" uid="uid://bn2r1q6ndbm5x" path="res://Arts/UI/EnemyStatsBarHud/Debuff.svg" id="8_yvmop"]
+[ext_resource type="FontFile" uid="uid://dy4ruh0opke57" path="res://Arts/Fonts/Bangers/Bangers-Regular.ttf" id="9_3vcrh"]
+[ext_resource type="Script" uid="uid://dhjp352jpg5pm" path="res://Scripts/UI/EnemyHud/enemy_stats_panel.gd" id="10_enemyhud"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_w1unh"]
+line_spacing = 2.0
+font = ExtResource("9_3vcrh")
+font_size = 10
+font_color = Color(0.8980392, 0.78039217, 0.06666667, 1)
+outline_size = 2
+outline_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_j4423"]
+line_spacing = 2.0
+font = ExtResource("9_3vcrh")
+font_size = 10
+font_color = Color(0.039215688, 0.8392157, 0.6, 1)
+outline_size = 2
+outline_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_hwafa"]
+line_spacing = 2.0
+font = ExtResource("9_3vcrh")
+font_size = 10
+outline_size = 2
+outline_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
 
 [node name="EnemyStatsPanel" type="Control" unique_id=1776729931]
 layout_mode = 3
@@ -15,6 +42,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("10_enemyhud")
 
 [node name="PanelRoot" type="Control" parent="." unique_id=1209622514]
 layout_mode = 1
@@ -113,13 +141,167 @@ scale = Vector2(1.3846153, 1)
 color = Color(0.047058824, 0.21960784, 0.84313726, 1)
 polygon = PackedVector2Array(-68.611115, -8, 52.000004, -6, 45.5, 23, -74.38889, 20)
 
+[node name="StatusBar" type="HBoxContainer" parent="StatsPanelRoot/StatusBar" unique_id=406054612]
+offset_left = -54.888878
+offset_top = 4.0
+offset_right = 59.10112
+offset_bottom = 21.75
+size_flags_stretch_ratio = 0.0
+
+[node name="AtkStatRoot" type="Control" parent="StatsPanelRoot/StatusBar/StatusBar" unique_id=1990155613]
+custom_minimum_size = Vector2(18, 0)
+layout_mode = 2
+
+[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot" unique_id=216644536]
+layout_mode = 0
+offset_left = -4.333328
+offset_right = 149.7407
+offset_bottom = 186.66666
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("7_ynff2")
+expand_mode = 4
+
+[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot" unique_id=1150962710]
+layout_mode = 0
+offset_left = -2.8888834
+offset_right = 151.18515
+offset_bottom = 186.66666
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("8_yvmop")
+expand_mode = 4
+
+[node name="AtkMagicLabel" type="Label" parent="StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot" unique_id=2035937168]
+layout_mode = 0
+offset_left = 1.0
+offset_right = 15.0
+offset_bottom = 12.0
+text = "Atk"
+label_settings = SubResource("LabelSettings_w1unh")
+horizontal_alignment = 1
+autowrap_mode = 1
+
+[node name="AtkPhysicalLabel" type="Label" parent="StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot" unique_id=828991440]
+layout_mode = 0
+offset_left = 1.0
+offset_right = 15.0
+offset_bottom = 12.0
+text = "Atk"
+label_settings = SubResource("LabelSettings_j4423")
+horizontal_alignment = 1
+autowrap_mode = 1
+
+[node name="DefStatRoot" type="Control" parent="StatsPanelRoot/StatusBar/StatusBar" unique_id=74438898]
+custom_minimum_size = Vector2(18, 0)
+layout_mode = 2
+
+[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/DefStatRoot" unique_id=496423249]
+layout_mode = 0
+offset_left = -4.333328
+offset_right = 149.7407
+offset_bottom = 186.66666
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("7_ynff2")
+expand_mode = 4
+
+[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/DefStatRoot" unique_id=1347068018]
+layout_mode = 0
+offset_left = -2.8888834
+offset_right = 151.18515
+offset_bottom = 186.66666
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("8_yvmop")
+expand_mode = 4
+
+[node name="DefMagicLabel" type="Label" parent="StatsPanelRoot/StatusBar/StatusBar/DefStatRoot" unique_id=544084058]
+layout_mode = 0
+offset_left = 1.0
+offset_right = 15.0
+offset_bottom = 12.0
+text = "Def"
+label_settings = SubResource("LabelSettings_w1unh")
+horizontal_alignment = 1
+autowrap_mode = 1
+
+[node name="DefPhysicalLabel" type="Label" parent="StatsPanelRoot/StatusBar/StatusBar/DefStatRoot" unique_id=381094066]
+layout_mode = 0
+offset_left = 1.0
+offset_right = 15.0
+offset_bottom = 12.0
+text = "Def"
+label_settings = SubResource("LabelSettings_j4423")
+horizontal_alignment = 1
+autowrap_mode = 1
+
+[node name="SpeedStatRoot" type="Control" parent="StatsPanelRoot/StatusBar/StatusBar" unique_id=188167025]
+custom_minimum_size = Vector2(18, 0)
+layout_mode = 2
+
+[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/SpeedStatRoot" unique_id=1856329914]
+layout_mode = 0
+offset_left = -4.333328
+offset_right = 149.7407
+offset_bottom = 186.66666
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("7_ynff2")
+expand_mode = 4
+
+[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/SpeedStatRoot" unique_id=1719856490]
+layout_mode = 0
+offset_left = -2.8888834
+offset_right = 151.18515
+offset_bottom = 186.66666
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("8_yvmop")
+expand_mode = 4
+
+[node name="SpeedLabel" type="Label" parent="StatsPanelRoot/StatusBar/StatusBar/SpeedStatRoot" unique_id=1168145582]
+layout_mode = 0
+offset_left = 1.0
+offset_right = 15.0
+offset_bottom = 12.0
+text = "SPD"
+label_settings = SubResource("LabelSettings_hwafa")
+horizontal_alignment = 1
+autowrap_mode = 1
+
+[node name="DownStatRoot" type="Control" parent="StatsPanelRoot/StatusBar/StatusBar" unique_id=1635612639]
+custom_minimum_size = Vector2(18, 0)
+layout_mode = 2
+
+[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/DownStatRoot" unique_id=1492428198]
+layout_mode = 0
+offset_left = -4.333328
+offset_right = 149.7407
+offset_bottom = 186.66666
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("7_ynff2")
+expand_mode = 4
+
+[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/DownStatRoot" unique_id=1370976848]
+layout_mode = 0
+offset_left = -2.8888834
+offset_right = 151.18515
+offset_bottom = 186.66666
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("8_yvmop")
+expand_mode = 4
+
+[node name="DwnLabel" type="Label" parent="StatsPanelRoot/StatusBar/StatusBar/DownStatRoot" unique_id=810295269]
+layout_mode = 0
+offset_left = 1.0
+offset_right = 17.777765
+offset_bottom = 12.0
+text = "Dwn"
+label_settings = SubResource("LabelSettings_hwafa")
+horizontal_alignment = 1
+autowrap_mode = 1
+
 [node name="ElementalRoot" type="Control" parent="." unique_id=1396400736]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="PrimerIconSlot" type="Control" parent="ElementalRoot" unique_id=194149858]
-visible = false
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
@@ -134,7 +316,6 @@ rotation = -0.6894051
 scale = Vector2(1.54, 1.54)
 
 [node name="TriggerIconSlot" type="Control" parent="ElementalRoot" unique_id=1857538814]
-visible = false
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
