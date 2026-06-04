@@ -83,8 +83,9 @@ offset_right = 147.4313
 offset_bottom = 6.9277015
 theme_override_styles/background = ExtResource("1_kss7v")
 theme_override_styles/fill = ExtResource("2_nmeq5")
+step = 1.0
 page = 0.1
-value = 48.01
+value = 3.0
 exp_edit = true
 show_percentage = false
 
@@ -96,9 +97,9 @@ offset_right = 139.66547
 offset_bottom = 24.132
 theme_override_styles/background = ExtResource("3_vcy0h")
 theme_override_styles/fill = ExtResource("4_ogwhb")
+step = 1.0
 page = 0.1
-value = 54.36
-exp_edit = true
+value = 10.0
 show_percentage = false
 
 [node name="NameRoot" type="Control" parent="PanelRoot" unique_id=240757903]
@@ -143,7 +144,7 @@ z_index = -1
 position = Vector2(22, 9)
 scale = Vector2(1.3846153, 1)
 color = Color(0.047058824, 0.21960784, 0.84313726, 1)
-polygon = PackedVector2Array(-68.611115, -8, 52.000004, -6, 45.5, 23, -74.38889, 20)
+polygon = PackedVector2Array(-68.611115, -8, 23.486298, -6.472809, 33.564407, -6.3056946, 52.000004, -6, 45.5, 23, -74.38889, 20)
 
 [node name="StatusBar" type="HBoxContainer" parent="StatsPanelRoot/StatusBar" unique_id=406054612]
 offset_left = -54.888878
