@@ -10,6 +10,8 @@ class_name EnemyStatsPanel
 @export var screen_offset: Vector2 = Vector2(-96.0, -170.0)
 @export var show_active_stats_debug: bool = false
 
+# UI nodes, its should be same node structure as enemy_stats_panel.tscn
+
 @onready var hp_value_label: Label = $PanelRoot/NameRoot/Name
 @onready var hp_bar: ProgressBar = $PanelRoot/StatusBar/BarsRoot/HpBar
 @onready var down_bar: ProgressBar = $PanelRoot/StatusBar/BarsRoot/DownBar
@@ -17,8 +19,30 @@ class_name EnemyStatsPanel
 @onready var active_stats_root: Control = $StatsPanelRoot
 @onready var primer_icon_slot: UIIconSlot = $ElementalRoot/PrimerIconSlot/UIIconSlot
 @onready var trigger_icon_slot: UIIconSlot = $ElementalRoot/TriggerIconSlot/UIIconSlot
-@onready var buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/BuffIcon
-@onready var debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/DebuffIcon
+# @onready var buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/BuffIcon
+# @onready var debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/DebuffIcon
+# @onready var down_label: Label = $StatsPanelRoot/StatusBar/StatusBar/DownStatRoot/DwnLabel
+
+# atk
+@onready var atk_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/BuffIcon
+@onready var atk_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/DebuffIcon
+@onready var m_atk_label: Label = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/AtkMagicLabel
+@onready var p_atk_label: Label = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/AtkPhysicalLabel
+
+# def
+@onready var def_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/DefStatRoot/BuffIcon
+@onready var def_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/DefStatRoot/DebuffIcon
+@onready var m_def_label: Label = $StatsPanelRoot/StatusBar/StatusBar/DefStatRoot/DefMagicLabel
+@onready var p_def_label: Label = $StatsPanelRoot/StatusBar/StatusBar/DefStatRoot/DefPhysicalLabel
+
+# spd
+@onready var spd_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/SpdStatRoot/BuffIcon
+@onready var spd_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/SpdStatRoot/DebuffIcon
+@onready var spd_label: Label = $StatsPanelRoot/StatusBar/StatusBar/SpdStatRoot/SpeedLabel
+
+# down
+@onready var down_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/DownStatRoot/BuffIcon
+@onready var down_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/DownStatRoot/DebuffIcon
 @onready var down_label: Label = $StatsPanelRoot/StatusBar/StatusBar/DownStatRoot/DwnLabel
 
 var _bound_battler: Battler = null
@@ -103,12 +127,44 @@ func _unbind_battler() -> void:
 		primer_icon_slot.set_style(null)
 	if trigger_icon_slot != null:
 		trigger_icon_slot.set_style(null)
-	if buff_icon_rect != null:
-		buff_icon_rect.visible = false
-	if debuff_icon_rect != null:
-		debuff_icon_rect.visible = false
+	# if buff_icon_rect != null:
+	# 	buff_icon_rect.visible = false
+	# if debuff_icon_rect != null:
+	# 	debuff_icon_rect.visible = false
+	if atk_buff_icon_rect != null:
+		atk_buff_icon_rect.visible = false
+	if atk_debuff_icon_rect != null:
+		atk_debuff_icon_rect.visible = false
+	if m_atk_label != null:
+		m_atk_label.text = ""
+	if p_atk_label != null:
+		p_atk_label.text = ""
+	if def_buff_icon_rect != null:
+		def_buff_icon_rect.visible = false
+	if def_debuff_icon_rect != null:
+		def_debuff_icon_rect.visible = false
+	if m_def_label != null:
+		m_def_label.text = ""
+	if p_def_label != null:
+		p_def_label.text = ""
+	if spd_buff_icon_rect != null:
+		spd_buff_icon_rect.visible = false
+	if spd_debuff_icon_rect != null:
+		spd_debuff_icon_rect.visible = false
+	if spd_label != null:
+		spd_label.text = ""
+	if down_buff_icon_rect != null:
+		down_buff_icon_rect.visible = false
+	if down_debuff_icon_rect != null:
+		down_debuff_icon_rect.visible = false
 	if down_label != null:
 		down_label.text = ""
+
+	# Clear affinity panels when unbound
+	# if primer_icon_slot != null:
+	# 	primer_icon_slot.set_style(null)
+	# if trigger_icon_slot != null:
+	# 	trigger_icon_slot.set_style(null)
 
 
 func _refresh_panel() -> void:
@@ -166,10 +222,36 @@ func _update_elemental_and_status_icons() -> void:
 			primer_icon_slot.set_style(null)
 		if trigger_icon_slot != null:
 			trigger_icon_slot.set_style(null)
-		if buff_icon_rect != null:
-			buff_icon_rect.visible = false
-		if debuff_icon_rect != null:
-			debuff_icon_rect.visible = false
+		# if buff_icon_rect != null:
+		# 	buff_icon_rect.visible = false
+		# if debuff_icon_rect != null:
+		# 	debuff_icon_rect.visible = false
+		if atk_buff_icon_rect != null:
+			atk_buff_icon_rect.visible = false
+		if atk_debuff_icon_rect != null:
+			atk_debuff_icon_rect.visible = false
+		if m_atk_label != null:
+			m_atk_label.text = ""
+		if p_atk_label != null:
+			p_atk_label.text = ""
+		if def_buff_icon_rect != null:
+			def_buff_icon_rect.visible = false
+		if def_debuff_icon_rect != null:
+			def_debuff_icon_rect.visible = false
+		if m_def_label != null:
+			m_def_label.text = ""
+		if p_def_label != null:
+			p_def_label.text = ""
+		if spd_buff_icon_rect != null:
+			spd_buff_icon_rect.visible = false
+		if spd_debuff_icon_rect != null:
+			spd_debuff_icon_rect.visible = false
+		if spd_label != null:
+			spd_label.text = ""
+		if down_buff_icon_rect != null:
+			down_buff_icon_rect.visible = false
+		if down_debuff_icon_rect != null:
+			down_debuff_icon_rect.visible = false
 		if down_label != null:
 			down_label.text = ""
 		return
@@ -192,26 +274,26 @@ func _update_elemental_and_status_icons() -> void:
 	# Buff / Debuff icons (show first of each type)
 	var has_buff: bool = false
 	var has_debuff: bool = false
-	if _bound_battler.status_manager != null:
-		var statuses: Array = _bound_battler.status_manager.get_active_status()
-		for status in statuses:
-			if not has_buff and status.effect_type == StatusEffect.Type.BUFF:
-				if buff_icon_rect != null:
-					buff_icon_rect.texture = UIIconLibrary.create_status_style(status).icon_texture
-					buff_icon_rect.visible = true
-				has_buff = true
-			if not has_debuff and status.effect_type == StatusEffect.Type.DEBUFF:
-				if debuff_icon_rect != null:
-					debuff_icon_rect.texture = UIIconLibrary.create_status_style(status).icon_texture
-					debuff_icon_rect.visible = true
-				has_debuff = true
-			if has_buff and has_debuff:
-				break
+	# if _bound_battler.status_manager != null:
+	# 	var statuses: Array = _bound_battler.status_manager.get_active_status()
+	# 	for status in statuses:
+	# 		if not has_buff and status.effect_type == StatusEffect.Type.BUFF:
+	# 			if buff_icon_rect != null:
+	# 				buff_icon_rect.texture = UIIconLibrary.create_status_style(status).icon_texture
+	# 				buff_icon_rect.visible = true
+	# 			has_buff = true
+	# 		if not has_debuff and status.effect_type == StatusEffect.Type.DEBUFF:
+	# 			if debuff_icon_rect != null:
+	# 				debuff_icon_rect.texture = UIIconLibrary.create_status_style(status).icon_texture
+	# 				debuff_icon_rect.visible = true
+	# 			has_debuff = true
+	# 		if has_buff and has_debuff:
+	# 			break
 
-	if not has_buff and buff_icon_rect != null:
-		buff_icon_rect.visible = false
-	if not has_debuff and debuff_icon_rect != null:
-		debuff_icon_rect.visible = false
+	# if not has_buff and buff_icon_rect != null:
+	# 	buff_icon_rect.visible = false
+	# if not has_debuff and debuff_icon_rect != null:
+	# 	debuff_icon_rect.visible = false
 
 	# Down meter label
 	if down_label != null and _bound_battler.down_manager != null:

@@ -77,9 +77,8 @@ offset_right = 214.88837
 offset_bottom = 6.9276986
 theme_override_styles/background = ExtResource("1_kss7v")
 theme_override_styles/fill = ExtResource("2_nmeq5")
-step = 1.0
 page = 0.1
-value = 3.0
+value = 48.01
 exp_edit = true
 show_percentage = false
 
@@ -91,9 +90,9 @@ offset_right = 199.83461
 offset_bottom = 24.132
 theme_override_styles/background = ExtResource("3_vcy0h")
 theme_override_styles/fill = ExtResource("4_ogwhb")
-step = 1.0
 page = 0.1
-value = 10.0
+value = 54.36
+exp_edit = true
 show_percentage = false
 
 [node name="StatusBar" type="Polygon2D" parent="PanelRoot" unique_id=1223326672]
@@ -141,21 +140,12 @@ anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-<<<<<<< HEAD
-[node name="StatusBar" type="Polygon2D" parent="StatsPanelRoot" unique_id=355393551]
-z_index = -1
-position = Vector2(22, 9)
-scale = Vector2(1.3846153, 1)
-color = Color(0.047058824, 0.21960784, 0.84313726, 1)
-polygon = PackedVector2Array(-68.611115, -8, 23.486298, -6.472809, 33.564407, -6.3056946, 52.000004, -6, 45.5, 23, -74.38889, 20)
-=======
 [node name="StatusBarRoots" type="Control" parent="StatsPanelRoot" unique_id=38396316]
 anchors_preset = 0
 offset_left = 15.0
 offset_top = 9.0
 offset_right = 60.055557
 offset_bottom = 49.0
->>>>>>> c0acaec (revising Enemy panel hud)
 
 [node name="StatusBar" type="HBoxContainer" parent="StatsPanelRoot/StatusBarRoots" unique_id=406054612]
 layout_mode = 0
