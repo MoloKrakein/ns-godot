@@ -54,33 +54,27 @@ anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="StatusBar" type="Polygon2D" parent="PanelRoot" unique_id=1223326672]
-position = Vector2(27.30769, 0)
-scale = Vector2(1.3846153, 1)
-color = Color(0, 0, 0, 1)
-polygon = PackedVector2Array(-64, -27, 72, -23, 67, 13, -71, 10)
-
-[node name="BarsRoot" type="Control" parent="PanelRoot/StatusBar" unique_id=1452637940]
-layout_mode = 3
+[node name="BarsRoot" type="Control" parent="PanelRoot" unique_id=1452637940]
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -24.0
-offset_top = -9.0
-offset_right = 24.0
-offset_bottom = -1.0
+offset_left = -25.923077
+offset_top = -29.0
+offset_right = 22.076923
+offset_bottom = -21.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(0.465, 0.465)
 
-[node name="HpBar" type="ProgressBar" parent="PanelRoot/StatusBar/BarsRoot" unique_id=376640]
+[node name="HpBar" type="ProgressBar" parent="PanelRoot/BarsRoot" unique_id=376640]
 layout_mode = 0
-offset_left = -77.111534
-offset_top = -4.3010736
-offset_right = 147.4313
-offset_bottom = 6.9277015
+offset_left = -92.63854
+offset_top = -4.3010755
+offset_right = 214.88837
+offset_bottom = 6.9276986
 theme_override_styles/background = ExtResource("1_kss7v")
 theme_override_styles/fill = ExtResource("2_nmeq5")
 step = 1.0
@@ -89,11 +83,11 @@ value = 3.0
 exp_edit = true
 show_percentage = false
 
-[node name="DownBar" type="ProgressBar" parent="PanelRoot/StatusBar/BarsRoot" unique_id=729696065]
+[node name="DownBar" type="ProgressBar" parent="PanelRoot/BarsRoot" unique_id=729696065]
 layout_mode = 0
-offset_left = -85.54362
+offset_left = -107.69231
 offset_top = 12.903226
-offset_right = 139.66547
+offset_right = 199.83461
 offset_bottom = 24.132
 theme_override_styles/background = ExtResource("3_vcy0h")
 theme_override_styles/fill = ExtResource("4_ogwhb")
@@ -101,6 +95,14 @@ step = 1.0
 page = 0.1
 value = 10.0
 show_percentage = false
+
+[node name="StatusBar" type="Polygon2D" parent="PanelRoot" unique_id=1223326672]
+z_index = -1
+position = Vector2(27.30769, 0)
+scale = Vector2(1.3846153, 1)
+color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-64, -27, 72, -23, 67, 13, -71, 10)
+metadata/_edit_lock_ = true
 
 [node name="NameRoot" type="Control" parent="PanelRoot" unique_id=240757903]
 anchors_preset = 0
@@ -139,43 +141,52 @@ anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
+<<<<<<< HEAD
 [node name="StatusBar" type="Polygon2D" parent="StatsPanelRoot" unique_id=355393551]
 z_index = -1
 position = Vector2(22, 9)
 scale = Vector2(1.3846153, 1)
 color = Color(0.047058824, 0.21960784, 0.84313726, 1)
 polygon = PackedVector2Array(-68.611115, -8, 23.486298, -6.472809, 33.564407, -6.3056946, 52.000004, -6, 45.5, 23, -74.38889, 20)
+=======
+[node name="StatusBarRoots" type="Control" parent="StatsPanelRoot" unique_id=38396316]
+anchors_preset = 0
+offset_left = 15.0
+offset_top = 9.0
+offset_right = 60.055557
+offset_bottom = 49.0
+>>>>>>> c0acaec (revising Enemy panel hud)
 
-[node name="StatusBar" type="HBoxContainer" parent="StatsPanelRoot/StatusBar" unique_id=406054612]
-offset_left = -54.888878
+[node name="StatusBar" type="HBoxContainer" parent="StatsPanelRoot/StatusBarRoots" unique_id=406054612]
+layout_mode = 0
+offset_left = -68.88887
 offset_top = 4.0
-offset_right = 59.10112
+offset_right = 45.101128
 offset_bottom = 21.75
+scale = Vector2(0.998, 0.998)
 size_flags_stretch_ratio = 0.0
 
-[node name="AtkStatRoot" type="Control" parent="StatsPanelRoot/StatusBar/StatusBar" unique_id=1990155613]
-custom_minimum_size = Vector2(18, 0)
+[node name="AtkStatRoot" type="Control" parent="StatsPanelRoot/StatusBarRoots/StatusBar" unique_id=1990155613]
+custom_minimum_size = Vector2(24.81, 0)
 layout_mode = 2
 
-[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot" unique_id=216644536]
+[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/AtkStatRoot" unique_id=216644536]
 layout_mode = 0
-offset_left = -4.333328
-offset_right = 149.7407
-offset_bottom = 186.66666
+offset_left = -7.111125
+offset_right = 184.0002
+offset_bottom = 191.11133
 scale = Vector2(0.075, 0.075)
 texture = ExtResource("7_ynff2")
-expand_mode = 4
 
-[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot" unique_id=1150962710]
+[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/AtkStatRoot" unique_id=1150962710]
 layout_mode = 0
-offset_left = -2.8888834
-offset_right = 151.18515
+offset_left = -6.8888855
+offset_right = 203.11111
 offset_bottom = 186.66666
 scale = Vector2(0.075, 0.075)
 texture = ExtResource("8_yvmop")
-expand_mode = 4
 
-[node name="AtkMagicLabel" type="Label" parent="StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot" unique_id=2035937168]
+[node name="AtkMagicLabel" type="Label" parent="StatsPanelRoot/StatusBarRoots/StatusBar/AtkStatRoot" unique_id=2035937168]
 layout_mode = 0
 offset_left = 1.0
 offset_right = 15.0
@@ -185,7 +196,7 @@ label_settings = SubResource("LabelSettings_w1unh")
 horizontal_alignment = 1
 autowrap_mode = 1
 
-[node name="AtkPhysicalLabel" type="Label" parent="StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot" unique_id=828991440]
+[node name="AtkPhysicalLabel" type="Label" parent="StatsPanelRoot/StatusBarRoots/StatusBar/AtkStatRoot" unique_id=828991440]
 layout_mode = 0
 offset_left = 1.0
 offset_right = 15.0
@@ -195,29 +206,27 @@ label_settings = SubResource("LabelSettings_j4423")
 horizontal_alignment = 1
 autowrap_mode = 1
 
-[node name="DefStatRoot" type="Control" parent="StatsPanelRoot/StatusBar/StatusBar" unique_id=74438898]
-custom_minimum_size = Vector2(18, 0)
+[node name="DefStatRoot" type="Control" parent="StatsPanelRoot/StatusBarRoots/StatusBar" unique_id=74438898]
+custom_minimum_size = Vector2(24.81, 0)
 layout_mode = 2
 
-[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/DefStatRoot" unique_id=496423249]
+[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/DefStatRoot" unique_id=496423249]
 layout_mode = 0
-offset_left = -4.333328
-offset_right = 149.7407
+offset_left = -7.3333282
+offset_right = 202.66667
 offset_bottom = 186.66666
 scale = Vector2(0.075, 0.075)
 texture = ExtResource("7_ynff2")
-expand_mode = 4
 
-[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/DefStatRoot" unique_id=1347068018]
+[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/DefStatRoot" unique_id=1347068018]
 layout_mode = 0
-offset_left = -2.8888834
-offset_right = 151.18515
+offset_left = -5.8888855
+offset_right = 204.11111
 offset_bottom = 186.66666
 scale = Vector2(0.075, 0.075)
 texture = ExtResource("8_yvmop")
-expand_mode = 4
 
-[node name="DefMagicLabel" type="Label" parent="StatsPanelRoot/StatusBar/StatusBar/DefStatRoot" unique_id=544084058]
+[node name="DefMagicLabel" type="Label" parent="StatsPanelRoot/StatusBarRoots/StatusBar/DefStatRoot" unique_id=544084058]
 layout_mode = 0
 offset_left = 1.0
 offset_right = 15.0
@@ -227,7 +236,7 @@ label_settings = SubResource("LabelSettings_w1unh")
 horizontal_alignment = 1
 autowrap_mode = 1
 
-[node name="DefPhysicalLabel" type="Label" parent="StatsPanelRoot/StatusBar/StatusBar/DefStatRoot" unique_id=381094066]
+[node name="DefPhysicalLabel" type="Label" parent="StatsPanelRoot/StatusBarRoots/StatusBar/DefStatRoot" unique_id=381094066]
 layout_mode = 0
 offset_left = 1.0
 offset_right = 15.0
@@ -237,29 +246,27 @@ label_settings = SubResource("LabelSettings_j4423")
 horizontal_alignment = 1
 autowrap_mode = 1
 
-[node name="SpeedStatRoot" type="Control" parent="StatsPanelRoot/StatusBar/StatusBar" unique_id=188167025]
-custom_minimum_size = Vector2(18, 0)
+[node name="SpeedStatRoot" type="Control" parent="StatsPanelRoot/StatusBarRoots/StatusBar" unique_id=188167025]
+custom_minimum_size = Vector2(24.81, 0)
 layout_mode = 2
 
-[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/SpeedStatRoot" unique_id=1856329914]
+[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/SpeedStatRoot" unique_id=1856329914]
 layout_mode = 0
-offset_left = -4.333328
-offset_right = 149.7407
+offset_left = -9.333332
+offset_right = 200.66667
 offset_bottom = 186.66666
 scale = Vector2(0.075, 0.075)
 texture = ExtResource("7_ynff2")
-expand_mode = 4
 
-[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/SpeedStatRoot" unique_id=1719856490]
+[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/SpeedStatRoot" unique_id=1719856490]
 layout_mode = 0
-offset_left = -2.8888834
-offset_right = 151.18515
+offset_left = -7.8888855
+offset_right = 202.11111
 offset_bottom = 186.66666
 scale = Vector2(0.075, 0.075)
 texture = ExtResource("8_yvmop")
-expand_mode = 4
 
-[node name="SpeedLabel" type="Label" parent="StatsPanelRoot/StatusBar/StatusBar/SpeedStatRoot" unique_id=1168145582]
+[node name="SpeedLabel" type="Label" parent="StatsPanelRoot/StatusBarRoots/StatusBar/SpeedStatRoot" unique_id=1168145582]
 layout_mode = 0
 offset_left = 1.0
 offset_right = 15.0
@@ -269,29 +276,27 @@ label_settings = SubResource("LabelSettings_hwafa")
 horizontal_alignment = 1
 autowrap_mode = 1
 
-[node name="DownStatRoot" type="Control" parent="StatsPanelRoot/StatusBar/StatusBar" unique_id=1635612639]
-custom_minimum_size = Vector2(18, 0)
+[node name="DownStatRoot" type="Control" parent="StatsPanelRoot/StatusBarRoots/StatusBar" unique_id=1635612639]
+custom_minimum_size = Vector2(24.81, 0)
 layout_mode = 2
 
-[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/DownStatRoot" unique_id=1492428198]
+[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/DownStatRoot" unique_id=1492428198]
 layout_mode = 0
-offset_left = -4.333328
-offset_right = 149.7407
+offset_left = -9.333313
+offset_right = 200.66669
 offset_bottom = 186.66666
 scale = Vector2(0.075, 0.075)
 texture = ExtResource("7_ynff2")
-expand_mode = 4
 
-[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBar/StatusBar/DownStatRoot" unique_id=1370976848]
+[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/DownStatRoot" unique_id=1370976848]
 layout_mode = 0
-offset_left = -2.8888834
-offset_right = 151.18515
+offset_left = -7.8888855
+offset_right = 202.11111
 offset_bottom = 186.66666
 scale = Vector2(0.075, 0.075)
 texture = ExtResource("8_yvmop")
-expand_mode = 4
 
-[node name="DwnLabel" type="Label" parent="StatsPanelRoot/StatusBar/StatusBar/DownStatRoot" unique_id=810295269]
+[node name="DwnLabel" type="Label" parent="StatsPanelRoot/StatusBarRoots/StatusBar/DownStatRoot" unique_id=810295269]
 layout_mode = 0
 offset_left = 1.0
 offset_right = 17.777765
@@ -300,6 +305,14 @@ text = "Dwn"
 label_settings = SubResource("LabelSettings_hwafa")
 horizontal_alignment = 1
 autowrap_mode = 1
+
+[node name="StatusBar" type="Polygon2D" parent="StatsPanelRoot" unique_id=355393551]
+z_index = -2
+position = Vector2(23, 9)
+scale = Vector2(1.3846153, 1)
+color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+polygon = PackedVector2Array(-68.611115, -8, 52.000004, -6, 45.5, 23, -74.38889, 20)
+metadata/_edit_lock_ = true
 
 [node name="ElementalRoot" type="Control" parent="." unique_id=1396400736]
 anchors_preset = 0
