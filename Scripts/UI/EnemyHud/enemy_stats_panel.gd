@@ -12,38 +12,47 @@ class_name EnemyStatsPanel
 
 # UI nodes, its should be same node structure as enemy_stats_panel.tscn
 
+# Core UI nodes
 @onready var hp_value_label: Label = $PanelRoot/NameRoot/Name
-@onready var hp_bar: ProgressBar = $PanelRoot/StatusBar/BarsRoot/HpBar
-@onready var down_bar: ProgressBar = $PanelRoot/StatusBar/BarsRoot/DownBar
+@onready var hp_bar: ProgressBar = $PanelRoot/BarsRoot/HpBar
+@onready var down_bar: ProgressBar = $PanelRoot/BarsRoot/DownBar
 @onready var affinity_panels: AffinityPanels = $AffinityPanelRoot/AffinityPanels
 @onready var active_stats_root: Control = $StatsPanelRoot
+
+
+
+# Stat bar main Group nodes
+@onready var status_bar_container: HBoxContainer = $StatsPanelRoot/StatusBarRoots/StatusBar
+@onready var status_bar_bg: Polygon2D = $StatsPanelRoot/StatusBar
+
+# Elemental affinity icons
 @onready var primer_icon_slot: UIIconSlot = $ElementalRoot/PrimerIconSlot/UIIconSlot
 @onready var trigger_icon_slot: UIIconSlot = $ElementalRoot/TriggerIconSlot/UIIconSlot
-# @onready var buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/BuffIcon
-# @onready var debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/DebuffIcon
-# @onready var down_label: Label = $StatsPanelRoot/StatusBar/StatusBar/DownStatRoot/DwnLabel
 
 # atk
-@onready var atk_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/BuffIcon
-@onready var atk_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/DebuffIcon
-@onready var m_atk_label: Label = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/AtkMagicLabel
-@onready var p_atk_label: Label = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/AtkPhysicalLabel
+@onready var atk_stat_root: Control = $StatsPanelRoot/StatusBarRoots/StatusBar/AtkStatRoot
+@onready var atk_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBarRoots/StatusBar/AtkStatRoot/BuffIcon
+@onready var atk_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBarRoots/StatusBar/AtkStatRoot/DebuffIcon
+@onready var m_atk_label: Label = $StatsPanelRoot/StatusBarRoots/StatusBar/AtkStatRoot/AtkMagicLabel
+@onready var p_atk_label: Label = $StatsPanelRoot/StatusBarRoots/StatusBar/AtkStatRoot/AtkPhysicalLabel
 
 # def
-@onready var def_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/DefStatRoot/BuffIcon
-@onready var def_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/DefStatRoot/DebuffIcon
-@onready var m_def_label: Label = $StatsPanelRoot/StatusBar/StatusBar/DefStatRoot/DefMagicLabel
-@onready var p_def_label: Label = $StatsPanelRoot/StatusBar/StatusBar/DefStatRoot/DefPhysicalLabel
+@onready var def_stat_root: Control = $StatsPanelRoot/StatusBarRoots/StatusBar/DefStatRoot
+@onready var def_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBarRoots/StatusBar/DefStatRoot/BuffIcon
+@onready var def_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBarRoots/StatusBar/DefStatRoot/DebuffIcon
+@onready var m_def_label: Label = $StatsPanelRoot/StatusBarRoots/StatusBar/DefStatRoot/DefMagicLabel
+@onready var p_def_label: Label = $StatsPanelRoot/StatusBarRoots/StatusBar/DefStatRoot/DefPhysicalLabel
 
 # spd
-@onready var spd_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/SpdStatRoot/BuffIcon
-@onready var spd_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/SpdStatRoot/DebuffIcon
-@onready var spd_label: Label = $StatsPanelRoot/StatusBar/StatusBar/SpdStatRoot/SpeedLabel
-
+@onready var speed_stat_root: Control = $StatsPanelRoot/StatusBarRoots/StatusBar/SpeedStatRoot
+@onready var spd_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBarRoots/StatusBar/SpeedStatRoot/BuffIcon
+@onready var spd_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBarRoots/StatusBar/SpeedStatRoot/DebuffIcon
+@onready var spd_label: Label = $StatsPanelRoot/StatusBarRoots/StatusBar/SpeedStatRoot/SpeedLabel
 # down
-@onready var down_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/DownStatRoot/BuffIcon
-@onready var down_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/DownStatRoot/DebuffIcon
-@onready var down_label: Label = $StatsPanelRoot/StatusBar/StatusBar/DownStatRoot/DwnLabel
+@onready var down_stat_root: Control = $StatsPanelRoot/StatusBarRoots/StatusBar/DownStatRoot
+@onready var down_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBarRoots/StatusBar/DownStatRoot/BuffIcon
+@onready var down_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBarRoots/StatusBar/DownStatRoot/DebuffIcon
+@onready var down_label: Label = $StatsPanelRoot/StatusBarRoots/StatusBar/DownStatRoot/DwnLabel
 
 var _bound_battler: Battler = null
 
@@ -74,8 +83,6 @@ func bind_battler(new_battler: Battler) -> void:
 	if _bound_battler != null:
 		if not _bound_battler.health_changed.is_connected(_on_battler_health_changed):
 			_bound_battler.health_changed.connect(_on_battler_health_changed)
-		# if not _bound_battler.mana_changed.is_connected(_on_battler_mana_changed):
-			# removed: use DownManager signals instead of mana_changed
 		if not _bound_battler.ui_state_changed.is_connected(_on_battler_ui_state_changed):
 			_bound_battler.ui_state_changed.connect(_on_battler_ui_state_changed)
 		if not _bound_battler.downed.is_connected(_on_battler_downed):
@@ -94,7 +101,6 @@ func bind_battler(new_battler: Battler) -> void:
 		if _bound_battler.down_manager != null:
 			if not _bound_battler.down_manager.down_meter_updated.is_connected(_on_down_meter_updated):
 				_bound_battler.down_manager.down_meter_updated.connect(_on_down_meter_updated)
-			# initialize down label immediately
 			_on_down_meter_updated(_bound_battler.down_manager.current_meter, _bound_battler.down_manager.max_meter)
 
 	# Defer refresh to avoid race where the Battler's onready children
@@ -111,7 +117,6 @@ func _unbind_battler() -> void:
 
 	if _bound_battler.health_changed.is_connected(_on_battler_health_changed):
 		_bound_battler.health_changed.disconnect(_on_battler_health_changed)
-	# removed: disconnect mana_changed (we use DownManager signals)
 	if _bound_battler.ui_state_changed.is_connected(_on_battler_ui_state_changed):
 		_bound_battler.ui_state_changed.disconnect(_on_battler_ui_state_changed)
 	if _bound_battler.downed.is_connected(_on_battler_downed):
@@ -121,50 +126,13 @@ func _unbind_battler() -> void:
 		affinity_panels.battler = null
 
 	_bound_battler = null
+	_clear_ui_elements()
 
-	# Clear icons when unbound
-	if primer_icon_slot != null:
-		primer_icon_slot.set_style(null)
-	if trigger_icon_slot != null:
-		trigger_icon_slot.set_style(null)
-	# if buff_icon_rect != null:
-	# 	buff_icon_rect.visible = false
-	# if debuff_icon_rect != null:
-	# 	debuff_icon_rect.visible = false
-	if atk_buff_icon_rect != null:
-		atk_buff_icon_rect.visible = false
-	if atk_debuff_icon_rect != null:
-		atk_debuff_icon_rect.visible = false
-	if m_atk_label != null:
-		m_atk_label.text = ""
-	if p_atk_label != null:
-		p_atk_label.text = ""
-	if def_buff_icon_rect != null:
-		def_buff_icon_rect.visible = false
-	if def_debuff_icon_rect != null:
-		def_debuff_icon_rect.visible = false
-	if m_def_label != null:
-		m_def_label.text = ""
-	if p_def_label != null:
-		p_def_label.text = ""
-	if spd_buff_icon_rect != null:
-		spd_buff_icon_rect.visible = false
-	if spd_debuff_icon_rect != null:
-		spd_debuff_icon_rect.visible = false
-	if spd_label != null:
-		spd_label.text = ""
-	if down_buff_icon_rect != null:
-		down_buff_icon_rect.visible = false
-	if down_debuff_icon_rect != null:
-		down_debuff_icon_rect.visible = false
-	if down_label != null:
-		down_label.text = ""
-
-	# Clear affinity panels when unbound
-	# if primer_icon_slot != null:
-	# 	primer_icon_slot.set_style(null)
-	# if trigger_icon_slot != null:
-	# 	trigger_icon_slot.set_style(null)
+func _clear_ui_elements() -> void:
+	if primer_icon_slot != null: primer_icon_slot.set_style(null)
+	if trigger_icon_slot != null: trigger_icon_slot.set_style(null)
+	if status_bar_container != null: status_bar_container.visible = false
+	if status_bar_bg != null: status_bar_bg.visible = false
 
 
 func _refresh_panel() -> void:
@@ -193,120 +161,133 @@ func _refresh_panel() -> void:
 		position = _bound_battler.get_global_transform_with_canvas().origin + screen_offset
 
 
-func _on_battler_health_changed(_new_hp: int) -> void:
-	_refresh_panel()
-
+	
+func _process(_delta: float) -> void:
+	if not follow_target or _bound_battler == null or not is_instance_valid(_bound_battler):
+		return
+	position = _bound_battler.get_global_transform_with_canvas().origin + screen_offset
 
 # mana_changed handler removed — down meter updates use DownManager signals
 
 
-func _on_battler_ui_state_changed() -> void:
+
+
+func _update_elemental_and_status_icons() -> void:
+	if _bound_battler == null or not is_instance_valid(_bound_battler) or _bound_battler.stats_manager == null:
+		_clear_ui_elements()
+		return
+
+	var active_reaction = _bound_battler.status_manager.active_reactions
+	
+	if active_reaction != null:
+		# Chain Reacted! Force both badges to stay active simultaneously
+		if primer_icon_slot != null:
+			var p_elem = active_reaction.reaction_primer
+			if p_elem == 0 and active_reaction.reaction_recipes.size() > 0:
+				p_elem = active_reaction.reaction_recipes[0].x # Read recipe source element fallback
+			primer_icon_slot.set_style(UIIconLibrary.create_element_style(p_elem))
+			primer_icon_slot.visible = true
+			
+		if trigger_icon_slot != null:
+			trigger_icon_slot.set_style(UIIconLibrary.create_reaction_style(active_reaction.id))
+			trigger_icon_slot.visible = true
+	else:
+		# Standalone state: Update Primer normally, hide empty trigger slot
+		if primer_icon_slot != null:
+			if _bound_battler.elemental_primer != GlobalData.Element.NEUTRAL:
+				primer_icon_slot.set_style(UIIconLibrary.create_element_style(_bound_battler.elemental_primer))
+				primer_icon_slot.visible = true
+			else:
+				primer_icon_slot.set_style(null)
+				primer_icon_slot.visible = false
+				
+		if trigger_icon_slot != null:
+			trigger_icon_slot.set_style(null)
+			trigger_icon_slot.visible = false
+
+	var sm = _bound_battler.status_manager
+	var str_mult = sm.get_stats_multiplier("strength")
+	var mag_mult = sm.get_stats_multiplier("magic")
+	var def_mult = sm.get_stats_multiplier("defense")
+	var spd_mult = sm.get_stats_multiplier("speed")
+	var dwn_mult = sm.get_down_meter_fill_multiplier()
+	var has_zero_def = sm.has_zero_defense()
+
+	# Rule 1: If completely clean slate, hide entire container block & poly background
+	var any_modified = (str_mult != 1.0 or mag_mult != 1.0 or def_mult != 1.0 or has_zero_def or spd_mult != 1.0 or dwn_mult != 1.0)
+	status_bar_container.visible = any_modified
+	if status_bar_bg != null:
+		status_bar_bg.visible = any_modified
+
+	if not any_modified:
+		return
+
+	# --- 1. ATK STAT HOOKS ---
+	var phys_atk_changed = (str_mult != 1.0)
+	var mag_atk_changed = (mag_mult != 1.0)
+	# atk_stat_root.visible = (phys_atk_changed or mag_atk_changed)
+
+	
+	if atk_stat_root.visible:
+		# Check direction for textures
+		var is_atk_buff = (str_mult > 1.0 or mag_mult > 1.0)
+		atk_buff_icon_rect.visible = is_atk_buff
+		atk_debuff_icon_rect.visible = not is_atk_buff
+		
+		# Conditional presentation rule for attack types
+		if phys_atk_changed and mag_atk_changed:
+			m_atk_label.visible = true  # "Flash" / prioritize magic label
+			p_atk_label.visible = false
+		elif mag_atk_changed:
+			m_atk_label.visible = true
+			p_atk_label.visible = false
+		else:
+			m_atk_label.visible = false
+			p_atk_label.visible = true
+
+	# --- 2. DEF STAT HOOKS ---
+	def_stat_root.visible = (def_mult != 1.0 or has_zero_def)
+	if def_stat_root.visible:
+		var is_def_buff = (def_mult > 1.0 and not has_zero_def)
+		def_buff_icon_rect.visible = is_def_buff
+		def_debuff_icon_rect.visible = not is_def_buff
+		
+		# Symmetrical engine modifications default to magic label prioritisation
+		m_def_label.visible = true
+		p_def_label.visible = false
+
+	# --- 3. SPEED STAT HOOKS ---
+	speed_stat_root.visible = (spd_mult != 1.0)
+	if speed_stat_root.visible:
+		var is_spd_buff = (spd_mult > 1.0)
+		spd_buff_icon_rect.visible = is_spd_buff
+		spd_debuff_icon_rect.visible = not is_spd_buff
+
+	# --- 4. DOWN MODIFIER HOOKS ---
+	down_stat_root.visible = (dwn_mult != 1.0)
+	if down_stat_root.visible:
+		# Higher value means enemy vulnerability accelerates (Debuff icon)
+		var is_dwn_debuff = (dwn_mult > 1.0)
+		down_buff_icon_rect.visible = not is_dwn_debuff
+		down_debuff_icon_rect.visible = is_dwn_debuff
+
+
+# --- Signal handlers for dynamic updates ---
+func _on_battler_health_changed(_new_hp: int) -> void:
 	_refresh_panel()
 
+func _on_status_state_changed() -> void:
+	_update_elemental_and_status_icons()
+
+func _on_battler_ui_state_changed() -> void:
+	_refresh_panel()
 
 func _on_battler_downed(_battler: Battler) -> void:
 	_refresh_panel()
 
 
-func _process(_delta: float) -> void:
-	if not follow_target:
-		return
-	if _bound_battler == null or not is_instance_valid(_bound_battler):
-		return
-	position = _bound_battler.get_global_transform_with_canvas().origin + screen_offset
-
-
-func _update_elemental_and_status_icons() -> void:
-	if _bound_battler == null or not is_instance_valid(_bound_battler):
-		if primer_icon_slot != null:
-			primer_icon_slot.set_style(null)
-		if trigger_icon_slot != null:
-			trigger_icon_slot.set_style(null)
-		# if buff_icon_rect != null:
-		# 	buff_icon_rect.visible = false
-		# if debuff_icon_rect != null:
-		# 	debuff_icon_rect.visible = false
-		if atk_buff_icon_rect != null:
-			atk_buff_icon_rect.visible = false
-		if atk_debuff_icon_rect != null:
-			atk_debuff_icon_rect.visible = false
-		if m_atk_label != null:
-			m_atk_label.text = ""
-		if p_atk_label != null:
-			p_atk_label.text = ""
-		if def_buff_icon_rect != null:
-			def_buff_icon_rect.visible = false
-		if def_debuff_icon_rect != null:
-			def_debuff_icon_rect.visible = false
-		if m_def_label != null:
-			m_def_label.text = ""
-		if p_def_label != null:
-			p_def_label.text = ""
-		if spd_buff_icon_rect != null:
-			spd_buff_icon_rect.visible = false
-		if spd_debuff_icon_rect != null:
-			spd_debuff_icon_rect.visible = false
-		if spd_label != null:
-			spd_label.text = ""
-		if down_buff_icon_rect != null:
-			down_buff_icon_rect.visible = false
-		if down_debuff_icon_rect != null:
-			down_debuff_icon_rect.visible = false
-		if down_label != null:
-			down_label.text = ""
-		return
-
-	# Primer icon
-	if primer_icon_slot != null:
-		var primer_style = UIIconLibrary.create_element_style(_bound_battler.elemental_primer)
-		primer_icon_slot.set_style(primer_style)
-
-	# Trigger / Reaction icon
-	if trigger_icon_slot != null:
-		var reaction = null
-		if _bound_battler.status_manager != null:
-			reaction = _bound_battler.status_manager.active_reactions
-		if reaction != null:
-			trigger_icon_slot.set_style(UIIconLibrary.create_reaction_style(reaction.id))
-		else:
-			trigger_icon_slot.set_style(null)
-
-	# Buff / Debuff icons (show first of each type)
-	var has_buff: bool = false
-	var has_debuff: bool = false
-	# if _bound_battler.status_manager != null:
-	# 	var statuses: Array = _bound_battler.status_manager.get_active_status()
-	# 	for status in statuses:
-	# 		if not has_buff and status.effect_type == StatusEffect.Type.BUFF:
-	# 			if buff_icon_rect != null:
-	# 				buff_icon_rect.texture = UIIconLibrary.create_status_style(status).icon_texture
-	# 				buff_icon_rect.visible = true
-	# 			has_buff = true
-	# 		if not has_debuff and status.effect_type == StatusEffect.Type.DEBUFF:
-	# 			if debuff_icon_rect != null:
-	# 				debuff_icon_rect.texture = UIIconLibrary.create_status_style(status).icon_texture
-	# 				debuff_icon_rect.visible = true
-	# 			has_debuff = true
-	# 		if has_buff and has_debuff:
-	# 			break
-
-	# if not has_buff and buff_icon_rect != null:
-	# 	buff_icon_rect.visible = false
-	# if not has_debuff and debuff_icon_rect != null:
-	# 	debuff_icon_rect.visible = false
-
-	# Down meter label
-	if down_label != null and _bound_battler.down_manager != null:
-		down_label.text = "%d / %d" % [_bound_battler.down_manager.current_meter, _bound_battler.down_manager.max_meter]
-
-
-func _on_status_state_changed() -> void:
-	_update_elemental_and_status_icons()
-
-
 func _on_status_applied(effect) -> void:
 	_update_elemental_and_status_icons()
-
 
 func _on_status_removed(effect) -> void:
 	_update_elemental_and_status_icons()

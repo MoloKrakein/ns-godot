@@ -54,6 +54,20 @@ var reaction_cooldowns: Dictionary = {}
 
 #region Lifecycle
 func _ready():
+	# Inject self reference into managers that need it
+	# down_manager.initialize(self)
+	# status_manager.initialize(self)
+	# affinity_manager.initialize(self)
+	# stats_manager.initialize(self)
+
+	down_manager.battler = self
+	status_manager.battler = self
+	affinity_manager.battler = self
+	stats_manager.battler = self
+	
+
+
+	
 	# Initialize stats based on the manager (which includes equipment)
 	current_hp = stats_manager.get_active_max_hp()
 	current_mp = stats.max_mp
@@ -319,7 +333,7 @@ func take_damage(power: int, is_magic: bool, element: GlobalData.Element = Globa
 
 		print("Down power : ", downpwr)
 		down_manager.increase_meter(downpwr)
-        
+		
 		# ---> NEW: The Cleanup (Shatter Logic) <---
 		# We use your existing `is_magic` bool to tell the StatusManager what kind of hit this was
 		var hit_type = "magic" if is_magic else "physical"
@@ -494,6 +508,10 @@ func process_turn_start():
 	for reaction in reaction_cooldowns.keys():
 		if reaction_cooldowns[reaction] > 0:
 			reaction_cooldowns[reaction] -= 1
+
+	if is_down:
+		print(stats.character_name, " is recovering from being downed...")
+		down_manager.reset_meter()
 
 	status_manager.process_turn_start()
 	emit_signal("ui_state_changed")
