@@ -1,0 +1,4607 @@
+
+============================================================
+--- FILE: ./Scripts/item_database.gd ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+extends Node
+
+var database: Dictionary={}
+
+func _ready():
+    print("ItemDB Initialize...")
+    _scan_directory("res://Resources/")
+    print("Load ", database.size(),"item to db")
+
+
+# Scanner for tscn
+func _scan_directory(path: String):
+    var dir = DirAccess.open(path)
+    if dir:
+        dir.list_dir_begin()
+        var file_name = dir.get_next()
+        while file_name != "":
+            if file_name.begins_with("."):
+                file_name = dir.get_next()
+                continue
+
+            if dir.current_is_dir():
+                _scan_directory(path + "/" + file_name)
+            elif file_name.ends_with(".tres"):
+                var file_path = path + "/" + file_name
+                var resource = ResourceLoader.load(file_path, "", ResourceLoader.CACHE_MODE_IGNORE)
+
+                if resource and "id" in resource and resource.id != "":
+                    database[resource.id] = resource
+
+            file_name = dir.get_next()
+# Helper function
+func get_item(id:String) -> Resource:
+    if database.has(id):
+        return database[id]
+    else:
+        printerr("ERROR: Item ID not found in database: ",id)
+        return null
+
+func find_chain_reaction(primer: int, trigger: int) -> StatusEffect:
+    for resource in database.values():
+        if resource is StatusEffect and resource.matches_reaction_recipe(primer, trigger):
+            return resource
+    return null
+
+func get_reaction_id(primer: int, trigger: int) -> String:
+    var reaction = find_chain_reaction(primer, trigger)
+    if reaction != null:
+        return reaction.id
+    return ""
+
+    
+
+
+============================================================
+--- FILE: ./Scripts/party_manager.gd ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+extends Node
+class_name PartyManager
+
+# Simple autoload-friendly party registry.
+var player_party: Array = []
+var enemy_party: Array = []
+
+signal battler_registered(battler)
+signal battler_unregistered(battler)
+
+func register_battler(battler: Battler) -> void:
+	if battler == null:
+		return
+	if battler.battler_type == Battler.BattlerType.PLAYER:
+		if battler not in player_party:
+			player_party.append(battler)
+			emit_signal("battler_registered", battler)
+	else:
+		if battler not in enemy_party:
+			enemy_party.append(battler)
+			emit_signal("battler_registered", battler)
+
+func unregister_battler(battler: Battler) -> void:
+	if battler == null:
+		return
+	if battler in player_party:
+		player_party.erase(battler)
+		emit_signal("battler_unregistered", battler)
+	if battler in enemy_party:
+		enemy_party.erase(battler)
+		emit_signal("battler_unregistered", battler)
+
+func get_player_party() -> Array:
+	return player_party.duplicate()
+
+func get_enemy_party() -> Array:
+	return enemy_party.duplicate()
+
+func clear() -> void:
+	player_party.clear()
+	enemy_party.clear()
+
+
+============================================================
+--- FILE: ./Scripts/global_data.gd ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+extends Node
+
+# Element Diagram Reference : https://app.diagrams.net/#G1aOTtExOuKytT-BcfikGi5PLnJVyz7wpg#%7B%22pageId%22%3A%220KW8x6qtRERvc5qper4m%22%7D
+enum Element {NEUTRAL,FIRE,EARTH,DARK,LIGHT}
+# PhysicalType simplified to a single `PHYSICAL` type; specific physical subtypes
+# (SLASH/PIERCE/TRAUMA) are folded into this single category to simplify UI.
+enum PhysicalType {NONE, PHYSICAL}
+
+# Minimal element interaction table for the 5-element system.
+# Values are multipliers applied when attacker element hits defender element.
+var elements = {
+	Element.FIRE: {Element.EARTH:1.2, Element.DARK:1.0, Element.LIGHT:0.95, Element.FIRE:0.2},
+	Element.EARTH: {Element.FIRE:0.9, Element.DARK:1.1, Element.LIGHT:1.2, Element.EARTH:0.2},
+	Element.DARK: {Element.LIGHT:0.8, Element.EARTH:1.15, Element.FIRE:1.0, Element.DARK:0.2},
+	Element.LIGHT: {Element.DARK:1.2, Element.EARTH:0.9, Element.FIRE:1.0, Element.LIGHT:0.2},
+	Element.NEUTRAL: {}
+}
+
+func get_mult(attk_element: Element, deff_element: Element) -> float:
+	if elements.has(attk_element):
+		return elements[attk_element].get(deff_element,1.0)
+
+	return 1.0
+
+func get_reaction_id(primer: Element, trigger: Element) -> String:
+	return ItemDatabase.get_reaction_id(primer, trigger)
+
+
+============================================================
+--- FILE: ./Scripts/test_combat_gym.gd ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+extends Control
+
+@export var move_button_scene: PackedScene = preload("res://Scenes/UI/buttons/movebutton/button.tscn")
+@export var party_panel_scene: PackedScene = preload("res://Scenes/UI/party_panel.tscn")
+@export var enemy_stats_panel_scene: PackedScene = preload("res://Scenes/UI/EnemyHud/enemy_stats_panel.tscn")
+
+@export var battle_manager: Node
+@export var damage_label: Label
+@export var damage_popup_scene: PackedScene = preload("res://Scenes/UI/damage_value_popups.tscn")
+@export var damage_popup_container: Control
+@export var button_container: VBoxContainer
+@export var skill_menu: SkillMenu
+@export var randomize_moves_per_turn: bool = true
+@export var target_button_container: VBoxContainer
+@export var player_party_stats_label: Label
+@export var enemy_party_stats_label: Label
+@export var turn_manipulation_container: HBoxContainer
+@export var turn_order_container: HBoxContainer
+@export var last_move_used_label: Label
+
+
+var player_party: Array[Battler] = []
+var enemy_party: Array[Battler] = []
+var player_party_panel: PartyPanel = null
+var enemy_party_panels: Array = []
+var current_actor: Battler = null
+var pending_move: BattleMove = null
+var pending_move_targets: Array[Battler] = []
+var battle_finished: bool = false
+
+# Load a few test moves from your Godot folders
+# @export var fire_move: BattleMove # You can swap this to Electro if you want!
+# @export var water_move: BattleMove
+
+var combat_log: PackedStringArray = []
+
+func _ready():
+	if battle_manager == null or damage_label == null:
+		push_error("Combat gym is missing inspector assignments for battle_manager or damage_label.")
+		return
+
+	if skill_menu == null and button_container == null:
+		push_error("Combat gym needs either a SkillMenu reference or a legacy button_container.")
+		return
+
+	# 1. Grab the characters from the BattleManager
+	player_party = battle_manager.player_party
+	enemy_party = battle_manager.enemy_party
+
+	if skill_menu != null and not skill_menu.move_selected.is_connected(_on_skill_menu_move_selected):
+		skill_menu.move_selected.connect(_on_skill_menu_move_selected)
+
+	_setup_gym_layout()
+	_setup_party_panels()
+	
+	# 2. Connect the UI Label to the Battler's post-damage resolved signal
+	for battler in battle_manager.player_party + battle_manager.enemy_party:
+		battler.damage_resolved.connect(_on_any_battler_damage_resolved.bind(battler))
+		battler.health_changed.connect(_refresh_combat_ui)
+		battler.primer_changed.connect(_refresh_combat_ui)
+		battler.ui_state_changed.connect(_refresh_combat_ui)
+	battle_manager.turn_started.connect(_on_turn_started)
+	battle_manager.party_member_swapped.connect(_on_party_member_swapped)
+
+	battle_manager.build_turn_queue()
+	_build_turn_controls()
+	_begin_flow()
+
+func _setup_gym_layout() -> void:
+	if damage_label == null:
+		return
+
+	damage_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	damage_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	damage_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	damage_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	damage_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+
+	if button_container != null:
+		button_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		button_container.add_theme_constant_override("separation", 6)
+
+	if target_button_container != null:
+		target_button_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		target_button_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		target_button_container.add_theme_constant_override("separation", 6)
+
+	if turn_manipulation_container != null:
+		turn_manipulation_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		turn_manipulation_container.size_flags_vertical = Control.SIZE_FILL
+		turn_manipulation_container.add_theme_constant_override("separation", 6)
+
+	if turn_order_container != null:
+		turn_order_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		turn_order_container.size_flags_vertical = Control.SIZE_FILL
+		turn_order_container.add_theme_constant_override("separation", 6)
+
+	if player_party_stats_label != null:
+		player_party_stats_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		player_party_stats_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+		player_party_stats_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+
+	if enemy_party_stats_label != null:
+		enemy_party_stats_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		enemy_party_stats_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+		enemy_party_stats_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+
+
+func _setup_party_panels() -> void:
+	if party_panel_scene == null:
+		push_warning("Combat gym has no party_panel_scene assigned.")
+		return
+
+	if player_party.size() > 0:
+		player_party_panel = _create_party_panel(player_party[0], Vector2(20.0, 560.0), "PlayerPartyPanel")
+
+	if enemy_stats_panel_scene == null:
+		push_warning("Combat gym has no enemy_stats_panel_scene assigned.")
+		return
+
+	for child in enemy_party_panels:
+		if is_instance_valid(child):
+			child.queue_free()
+	enemy_party_panels.clear()
+
+	for index in enemy_party.size():
+		var enemy_battler: Battler = enemy_party[index]
+		if enemy_battler == null:
+			continue
+		var panel_position: Vector2 = enemy_battler.get_global_transform_with_canvas().origin + Vector2(-96.0, -170.0)
+		var panel_name: String = "EnemyStatsPanel_%d" % index
+		var enemy_panel = _create_enemy_stats_panel(enemy_battler, panel_position, panel_name)
+		if enemy_panel != null:
+			enemy_party_panels.append(enemy_panel)
+
+
+func _create_party_panel(bound_battler: Battler, panel_position: Vector2, panel_name: String) -> PartyPanel:
+	if bound_battler == null:
+		return null
+
+	var panel: PartyPanel = party_panel_scene.instantiate() as PartyPanel
+	if panel == null:
+		return null
+
+	panel.name = panel_name
+	add_child(panel)
+	panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	panel.position = panel_position
+	panel.size = Vector2(191.0, 181.0)
+	panel.bind_battler(bound_battler)
+	return panel
+
+
+func _create_enemy_stats_panel(bound_battler: Battler, panel_position: Vector2, panel_name: String):
+	if bound_battler == null:
+		return null
+
+	var panel = enemy_stats_panel_scene.instantiate()
+	if panel == null:
+		return null
+
+	panel.name = panel_name
+	add_child(panel)
+	panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	panel.position = panel_position
+	panel.size = Vector2(191.0, 181.0)
+	panel.bind_battler(bound_battler)
+	return panel
+
+func _build_turn_controls() -> void:
+	if turn_manipulation_container == null:
+		return
+	for child in turn_manipulation_container.get_children():
+		child.queue_free()
+	_create_turn_control_button(turn_manipulation_container, "END TURN", _on_end_turn_pressed)
+	_create_turn_control_button(turn_manipulation_container, "PLAYER OVERDRIVE", _on_toggle_player_overdrive_pressed)
+	_create_turn_control_button(turn_manipulation_container, "ENEMY OVERDRIVE", _on_toggle_enemy_overdrive_pressed)
+	_create_turn_control_button(turn_manipulation_container, "QUEUE", _on_dump_queue_pressed)
+	_create_turn_control_button(turn_manipulation_container, "REACTIONS", _on_run_reaction_matrix_pressed)
+	_create_turn_control_button(turn_manipulation_container, "RELOAD", _on_reload_battle_gym_pressed)
+
+func _create_turn_control_button(container: Container, label: String, callback: Callable) -> void:
+	var btn := Button.new()
+	btn.text = label
+	container.add_child(btn)
+	btn.pressed.connect(callback)
+
+# --- BUTTON LOGIC ---
+
+func _build_move_buttons():
+	_clear_target_buttons()
+
+	if skill_menu != null:
+		skill_menu.clear_moves()
+
+	if button_container != null and skill_menu == null:
+		for c in button_container.get_children():
+			c.queue_free() # Clear out old buttons if they exist
+
+	if current_actor == null or battle_finished:
+		return
+
+	if skill_menu != null:
+		skill_menu.populate_for_battler(current_actor)
+		return
+
+	if current_actor.basic_atk != null:
+		_create_button_for_move(current_actor.basic_atk)
+
+	for skill in current_actor.skills_list:
+		if skill != null:
+			_create_button_for_move(skill)
+
+func _on_end_turn_pressed():
+	if battle_finished:
+		return
+	if current_actor != null:
+		battle_manager.reschedule_battler_turn(current_actor)
+	pending_move = null
+	pending_move_targets.clear()
+	_clear_target_buttons()
+	_advance_turn_flow()
+
+func _on_toggle_player_overdrive_pressed() -> void:
+	var current = battle_manager.overdrive_parties.get(false, false)
+	battle_manager.set_party_overdrive(false, not current)
+	_update_ui_text("Player Overdrive toggled.", 0, false, false)
+
+func _on_toggle_enemy_overdrive_pressed() -> void:
+	var current = battle_manager.overdrive_parties.get(true, false)
+	battle_manager.set_party_overdrive(true, not current)
+	_update_ui_text("Enemy Overdrive toggled.", 0, false, false)
+
+func _on_dump_queue_pressed() -> void:
+	print("\n--- TURN QUEUE DUMP ---")
+	for battler in battle_manager.turn_queue:
+		print("- ", battler.stats.character_name, " | HP: ", battler.current_hp, " | SPD: ", battler.stats.speed)
+	_refresh_combat_ui()
+
+func _on_run_reaction_matrix_pressed() -> void:
+	_test_all_reactions()
+	_refresh_combat_ui()
+
+func _on_reload_battle_gym_pressed() -> void:
+	get_tree().reload_current_scene()
+
+func _create_button_for_move(move: BattleMove):
+	if button_container == null:
+		return
+	var btn: MoveButton = move_button_scene.instantiate()
+	button_container.add_child(btn)
+	btn.pressed.connect(func(): _execute_selected_move(move))
+	btn.call_deferred("setup_move", move)
+
+func _on_skill_menu_move_selected(move: BattleMove) -> void:
+	_execute_selected_move(move)
+
+func _execute_selected_move(move: BattleMove):
+	if battle_finished or current_actor == null:
+		return
+	if not current_actor.can_use_move(move):
+		print("Cannot use ", move.move_name)
+		return
+
+	if move.target_type == BattleMove.Target.SELF:
+		battle_manager.execute_move(current_actor, move, current_actor)
+		battle_manager.reschedule_battler_turn(current_actor, move)
+		_update_last_move_label(move, current_actor, "SELF")
+		_end_current_actor_turn()
+		return
+
+	pending_move = move
+	_show_target_buttons(move)
+
+func _show_target_buttons(move: BattleMove) -> void:
+	_clear_target_buttons()
+	var target_container: VBoxContainer = _get_target_button_container()
+	if target_container == null:
+		push_warning("No target button container is assigned; cannot show target selection UI.")
+		return
+
+	var valid_targets: Array[Battler] = _get_valid_targets_for_move(move)
+	for target in valid_targets:
+		var target_btn: Button = Button.new()
+		target_btn.text = "Target: %s" % target.stats.character_name
+		target_container.add_child(target_btn)
+		target_btn.pressed.connect(func(): _execute_move_on_target(target))
+
+func _execute_move_on_target(target: Battler) -> void:
+	if battle_finished or current_actor == null or pending_move == null:
+		return
+	battle_manager.execute_move(current_actor, pending_move, target)
+	battle_manager.reschedule_battler_turn(current_actor, pending_move)
+	_update_last_move_label(pending_move, current_actor, target.stats.character_name)
+	pending_move = null
+	pending_move_targets.clear()
+	_clear_target_buttons()
+	_end_current_actor_turn()
+
+func _clear_target_buttons() -> void:
+	var target_container: VBoxContainer = _get_target_button_container()
+	if target_container == null:
+		return
+
+	for child in target_container.get_children():
+		if child is Button and child.text.begins_with("Target:"):
+			child.queue_free()
+
+func _get_target_button_container() -> VBoxContainer:
+	if target_button_container != null:
+		return target_button_container
+	return button_container
+
+func _get_valid_targets_for_move(move: BattleMove) -> Array[Battler]:
+	var targets: Array[Battler] = []
+	if current_actor == null:
+		return targets
+	var is_enemy_actor: bool = current_actor in battle_manager.enemy_party
+	match move.target_type:
+		BattleMove.Target.SINGLE_ENEMY, BattleMove.Target.ALL_ENEMIES:
+			targets.append_array(battle_manager.get_active_party(not is_enemy_actor))
+		BattleMove.Target.SINGLE_ALLY, BattleMove.Target.ALL_ALLIES:
+			targets.append_array(battle_manager.get_active_party(is_enemy_actor))
+		BattleMove.Target.SELF:
+			targets.append(current_actor)
+	return targets
+
+func _begin_flow() -> void:
+	battle_finished = false
+	_advance_turn_flow()
+
+func _advance_turn_flow() -> void:
+	if battle_finished:
+		return
+	var battler: Battler = battle_manager.start_next_turn()
+	if battler == null:
+		_update_ui_text("Queue empty.", 0, false, false)
+		return
+	current_actor = battler
+	if current_actor in battle_manager.enemy_party:
+		if skill_menu != null:
+			skill_menu.clear_moves()
+		_clear_target_buttons()
+		call_deferred("_auto_resolve_enemy_turn")
+	else:
+		_build_move_buttons()
+		_refresh_combat_ui()
+
+func _auto_resolve_enemy_turn() -> void:
+	if battle_finished or current_actor == null:
+		return
+	var enemy_move: BattleMove = current_actor.basic_atk if current_actor.basic_atk != null else null
+	if enemy_move == null and current_actor.skills_list.size() > 0:
+		enemy_move = current_actor.skills_list[0]
+	if enemy_move == null:
+		battle_manager.reschedule_battler_turn(current_actor)
+		_end_current_actor_turn()
+		return
+	var target_party: Array[Battler] = battle_manager.get_active_party(false if current_actor in battle_manager.enemy_party else true)
+	var target: Battler = battle_manager.get_highest_threat_target(target_party)
+	battle_manager.execute_move(current_actor, enemy_move, target)
+	battle_manager.reschedule_battler_turn(current_actor, enemy_move)
+	_update_last_move_label(enemy_move, current_actor, target.stats.character_name)
+	_end_current_actor_turn()
+
+func _end_current_actor_turn() -> void:
+	_refresh_combat_ui()
+	if battle_finished:
+		return
+	if battle_manager.check_party_downs():
+		battle_finished = true
+		_refresh_combat_ui()
+		return
+	call_deferred("_advance_turn_flow")
+
+func _on_turn_started(active_battler: Battler) -> void:
+	current_actor = active_battler
+	# For the combat gym test: randomize each battler's equipped moves each turn (temporary)
+	if randomize_moves_per_turn:
+		_randomize_equipped_moves()
+	_refresh_combat_ui()
+
+
+func _randomize_equipped_moves() -> void:
+	# Randomly pick up to 5 moves from each battler's skills_list and assign to equipped_moves
+	var all_battlers = battle_manager.player_party + battle_manager.enemy_party
+	for b in all_battlers:
+		if b == null:
+			continue
+		var pool: Array[BattleMove] = []
+		for m in b.skills_list:
+			if m != null:
+				pool.append(m)
+		# also allow basic attack as a candidate
+		if b.basic_atk != null:
+			pool.append(b.basic_atk)
+		if pool.size() == 0:
+			var empty_picks: Array[BattleMove] = []
+			b.set_equipped_moves(empty_picks)
+			continue
+		var picks: Array[BattleMove] = []
+		var max_slots: int = min(5, pool.size())
+		while picks.size() < max_slots and pool.size() > 0:
+			var idx: int = int(randi()) % pool.size()
+			picks.append(pool[idx])
+			pool.remove_at(idx)
+		b.set_equipped_moves(picks)
+		# notify UI/state
+		if b.has_method("emit_signal"):
+			b.emit_signal("ui_state_changed")
+		# If this battler is the currently displayed actor, refresh the skill menu so equipped slots update
+		if skill_menu != null and b == current_actor:
+			skill_menu.populate_for_battler(current_actor)
+
+func _on_party_member_swapped(_outgoing: Battler, _incoming: Battler, _is_enemy_party: bool) -> void:
+	if player_party.size() > 0 and player_party_panel != null:
+		player_party_panel.bind_battler(player_party[0])
+	_refresh_combat_ui()
+
+func _on_any_battler_damage_resolved(amount: int, current_hp: int, max_hp: int, down_meter: int, is_weakness: bool, is_crit: bool, is_resist: bool, is_block: bool, attacker: Battler, battler: Battler) -> void:
+	_spawn_damage_popup(battler, amount, is_crit, is_weakness, is_resist, is_block, attacker)
+	if battler == enemy_party[0]:
+		_update_ui_text("Slime took damage.", 0, is_crit, is_weakness)
+	else:
+		_refresh_combat_ui()
+
+func _spawn_damage_popup(battler: Battler, amount: int, is_crit: bool, is_weakness: bool, is_resist: bool = false, is_block: bool = false, attacker: Battler = null) -> void:
+	if battler == null or damage_popup_scene == null:
+		return
+
+	var popup: DamageValuePopups = damage_popup_scene.instantiate() as DamageValuePopups
+	if popup == null:
+		return
+
+	var popup_parent: Node = damage_popup_container if damage_popup_container != null else self
+	popup_parent.add_child(popup)
+	var popup_position: Vector2 = Vector2.ZERO
+	# Prefer using the attacker's party UI node when available so damage appears on the side doing the damage.
+	if attacker != null:
+		if attacker in player_party:
+			var player_node := get_node_or_null("PlayerParty/PartyCurrentStats")
+			if player_node != null:
+				popup_position = player_node.get_global_transform_with_canvas().origin
+			else:
+				popup_position = attacker.get_global_transform_with_canvas().origin
+		elif attacker in enemy_party:
+			var enemy_node := get_node_or_null("EnemyParty/PartyCurrentStats")
+			if enemy_node != null:
+				popup_position = enemy_node.get_global_transform_with_canvas().origin
+			else:
+				popup_position = attacker.get_global_transform_with_canvas().origin
+	# Fallback to an explicit Popup Pos node or the target's world position
+	if popup_position == Vector2.ZERO:
+		var popup_pos_node := get_node_or_null("Popup Pos")
+		if popup_pos_node != null:
+			popup_position = popup_pos_node.get_global_transform_with_canvas().origin
+		elif battler != null:
+			popup_position = battler.get_global_transform_with_canvas().origin
+	popup.play_popup(
+		amount,
+		battler.current_hp,
+		battler.stats_manager.get_active_max_hp(),
+		battler.down_manager.current_meter,
+		100,
+		is_weakness,
+		is_crit,
+		is_resist,
+		is_block,
+		popup_position
+	)
+
+func _refresh_combat_ui(_unused: Variant = null) -> void:
+	if enemy_party.size() == 0:
+		return
+	_refresh_party_labels()
+	_refresh_turn_order()
+	_update_ui_text("Combat Flow Active", 0, false, false)
+
+func _refresh_party_labels() -> void:
+	if player_party_stats_label != null:
+		player_party_stats_label.text = _build_party_summary(player_party, "Player Party")
+	if enemy_party_stats_label != null:
+		enemy_party_stats_label.text = _build_party_summary(enemy_party, "Enemy Party")
+
+func _build_party_summary(party: Array[Battler], title: String) -> String:
+	var lines: PackedStringArray = [title]
+	for battler in party:
+		if battler == null:
+			continue
+		var primer_name: String = GlobalData.Element.keys()[battler.elemental_primer]
+		var effects: Array[String] = []
+		for s in battler.status_manager.active_status:
+			effects.append(s.effect_name)
+		if battler.status_manager.active_reactions != null:
+			effects.append("[R] " + battler.status_manager.active_reactions.effect_name)
+		var effects_str: String = "NONE"
+		if effects.size() > 0:
+			effects_str = ", ".join(effects)
+		lines.append("%s | HP %d/%d | %s | %s" % [battler.stats.character_name, battler.current_hp, battler.stats_manager.get_active_max_hp(), primer_name, effects_str])
+	return "\n".join(lines)
+
+func _refresh_turn_order() -> void:
+	if turn_order_container == null:
+		return
+	for child in turn_order_container.get_children():
+		child.queue_free()
+
+	var label := Label.new()
+	label.text = "Turn Order"
+	turn_order_container.add_child(label)
+
+	for battler in battle_manager.turn_queue:
+		var chip := Label.new()
+		chip.text = "%s (AV %d)" % [battler.stats.character_name, battle_manager.get_battler_turn_action_value(battler)]
+		turn_order_container.add_child(chip)
+
+# --- UI VISUAL UPDATE ---
+
+func _update_last_move_label(move: BattleMove, actor: Battler, target_info: String) -> void:
+	if last_move_used_label == null:
+		return
+	var target_text: String = target_info if target_info != "SELF" and target_info != "ALL" else target_info
+	last_move_used_label.text = "%s used %s → %s" % [actor.stats.character_name, move.move_name, target_text]
+
+func _on_slime_damage_taken(amount: int, is_crit: bool, is_weakness: bool):
+	var header = "Slime took " + str(amount) + " Damage!"
+	_update_ui_text(header, amount, is_crit, is_weakness)
+
+func _update_ui_text(header: String, _amount: int, is_crit: bool, is_weakness: bool):
+	var pop_up_text = header
+	
+	if is_weakness:
+		pop_up_text += "\n>> WEAKNESS HIT! <<"
+	if is_crit:
+		pop_up_text += "\n>> CRITICAL HIT! <<"
+		
+	pop_up_text += "\n\n--- BATTLE STATUS ---"
+	for battler in battle_manager.player_party + battle_manager.enemy_party:
+		var side_label: String = "Enemy" if battler in battle_manager.enemy_party else "Player"
+		pop_up_text += "\n" + side_label + ": " + battler.stats.character_name
+		pop_up_text += " | HP: " + str(battler.current_hp) + "/" + str(battler.stats_manager.get_active_max_hp())
+		pop_up_text += " | Down: " + str(battler.down_manager.current_meter) + "/100"
+		pop_up_text += " | Primer: " + GlobalData.Element.keys()[battler.elemental_primer]
+		var curr_effects: Array[String] = []
+		for s in battler.status_manager.active_status:
+			curr_effects.append(s.effect_name)
+		if battler.status_manager.active_reactions != null:
+			curr_effects.append("[R] " + battler.status_manager.active_reactions.effect_name)
+		pop_up_text += " | Effects: " + (", ".join(curr_effects) if curr_effects.size() > 0 else "NONE")
+		if battler.status_manager.active_reactions != null:
+			pop_up_text += " | Reaction: " + battler.status_manager.active_reactions.effect_name
+		if battler.down_manager.is_downed:
+			pop_up_text += " | DOWN"
+
+	if current_actor != null:
+		pop_up_text += "\n\nCurrent Turn: " + current_actor.stats.character_name
+	else:
+		pop_up_text += "\n\nCurrent Turn: NONE"
+
+	if battle_finished:
+		pop_up_text += "\nBattle State: FINISHED"
+	
+	damage_label.text = pop_up_text
+
+
+
+func _test_all_reactions():
+	print("\n--- RUNNING REACTION MATRIX TEST ---")
+	var elements = GlobalData.Element.values()
+	
+	for primer in elements:
+		for trigger in elements:
+			# Skip neutral or same-element combos
+			if primer == GlobalData.Element.NEUTRAL or trigger == GlobalData.Element.NEUTRAL or primer == trigger:
+				continue
+				
+			var reaction = ItemDatabase.find_chain_reaction(primer, trigger)
+			var p_name = GlobalData.Element.keys()[primer]
+			var t_name = GlobalData.Element.keys()[trigger]
+			
+			if reaction != null:
+				print(p_name, " + ", t_name, " = ", reaction.id)
+			else:
+				# Optional: Print combos that DON'T have a reaction yet
+				# print(p_name, " + ", t_name, " = NO REACTION")
+				pass
+	print("--- TEST COMPLETE ---\n")
+
+
+============================================================
+--- FILE: ./Scripts/UI/party_panel.gd ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+extends Control
+class_name PartyPanel
+
+@export var battler: Battler:
+	set(value):
+		bind_battler(value)
+
+@export var show_active_stats_debug: bool = false
+
+@onready var hp_value_label: Label = $BGStar/NumVal/HpVal
+@onready var mana_value_label: Label = $BGStar/NumVal/ManaVal
+@onready var hp_bar: ProgressBar = $BGStar/StatBar/Background/HpBar
+@onready var mana_bar: ProgressBar = $BGStar/StatBar/Background/MpBar
+@onready var down_meter_bar: ProgressBar = $BGStar/StatBar/Background/MpBar2
+@onready var active_stats_label: Label = $BGStar/ActiveStats
+@onready var affinity_panels: AffinityPanels = $BGStar/NumVal/AffinityRoot/AffinityPanels
+
+var _bound_battler: Battler = null
+
+
+func _ready() -> void:
+	_refresh_panel()
+
+
+func bind_battler(new_battler: Battler) -> void:
+	if _bound_battler == new_battler:
+		_refresh_panel()
+		return
+
+	_unbind_battler()
+	_bound_battler = new_battler
+	battler = new_battler
+
+	# Update affinity panel binding
+	if affinity_panels != null:
+		affinity_panels.battler = _bound_battler
+
+	if _bound_battler != null:
+		if not _bound_battler.health_changed.is_connected(_on_battler_health_changed):
+			_bound_battler.health_changed.connect(_on_battler_health_changed)
+		if not _bound_battler.mana_changed.is_connected(_on_battler_mana_changed):
+			_bound_battler.mana_changed.connect(_on_battler_mana_changed)
+		if not _bound_battler.ui_state_changed.is_connected(_on_battler_ui_state_changed):
+			_bound_battler.ui_state_changed.connect(_on_battler_ui_state_changed)
+		if not _bound_battler.downed.is_connected(_on_battler_downed):
+			_bound_battler.downed.connect(_on_battler_downed)
+
+	_refresh_panel()
+
+
+func _unbind_battler() -> void:
+	if _bound_battler == null:
+		return
+
+	if _bound_battler.health_changed.is_connected(_on_battler_health_changed):
+		_bound_battler.health_changed.disconnect(_on_battler_health_changed)
+	if _bound_battler.mana_changed.is_connected(_on_battler_mana_changed):
+		_bound_battler.mana_changed.disconnect(_on_battler_mana_changed)
+	if _bound_battler.ui_state_changed.is_connected(_on_battler_ui_state_changed):
+		_bound_battler.ui_state_changed.disconnect(_on_battler_ui_state_changed)
+	if _bound_battler.downed.is_connected(_on_battler_downed):
+		_bound_battler.downed.disconnect(_on_battler_downed)
+
+	# Clear affinity panel binding
+	if affinity_panels != null:
+		affinity_panels.battler = null
+
+	_bound_battler = null
+
+
+func _refresh_panel() -> void:
+	if hp_value_label == null or mana_value_label == null or hp_bar == null or mana_bar == null or down_meter_bar == null or active_stats_label == null:
+		return
+
+	if _bound_battler == null or not is_instance_valid(_bound_battler):
+		hp_value_label.text = "--/--"
+		mana_value_label.text = "--/--"
+		hp_bar.value = 0.0
+		mana_bar.value = 0.0
+		down_meter_bar.value = 0.0
+		return
+
+	var max_hp: int = _bound_battler.stats_manager.get_active_max_hp()
+	var max_mp: int = _bound_battler.stats.max_mp
+	var current_hp: int = _bound_battler.current_hp
+	var current_mp: int = _bound_battler.current_mp
+	var current_down_meter: int = _bound_battler.down_manager.current_meter
+	var max_down_meter: int = _bound_battler.down_manager.max_meter
+
+	hp_value_label.text = "%d/%d" % [current_hp, max_hp]
+	mana_value_label.text = "%d/%d" % [current_mp, max_mp]
+	hp_bar.max_value = float(max_hp)
+	hp_bar.value = float(current_hp)
+	mana_bar.max_value = float(max_mp)
+	mana_bar.value = float(current_mp)
+	down_meter_bar.max_value = float(max_down_meter)
+	down_meter_bar.value = float(current_down_meter)
+
+	if show_active_stats_debug:
+		var lines: PackedStringArray = PackedStringArray()
+		lines.append(_format_stat_debug_line("HP", _bound_battler.stats_manager.get_stat_debug_breakdown("max_hp"), false, false))
+		lines.append(_format_stat_debug_line("STR", _bound_battler.stats_manager.get_stat_debug_breakdown("strength"), false, false))
+		lines.append(_format_stat_debug_line("MAG", _bound_battler.stats_manager.get_stat_debug_breakdown("magic"), false, false))
+		lines.append(_format_stat_debug_line("PDEF", _bound_battler.stats_manager.get_stat_debug_breakdown("physical_def"), true, false))
+		lines.append(_format_stat_debug_line("MDEF", _bound_battler.stats_manager.get_stat_debug_breakdown("magic_def"), true, false))
+		lines.append(_format_stat_debug_line("SPD", _bound_battler.stats_manager.get_stat_debug_breakdown("speed"), false, false))
+		lines.append(_format_stat_debug_line("LCK", _bound_battler.stats_manager.get_stat_debug_breakdown("luck"), false, false))
+		lines.append(_format_stat_debug_line("CRT", _bound_battler.stats_manager.get_stat_debug_breakdown("crit_chance"), false, true))
+		lines.append(_format_stat_debug_line("CDMG", _bound_battler.stats_manager.get_stat_debug_breakdown("crit_dmg"), false, true))
+		active_stats_label.visible = true
+		active_stats_label.text = "\n".join(lines)
+	else:
+		active_stats_label.visible = false
+		active_stats_label.text = ""
+
+
+func _on_battler_health_changed(_new_hp: int) -> void:
+	_refresh_panel()
+
+
+func _on_battler_mana_changed(_new_mp: int) -> void:
+	_refresh_panel()
+
+
+func _on_battler_ui_state_changed() -> void:
+	_refresh_panel()
+
+
+func _on_battler_downed(_downed_battler: Battler) -> void:
+	_refresh_panel()
+
+
+func _format_stat_debug_line(label_name: String, breakdown: Dictionary, is_defense: bool, is_percentage: bool) -> String:
+	var base_value: float = float(breakdown.get("base", 0.0))
+	var equipment_bonus: float = float(breakdown.get("equipment", 0.0))
+	var move_flat_bonus: float = float(breakdown.get("move_flat", 0.0))
+	var move_pct_bonus: float = float(breakdown.get("move_pct", 0.0))
+	var status_mult: float = float(breakdown.get("status_mult", 1.0))
+	var extra_mult: float = float(breakdown.get("extra_mult", 1.0))
+	var active_value: float = float(breakdown.get("active", 0.0))
+
+	if is_percentage:
+		return "%s %.2f (+%.2f eq, +%.2f move, x%.2f move%%, x%.2f = %.2f)" % [label_name, base_value, equipment_bonus, move_flat_bonus, 1.0 + move_pct_bonus, status_mult, active_value]
+
+	if is_defense:
+		return "%s %.0f (+%.0f eq, +%.0f move, x%.2f status, x%.2f adrenal = %.0f)" % [label_name, base_value, equipment_bonus, move_flat_bonus, status_mult, extra_mult, active_value]
+
+	return "%s %.0f (+%.0f eq, +%.0f move, x%.2f = %.0f)" % [label_name, base_value, equipment_bonus, move_flat_bonus, status_mult, active_value]
+
+
+============================================================
+--- FILE: ./Scripts/UI/skill_menu.gd ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+extends Control
+class_name SkillMenu
+
+signal move_selected(move: BattleMove)
+
+@export var move_button_scene: PackedScene = preload("res://Scenes/UI/buttons/movebutton/button.tscn")
+@export var button_group_path: NodePath = NodePath("MenuRoot/Bg/Buttons/ButtonGroup")
+@export var include_basic_attack: bool = true
+@export var left_staircase_margins: PackedFloat32Array = PackedFloat32Array([0.0, 12.0, 24.0, 36.0, 48.0])
+@export var overflow_margin_step: float = 12.0
+@export var auto_rebuild_on_ready: bool = false
+@export var preview_moves: Array[BattleMove] = []
+
+var _bound_moves: Array[BattleMove] = []
+
+@onready var _button_group: VBoxContainer = get_node_or_null(button_group_path) as VBoxContainer
+@onready var _equip_slot_group: HBoxContainer = get_node_or_null("MenuRoot/Bg/EquipDisplay/SlotGroup") as HBoxContainer
+
+func _ready() -> void:
+	if _button_group == null:
+		push_error("SkillMenu is missing a valid button_group_path.")
+		return
+
+	if auto_rebuild_on_ready and not preview_moves.is_empty():
+		set_moves(preview_moves)
+
+func populate_for_battler(battler: Battler) -> void:
+	var moves: Array[BattleMove] = []
+	if battler == null:
+		set_moves(moves)
+		return
+
+	# Show only the equipped moves (the moves the battler will actually use).
+	# If no equipped moves are assigned, fall back to showing the full learned pool
+	# so the designer can equip moves manually.
+	var equipped: Array[BattleMove] = battler.get_equipped_moves()
+	if equipped != null and equipped.size() > 0:
+		# Use equipped order as the actionable move list
+		for m in equipped:
+			if m != null:
+				moves.append(m)
+	else:
+		# Fallback: show basic attack + learned skills so the player/ designer can equip
+		if include_basic_attack and battler.basic_atk != null:
+			moves.append(battler.basic_atk)
+		for skill: BattleMove in battler.skills_list:
+			if skill != null:
+				moves.append(skill)
+
+	set_moves(moves)
+	# Update equipped slots display
+	if _equip_slot_group != null:
+		set_equipped_slots(battler.get_equipped_moves())
+
+
+func set_equipped_slots(equipped: Array[BattleMove]) -> void:
+	if _equip_slot_group == null:
+		return
+	for i in range(_equip_slot_group.get_child_count()):
+		var child = _equip_slot_group.get_child(i)
+		if child is Label:
+			var lbl: Label = child as Label
+			if i < equipped.size() and equipped[i] != null:
+				lbl.text = equipped[i].move_name
+			else:
+				lbl.text = "Empty"
+
+func set_moves(moves: Array[BattleMove]) -> void:
+	_bound_moves.clear()
+	_bound_moves.append_array(moves)
+	_rebuild_buttons()
+
+func clear_moves() -> void:
+	_bound_moves.clear()
+	_clear_button_rows()
+
+func _rebuild_buttons() -> void:
+	if _button_group == null:
+		return
+	if move_button_scene == null:
+		push_error("SkillMenu move_button_scene is not assigned.")
+		return
+
+	_clear_button_rows()
+
+	for index: int in range(_bound_moves.size()):
+		var move: BattleMove = _bound_moves[index]
+		if move == null:
+			continue
+
+		var row: HBoxContainer = HBoxContainer.new()
+		row.name = "Row%d" % (index + 1)
+		_button_group.add_child(row)
+
+		var spacer: Container = Container.new()
+		spacer.name = "LeftSpacer"
+		spacer.custom_minimum_size = Vector2(_get_margin_for_row(index), 0.0)
+		row.add_child(spacer)
+
+		var button_node: Node = move_button_scene.instantiate()
+		row.add_child(button_node)
+
+		if button_node is MoveButton:
+			var move_button: MoveButton = button_node as MoveButton
+			move_button.setup_move(move)
+			move_button.pressed.connect(_on_move_pressed.bind(move))
+
+func _clear_button_rows() -> void:
+	if _button_group == null:
+		return
+	for child: Node in _button_group.get_children():
+		child.queue_free()
+
+func _get_margin_for_row(index: int) -> float:
+	if left_staircase_margins.is_empty():
+		return 0.0
+	if index < left_staircase_margins.size():
+		return left_staircase_margins[index]
+
+	var last_index: int = left_staircase_margins.size() - 1
+	var overflow_rows: int = index - last_index
+	return left_staircase_margins[last_index] + (overflow_margin_step * float(overflow_rows))
+
+func _on_move_pressed(move: BattleMove) -> void:
+	move_selected.emit(move)
+
+
+============================================================
+--- FILE: ./Scripts/UI/damage_value_popups.gd ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+extends Control
+class_name DamageValuePopups
+
+@export var popup_lifetime: float = 0.9
+@export var float_up_distance: float = 28.0
+@export var popup_offset: Vector2 = Vector2(-18.0, -72.0)
+
+@onready var root_panel: Control = $Root
+@onready var damage_value_label: Label = $Root/dmg_value
+@onready var target_current_health: ProgressBar = $Root/StatsBar_Root/Bg/Bars_Root/Target_current_health
+@onready var target_current_down_meter: ProgressBar = $Root/StatsBar_Root/Bg/Bars_Root/Target_current_DownMeter
+@onready var weak_root: Control = $Root/DamageType_Root/Weak_Root
+@onready var critical_root: Control = $Root/DamageType_Root/Critical_Root
+@onready var resist_root: Control = $Root/DamageType_Root/Resist_Root
+@onready var block_root: Control = $Root/DamageType_Root/Block_Root
+
+func set_damage_value(value: int) -> void:
+	if damage_value_label != null:
+		damage_value_label.text = str(value)
+
+func set_target_health(current_hp: int, max_hp: int) -> void:
+	if target_current_health == null:
+		return
+	var max_value: float = float(max(1, max_hp))
+	target_current_health.max_value = max_value
+	target_current_health.value = clampf(float(current_hp), 0.0, max_value)
+
+func set_target_down_meter(current_meter: int, max_meter: int = 100) -> void:
+	if target_current_down_meter == null:
+		return
+	var max_value: float = float(max(1, max_meter))
+	target_current_down_meter.max_value = max_value
+	target_current_down_meter.value = clampf(float(current_meter), 0.0, max_value)
+
+func set_hit_type(is_weakness: bool, is_critical: bool, is_resist: bool=false, is_block: bool=false) -> void:
+	if weak_root != null:
+		weak_root.visible = is_weakness
+	if critical_root != null:
+		critical_root.visible = is_critical
+	if resist_root != null:
+		resist_root.visible = is_resist
+	if block_root != null:
+		block_root.visible = is_block
+
+func bind_damage_popup(value: int, current_hp: int, max_hp: int, current_down_meter: int, max_down_meter: int, is_weakness: bool, is_critical: bool, is_resist: bool=false, is_block: bool=false) -> void:
+	set_damage_value(value)
+	set_target_health(current_hp, max_hp)
+	set_target_down_meter(current_down_meter, max_down_meter)
+	set_hit_type(is_weakness, is_critical, is_resist, is_block)
+
+func play_popup(value: int, current_hp: int, max_hp: int, current_down_meter: int, max_down_meter: int, is_weakness: bool, is_critical: bool, is_resist: bool=false, is_block: bool=false, screen_position: Vector2 = Vector2.ZERO) -> void:
+	bind_damage_popup(value, current_hp, max_hp, current_down_meter, max_down_meter, is_weakness, is_critical, is_resist, is_block)
+	root_panel.position = screen_position + popup_offset
+	visible = true
+	modulate.a = 1.0
+	var start_position: Vector2 = root_panel.position
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(self, "modulate:a", 0.0, popup_lifetime)
+	tween.tween_property(root_panel, "position:y", start_position.y - float_up_distance, popup_lifetime)
+	await get_tree().create_timer(popup_lifetime).timeout
+	queue_free()
+
+func reset_popup() -> void:
+	if damage_value_label != null:
+		damage_value_label.text = "0"
+	set_target_health(0, 1)
+	set_target_down_meter(0, 100)
+	set_hit_type(false, false)
+
+
+============================================================
+--- FILE: ./Scripts/UI/affinity_panels.gd ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+extends Control
+class_name AffinityPanels
+
+@export var battler: Battler:
+	set(value):
+		bind_battler(value)
+
+@export var weak_color: Color = Color("#00BDF2")
+@export var normal_color: Color = Color("#29388A")
+@export var resist_color: Color = Color("#771717")
+@export var block_color: Color = Color("#1a083d")
+
+@onready var fire_bg_fill: Panel = $Root/FireRootIcons/BgFill
+@onready var fire_bg_stroke: Panel = $Root/FireRootIcons/BgStroke
+@onready var light_bg_fill: Panel = $Root/LightRootIcons/BgFill
+@onready var light_bg_stroke: Panel = $Root/LightRootIcons/BgStroke
+@onready var earth_bg_fill: Panel = $Root/EarthRootIcons/BgFill
+@onready var earth_bg_stroke: Panel = $Root/EarthRootIcons/BgStroke
+@onready var dark_bg_fill: Panel = $Root/DarkRootIcons/BgFill
+@onready var dark_bg_stroke: Panel = $Root/DarkRootIcons/BgStroke
+@onready var physical_bg_fill: Panel = $Root/PhysicalRootIcons/BgFill
+@onready var physical_bg_stroke: Panel = $Root/PhysicalRootIcons/BgStroke
+
+var _bound_battler: Battler = null
+
+
+func _ready() -> void:
+	_refresh_panel()
+
+
+func bind_battler(new_battler: Battler) -> void:
+	if _bound_battler == new_battler:
+		_refresh_panel()
+		return
+
+	_bound_battler = new_battler
+	battler = new_battler
+	_refresh_panel()
+
+
+func _refresh_panel() -> void:
+	if fire_bg_fill == null or fire_bg_stroke == null or light_bg_fill == null or light_bg_stroke == null or earth_bg_fill == null or earth_bg_stroke == null or dark_bg_fill == null or dark_bg_stroke == null or physical_bg_fill == null or physical_bg_stroke == null:
+		return
+
+	if _bound_battler == null or not is_instance_valid(_bound_battler) or _bound_battler.affinity_manager == null:
+		_apply_slot_color(fire_bg_fill, fire_bg_stroke, normal_color)
+		_apply_slot_color(light_bg_fill, light_bg_stroke, normal_color)
+		_apply_slot_color(earth_bg_fill, earth_bg_stroke, normal_color)
+		_apply_slot_color(dark_bg_fill, dark_bg_stroke, normal_color)
+		_apply_slot_color(physical_bg_fill, physical_bg_stroke, normal_color)
+		return
+
+	var affinity_manager: AffinityManager = _bound_battler.affinity_manager
+	_apply_slot_color(fire_bg_fill, fire_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.FIRE)))
+	_apply_slot_color(light_bg_fill, light_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.LIGHT)))
+	_apply_slot_color(earth_bg_fill, earth_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.EARTH)))
+	_apply_slot_color(dark_bg_fill, dark_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.DARK)))
+	_apply_slot_color(physical_bg_fill, physical_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(false, GlobalData.Element.NEUTRAL, GlobalData.PhysicalType.NONE)))
+
+
+func _get_affinity_color(affinity: BattlerStats.Affinity) -> Color:
+	match affinity:
+		BattlerStats.Affinity.WEAK:
+			return weak_color
+		BattlerStats.Affinity.RESIST:
+			return resist_color
+		BattlerStats.Affinity.BLOCK:
+			return block_color
+		_:
+			return normal_color
+
+
+func _apply_slot_color(fill_panel: Panel, stroke_panel: Panel, color_value: Color) -> void:
+	fill_panel.modulate = color_value
+	stroke_panel.modulate = color_value
+
+============================================================
+--- FILE: ./Scripts/UI/buttons/movebutton/move_button.gd ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+extends Control
+class_name MoveButton
+
+signal pressed
+
+@onready var button: Button = $Button
+@onready var icon_slot: UIIconSlot = $UIIconSlot
+@onready var move_name_label: Label = $Button/MarginContainer/HBoxContainer/MoveName
+# @onready var cost_type_label: Label = $Button/MarginContainer/HBoxContainer/CostBox/CostType
+@onready var cost_label: Label = $Button/MarginContainer/HBoxContainer/CostBox/CostLabel
+@onready var magic_type_icon: TextureRect = $TypeBadge/MagicTypeIcon
+@onready var physical_type_icon: TextureRect = $TypeBadge/PhysicalTypeIcon
+
+func _ready() -> void:
+	button.pressed.connect(_on_button_pressed)
+
+func _on_button_pressed() -> void:
+	pressed.emit()
+
+func setup_move(move: BattleMove) -> void:
+	button.text = ""
+	button.tooltip_text = "%s\n%s" % [move.get_button_label(), move.description]
+	move_name_label.text = move.move_name
+	move_name_label.clip_text = true
+	move_name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	# move_name_label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	# cost_type_label.visible = move.is_magic
+	cost_label.text = str(move.mp_cost)
+	# Show magic/type icon for moves that are magical or that consume MP (e.g., support moves using MP).
+	var move_cat = move.get_move_category()
+	magic_type_icon.visible = move.is_magic or (move.mp_cost > 0 and move_cat == move.MoveCategory.SUPPORT)
+	# Show physical icon when the move is explicitly physical.
+	physical_type_icon.visible = not move.is_magic and move.physical_type != GlobalData.PhysicalType.NONE
+	icon_slot.set_style(UIIconLibrary.create_move_style(move))
+
+
+============================================================
+--- FILE: ./Scripts/UI/icon_system/ui_icon_style.gd ---
+--- LAST MODIFIED: 2026-05-25 14:28:45 ---
+============================================================
+
+extends Resource
+class_name UIIconStyle
+
+@export_group("Identity")
+@export var key: StringName = &""
+
+@export_group("Textures")
+@export var icon_texture: Texture2D = null
+@export var background_fill_texture: Texture2D = null
+@export var background_stroke_texture: Texture2D = null
+
+@export_group("Visibility")
+@export var use_background: bool = true
+@export var use_icon: bool = true
+
+@export_group("Tint")
+@export var icon_modulate: Color = Color(1, 1, 1, 1)
+@export var background_modulate: Color = Color(1, 1, 1, 1)
+
+@export_group("Palette")
+@export var background_fill_color: Color = Color(1, 1, 1, 1)
+@export var background_stroke_color: Color = Color(0, 0, 0, 1)
+@export var icon_fill_color: Color = Color(1, 1, 1, 1)
+@export var icon_stroke_color: Color = Color(0, 0, 0, 1)
+
+@export_group("Fallback")
+@export var theme_icon_name: StringName = &""
+@export var theme_icon_type: StringName = &"EditorIcons"
+
+func has_background() -> bool:
+	return use_background and (background_fill_texture != null or background_stroke_texture != null)
+
+func has_icon() -> bool:
+	return use_icon and (icon_texture != null or theme_icon_name != &"")
+
+============================================================
+--- FILE: ./Scripts/UI/icon_system/ui_icon_library.gd ---
+--- LAST MODIFIED: 2026-05-26 14:18:30 ---
+============================================================
+
+extends RefCounted
+class_name UIIconLibrary
+
+const ELEMENT_BACKGROUND_FILL_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/starbg.svg")
+const ELEMENT_BACKGROUND_STROKE_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/starbg_stroke.svg")
+const FIRE_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Icons/Fire.svg")
+const EARTH_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Icons/Earth.svg")
+const LIGHT_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Icons/Light.svg")
+const DARK_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Icons/Dark.svg")
+const PHYSICAL_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Icons/Physical.svg")
+const HEAL_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Icons/Heal.svg")
+const BUFF_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Icons/Buff.svg")
+const DEBUFF_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Icons/Debuff.svg")
+const MULTI_FIRE_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Multi_icons/M_Fire.svg")
+const MULTI_EARTH_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Multi_icons/M_Earth.svg")
+const MULTI_LIGHT_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Multi_icons/M_Light.svg")
+const MULTI_DARKNESS_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Multi_icons/M_Darkness.svg")
+const MULTI_PHYSICAL_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Multi_icons/M_Physical.svg")
+const MULTI_HEAL_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Multi_icons/M_Heal.svg")
+const MULTI_BUFF_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Multi_icons/M_Buff.svg")
+const MULTI_DEBUFF_ICON_TEXTURE: Texture2D = preload("res://Arts/UI/Icons/Multi_icons/M_Debuff.svg")
+
+const FIRE_BACKGROUND_FILL: Color = Color("#D70C0F")
+const FIRE_BACKGROUND_STROKE: Color = Color("#ECB726")
+const EARTH_BACKGROUND_FILL: Color = Color("#00FF11")
+const EARTH_BACKGROUND_STROKE: Color = Color("#007D08")
+const LIGHT_BACKGROUND_FILL: Color = Color("#FFF700")
+const LIGHT_BACKGROUND_STROKE: Color = Color("#737000")
+const DARK_BACKGROUND_FILL: Color = Color("#270136")
+const DARK_BACKGROUND_STROKE: Color = Color("#600AD6")
+const PHYSICAL_BACKGROUND_FILL: Color = Color("#686868")
+const PHYSICAL_BACKGROUND_STROKE: Color = Color("#262525")
+const HEAL_BACKGROUND_FILL: Color = Color("#FF33BB")
+const HEAL_BACKGROUND_STROKE: Color = Color("#771717")
+const BUFF_BACKGROUND_FILL: Color = Color("#71AAFF")
+const BUFF_BACKGROUND_STROKE: Color = Color("#544EB2")
+const DEBUFF_BACKGROUND_FILL: Color = Color("#544EB2")
+const DEBUFF_BACKGROUND_STROKE: Color = Color("#71AAFF")
+
+static func create_generic_style(key: StringName, icon_texture: Texture2D = null, background_texture: Texture2D = null, show_background: bool = true) -> UIIconStyle:
+	var style: UIIconStyle = UIIconStyle.new()
+	style.key = key
+	style.icon_texture = icon_texture
+	style.background_fill_texture = background_texture
+	style.use_background = show_background
+	return style
+
+static func create_move_style(move: BattleMove) -> UIIconStyle:
+	var style: UIIconStyle = UIIconStyle.new()
+	var use_multi_icon: bool = _is_multi_target(move)
+	style.key = move.get_icon_key()
+	style.icon_texture = _resolve_move_icon_texture(move)
+	style.background_fill_texture = ELEMENT_BACKGROUND_FILL_TEXTURE
+	style.background_stroke_texture = ELEMENT_BACKGROUND_STROKE_TEXTURE
+	style.use_background = true
+	style.background_fill_color = PHYSICAL_BACKGROUND_FILL
+	style.background_stroke_color = PHYSICAL_BACKGROUND_STROKE
+	style.background_modulate = PHYSICAL_BACKGROUND_FILL
+
+	if _apply_support_background_style(style, move, use_multi_icon):
+		pass
+	elif move.is_magic and move.element != GlobalData.Element.NEUTRAL:
+		match move.element:
+			GlobalData.Element.FIRE:
+				if use_multi_icon:
+					style.background_fill_color = Color("#FF2626")
+					style.background_stroke_color = FIRE_BACKGROUND_FILL
+					style.background_modulate = Color("#FF2626")
+				else:
+					style.background_fill_color = FIRE_BACKGROUND_FILL
+					style.background_stroke_color = FIRE_BACKGROUND_STROKE
+					style.background_modulate = FIRE_BACKGROUND_FILL
+			GlobalData.Element.EARTH:
+				_set_background_colors(style, EARTH_BACKGROUND_FILL, EARTH_BACKGROUND_STROKE, use_multi_icon)
+			GlobalData.Element.LIGHT:
+				_set_background_colors(style, LIGHT_BACKGROUND_FILL, LIGHT_BACKGROUND_STROKE, use_multi_icon)
+			GlobalData.Element.DARK:
+				_set_background_colors(style, DARK_BACKGROUND_FILL, DARK_BACKGROUND_STROKE, use_multi_icon)
+	elif not move.is_magic and move.physical_type != GlobalData.PhysicalType.NONE:
+		_set_background_colors(style, PHYSICAL_BACKGROUND_FILL, PHYSICAL_BACKGROUND_STROKE, use_multi_icon)
+	style.use_background = move.get_move_template() != BattleMove.MoveTemplate.UTILITY
+	return style
+
+static func _resolve_move_icon_texture(move: BattleMove) -> Texture2D:
+	if move.icon != null:
+		return move.icon
+
+	if move.ui_icon_name != &"":
+		var explicit_icon: Texture2D = _resolve_texture_from_key(move.ui_icon_name)
+		if explicit_icon != null:
+			return explicit_icon
+
+	match move.get_move_template():
+		BattleMove.MoveTemplate.HEAL:
+			return _resolve_heal_icon(_is_multi_target(move))
+		BattleMove.MoveTemplate.STATUS:
+			return _resolve_status_icon(move, _is_multi_target(move))
+		BattleMove.MoveTemplate.SUPPORT:
+			return _resolve_support_icon(_is_multi_target(move))
+		BattleMove.MoveTemplate.UTILITY:
+			return _resolve_utility_icon(_is_multi_target(move))
+
+	if move.is_magic and move.element != GlobalData.Element.NEUTRAL:
+		return _resolve_element_icon(move.element, _is_multi_target(move))
+
+	if not move.is_magic and move.physical_type != GlobalData.PhysicalType.NONE:
+		return _resolve_physical_icon(_is_multi_target(move))
+
+	return _resolve_template_icon(move.get_move_template(), _is_multi_target(move))
+
+static func _is_multi_target(move: BattleMove) -> bool:
+	return move.target_type == BattleMove.Target.ALL_ENEMIES or move.target_type == BattleMove.Target.ALL_ALLIES
+
+static func _resolve_element_icon(element: GlobalData.Element, use_multi_icon: bool) -> Texture2D:
+	match element:
+		GlobalData.Element.FIRE:
+			return MULTI_FIRE_ICON_TEXTURE if use_multi_icon else FIRE_ICON_TEXTURE
+		GlobalData.Element.EARTH:
+			return MULTI_EARTH_ICON_TEXTURE if use_multi_icon else EARTH_ICON_TEXTURE
+		GlobalData.Element.LIGHT:
+			return MULTI_LIGHT_ICON_TEXTURE if use_multi_icon else LIGHT_ICON_TEXTURE
+		GlobalData.Element.DARK:
+			return MULTI_DARKNESS_ICON_TEXTURE if use_multi_icon else DARK_ICON_TEXTURE
+		_:
+			return PHYSICAL_ICON_TEXTURE
+
+static func _resolve_physical_icon(use_multi_icon: bool) -> Texture2D:
+	return MULTI_PHYSICAL_ICON_TEXTURE if use_multi_icon else PHYSICAL_ICON_TEXTURE
+
+static func _resolve_template_icon(template: BattleMove.MoveTemplate, use_multi_icon: bool) -> Texture2D:
+	match template:
+		BattleMove.MoveTemplate.HEAL:
+			return _resolve_heal_icon(use_multi_icon)
+		BattleMove.MoveTemplate.SUPPORT:
+			return _resolve_support_icon(use_multi_icon)
+		BattleMove.MoveTemplate.STATUS:
+			return _resolve_status_icon(null, use_multi_icon)
+		BattleMove.MoveTemplate.UTILITY:
+			return _resolve_utility_icon(use_multi_icon)
+		_:
+			return _resolve_physical_icon(use_multi_icon)
+
+static func _resolve_support_icon(use_multi_icon: bool) -> Texture2D:
+	return MULTI_HEAL_ICON_TEXTURE if use_multi_icon else HEAL_ICON_TEXTURE
+
+static func _resolve_heal_icon(use_multi_icon: bool) -> Texture2D:
+	return MULTI_HEAL_ICON_TEXTURE if use_multi_icon else HEAL_ICON_TEXTURE
+
+static func _resolve_status_icon(move: BattleMove, use_multi_icon: bool) -> Texture2D:
+	if move != null and move.applied_status != null and move.applied_status.effect_type == StatusEffect.Type.BUFF:
+		return MULTI_BUFF_ICON_TEXTURE if use_multi_icon else BUFF_ICON_TEXTURE
+	return MULTI_DEBUFF_ICON_TEXTURE if use_multi_icon else DEBUFF_ICON_TEXTURE
+
+static func _resolve_utility_icon(use_multi_icon: bool) -> Texture2D:
+	return MULTI_EARTH_ICON_TEXTURE if use_multi_icon else EARTH_ICON_TEXTURE
+
+static func _resolve_texture_from_key(icon_key: StringName) -> Texture2D:
+	match icon_key:
+		&"custom_texture":
+			return null
+		&"Heal", &"move_heal", &"template_heal_template":
+			return HEAL_ICON_TEXTURE
+		&"Buff", &"move_buff":
+			return BUFF_ICON_TEXTURE
+		&"Debuff", &"move_debuff":
+			return DEBUFF_ICON_TEXTURE
+		&"M_Heal":
+			return MULTI_HEAL_ICON_TEXTURE
+		&"M_Buff":
+			return MULTI_BUFF_ICON_TEXTURE
+		&"M_Debuff":
+			return MULTI_DEBUFF_ICON_TEXTURE
+		&"M_Fire", &"element_fire":
+			return MULTI_FIRE_ICON_TEXTURE
+		&"M_Earth", &"element_earth":
+			return MULTI_EARTH_ICON_TEXTURE
+		&"M_Light", &"element_light":
+			return MULTI_LIGHT_ICON_TEXTURE
+		&"M_Darkness", &"element_dark":
+			return MULTI_DARKNESS_ICON_TEXTURE
+		&"M_Physical":
+			return MULTI_PHYSICAL_ICON_TEXTURE
+		&"element_fire":
+			return FIRE_ICON_TEXTURE
+		&"element_earth":
+			return EARTH_ICON_TEXTURE
+		&"element_light":
+			return LIGHT_ICON_TEXTURE
+		&"element_dark":
+			return DARK_ICON_TEXTURE
+		&"physical_slash", &"physical_pierce", &"physical_strike", &"physical_bullet", &"physical_none":
+			return PHYSICAL_ICON_TEXTURE
+		&"template_attack_template", &"move_attack":
+			return MULTI_PHYSICAL_ICON_TEXTURE
+		&"template_status_template", &"move_status":
+			return MULTI_DEBUFF_ICON_TEXTURE
+		&"template_support_template", &"move_support":
+			return MULTI_HEAL_ICON_TEXTURE
+		&"template_utility_template", &"move_utility":
+			return MULTI_EARTH_ICON_TEXTURE
+		&"target_aoe":
+			return MULTI_LIGHT_ICON_TEXTURE
+		&"target_self":
+			return MULTI_EARTH_ICON_TEXTURE
+		&"Group":
+			return LIGHT_ICON_TEXTURE
+		&"ColorRect":
+			return LIGHT_ICON_TEXTURE
+		&"Sword":
+			return PHYSICAL_ICON_TEXTURE
+		&"Heart":
+			return LIGHT_ICON_TEXTURE
+		&"NodeInfo":
+			return DARK_ICON_TEXTURE
+		&"Tools":
+			return EARTH_ICON_TEXTURE
+		&"Node":
+			return EARTH_ICON_TEXTURE
+		_:
+			return null
+
+static func _set_background_colors(style: UIIconStyle, fill_color: Color, stroke_color: Color, use_multi_icon: bool) -> void:
+	if use_multi_icon:
+		style.background_fill_color = stroke_color
+		style.background_stroke_color = fill_color
+		style.background_modulate = stroke_color
+		return
+
+	style.background_fill_color = fill_color
+	style.background_stroke_color = stroke_color
+	style.background_modulate = fill_color
+
+static func _apply_support_background_style(style: UIIconStyle, move: BattleMove, use_multi_icon: bool) -> bool:
+	match move.get_move_template():
+		BattleMove.MoveTemplate.HEAL:
+			_set_background_colors(style, HEAL_BACKGROUND_FILL, HEAL_BACKGROUND_STROKE, use_multi_icon)
+			return true
+		BattleMove.MoveTemplate.STATUS:
+			if move.applied_status != null and move.applied_status.effect_type == StatusEffect.Type.BUFF:
+				_set_background_colors(style, BUFF_BACKGROUND_FILL, BUFF_BACKGROUND_STROKE, use_multi_icon)
+			else:
+				_set_background_colors(style, DEBUFF_BACKGROUND_FILL, DEBUFF_BACKGROUND_STROKE, use_multi_icon)
+			return true
+		BattleMove.MoveTemplate.SUPPORT:
+			_set_background_colors(style, HEAL_BACKGROUND_FILL, HEAL_BACKGROUND_STROKE, use_multi_icon)
+			return true
+		_:
+			return false
+
+static func _load_texture_safe(resource_path: String) -> Texture2D:
+	if resource_path.is_empty():
+		return null
+	if not ResourceLoader.exists(resource_path):
+		return null
+
+	var loaded_resource: Resource = load(resource_path)
+	if loaded_resource is Texture2D:
+		return loaded_resource as Texture2D
+	return null
+
+static func _create_colored_style(key: StringName, icon_texture: Texture2D, fill_color: Color, stroke_color: Color) -> UIIconStyle:
+	var style: UIIconStyle = UIIconStyle.new()
+	style.key = key
+	style.icon_texture = icon_texture
+	style.background_fill_texture = ELEMENT_BACKGROUND_FILL_TEXTURE
+	style.background_stroke_texture = ELEMENT_BACKGROUND_STROKE_TEXTURE
+	style.use_background = true
+	style.use_icon = true
+	style.background_fill_color = fill_color
+	style.background_stroke_color = stroke_color
+	style.background_modulate = fill_color
+	return style
+
+static func create_item_style(item: Consumable) -> UIIconStyle:
+	var custom_texture: Texture2D = _load_texture_safe(item.icon_path)
+	if custom_texture != null:
+		return _create_colored_style(StringName("item_%s" % item.id), custom_texture, LIGHT_BACKGROUND_FILL, LIGHT_BACKGROUND_STROKE)
+
+	if item.heals_hp > 0 or item.heals_mp > 0 or item.cures_status:
+		return _create_colored_style(StringName("item_%s" % item.id), LIGHT_ICON_TEXTURE, LIGHT_BACKGROUND_FILL, LIGHT_BACKGROUND_STROKE)
+	if item.applied_debuff != null:
+		return _create_colored_style(StringName("item_%s" % item.id), DARK_ICON_TEXTURE, DARK_BACKGROUND_FILL, DARK_BACKGROUND_STROKE)
+	if item.applied_buff != null:
+		return _create_colored_style(StringName("item_%s" % item.id), EARTH_ICON_TEXTURE, EARTH_BACKGROUND_FILL, EARTH_BACKGROUND_STROKE)
+
+	return _create_colored_style(StringName("item_%s" % item.id), PHYSICAL_ICON_TEXTURE, PHYSICAL_BACKGROUND_FILL, PHYSICAL_BACKGROUND_STROKE)
+
+static func create_equipment_style(equipment: Equipment) -> UIIconStyle:
+	var icon_texture: Texture2D = PHYSICAL_ICON_TEXTURE
+	var fill_color: Color = PHYSICAL_BACKGROUND_FILL
+	var stroke_color: Color = PHYSICAL_BACKGROUND_STROKE
+
+	if equipment.slot_type == Equipment.Slot.WEAPON:
+		fill_color = FIRE_BACKGROUND_FILL
+		stroke_color = FIRE_BACKGROUND_STROKE
+	elif equipment.slot_type == Equipment.Slot.ARMOR:
+		fill_color = EARTH_BACKGROUND_FILL
+		stroke_color = EARTH_BACKGROUND_STROKE
+	elif equipment.slot_type == Equipment.Slot.ACCESSORY:
+		fill_color = LIGHT_BACKGROUND_FILL
+		stroke_color = LIGHT_BACKGROUND_STROKE
+
+	return _create_colored_style(StringName("equipment_%s" % equipment.id), icon_texture, fill_color, stroke_color)
+
+static func create_element_style(element: GlobalData.Element) -> UIIconStyle:
+	var style: UIIconStyle = UIIconStyle.new()
+	style.key = StringName("element_%s" % GlobalData.Element.keys()[element].to_lower())
+	style.use_background = element != GlobalData.Element.NEUTRAL
+	style.background_fill_texture = ELEMENT_BACKGROUND_FILL_TEXTURE
+	style.background_stroke_texture = ELEMENT_BACKGROUND_STROKE_TEXTURE
+	style.icon_modulate = Color(1, 1, 1, 1)
+
+	match element:
+		GlobalData.Element.FIRE:
+			style.icon_texture = FIRE_ICON_TEXTURE
+			style.background_fill_color = FIRE_BACKGROUND_FILL
+			style.background_stroke_color = FIRE_BACKGROUND_STROKE
+			style.background_modulate = FIRE_BACKGROUND_FILL
+		GlobalData.Element.EARTH:
+			style.icon_texture = EARTH_ICON_TEXTURE
+			style.background_fill_color = EARTH_BACKGROUND_FILL
+			style.background_stroke_color = EARTH_BACKGROUND_STROKE
+			style.background_modulate = EARTH_BACKGROUND_FILL
+		GlobalData.Element.LIGHT:
+			style.icon_texture = LIGHT_ICON_TEXTURE
+			style.background_fill_color = LIGHT_BACKGROUND_FILL
+			style.background_stroke_color = LIGHT_BACKGROUND_STROKE
+			style.background_modulate = LIGHT_BACKGROUND_FILL
+		GlobalData.Element.DARK:
+			style.icon_texture = DARK_ICON_TEXTURE
+			style.background_fill_color = DARK_BACKGROUND_FILL
+			style.background_stroke_color = DARK_BACKGROUND_STROKE
+			style.background_modulate = DARK_BACKGROUND_FILL
+			
+	return style
+
+static func create_physical_style() -> UIIconStyle:
+	var style: UIIconStyle = UIIconStyle.new()
+	style.key = &"physical"
+	style.icon_texture = PHYSICAL_ICON_TEXTURE
+	style.background_fill_texture = ELEMENT_BACKGROUND_FILL_TEXTURE
+	style.background_stroke_texture = ELEMENT_BACKGROUND_STROKE_TEXTURE
+	style.use_background = true
+	style.background_fill_color = PHYSICAL_BACKGROUND_FILL
+	style.background_stroke_color = PHYSICAL_BACKGROUND_STROKE
+	style.background_modulate = PHYSICAL_BACKGROUND_FILL
+	return style
+
+static func create_reaction_style(reaction_id: String) -> UIIconStyle:
+	var style: UIIconStyle = UIIconStyle.new()
+	style.key = StringName(reaction_id)
+	style.icon_texture = DARK_ICON_TEXTURE
+	style.background_fill_texture = ELEMENT_BACKGROUND_FILL_TEXTURE
+	style.background_stroke_texture = ELEMENT_BACKGROUND_STROKE_TEXTURE
+	style.use_background = reaction_id != ""
+	style.background_fill_color = DARK_BACKGROUND_FILL
+	style.background_stroke_color = DARK_BACKGROUND_STROKE
+	style.background_modulate = DARK_BACKGROUND_FILL
+	return style
+
+static func create_status_style(status: StatusEffect) -> UIIconStyle:
+	var style: UIIconStyle = UIIconStyle.new()
+	style.key = StringName(status.id)
+	style.icon_texture = EARTH_ICON_TEXTURE
+	style.background_fill_texture = ELEMENT_BACKGROUND_FILL_TEXTURE
+	style.background_stroke_texture = ELEMENT_BACKGROUND_STROKE_TEXTURE
+	style.use_background = true
+	style.use_icon = true
+	style.background_fill_color = EARTH_BACKGROUND_FILL
+	style.background_stroke_color = EARTH_BACKGROUND_STROKE
+	style.background_modulate = EARTH_BACKGROUND_FILL
+	return style
+
+
+============================================================
+--- FILE: ./Scripts/UI/icon_system/ui_icon_slot.gd ---
+--- LAST MODIFIED: 2026-05-25 14:28:45 ---
+============================================================
+
+extends Control
+class_name UIIconSlot
+
+@export var show_background: bool = true
+@export var show_icon: bool = true
+@export var icon_style: UIIconStyle = null
+
+@onready var background_fill_rect: TextureRect = $BackgroundFill
+@onready var background_stroke_rect: TextureRect = $BackgroundStroke
+@onready var icon_rect: TextureRect = $Icon
+
+func _ready() -> void:
+	refresh()
+
+func set_style(style: UIIconStyle) -> void:
+	icon_style = style
+	refresh()
+
+func refresh() -> void:
+	if background_fill_rect == null or background_stroke_rect == null or icon_rect == null:
+		return
+
+	var style: UIIconStyle = icon_style
+	if style == null:
+		background_fill_rect.visible = false
+		background_fill_rect.texture = null
+		background_stroke_rect.visible = false
+		background_stroke_rect.texture = null
+		icon_rect.visible = false
+		icon_rect.texture = null
+		return
+
+	background_fill_rect.visible = show_background and style.use_background and style.background_fill_texture != null
+	background_fill_rect.texture = style.background_fill_texture if background_fill_rect.visible else null
+	background_fill_rect.modulate = style.background_fill_color
+
+	background_stroke_rect.visible = show_background and style.use_background and style.background_stroke_texture != null
+	background_stroke_rect.texture = style.background_stroke_texture if background_stroke_rect.visible else null
+	background_stroke_rect.modulate = style.background_stroke_color
+
+	var resolved_icon: Texture2D = style.icon_texture
+	if resolved_icon == null and style.theme_icon_name != &"":
+		resolved_icon = get_theme_icon(style.theme_icon_name, style.theme_icon_type)
+
+	icon_rect.visible = show_icon and style.use_icon and resolved_icon != null
+	icon_rect.texture = resolved_icon if icon_rect.visible else null
+	icon_rect.modulate = style.icon_modulate
+
+============================================================
+--- FILE: ./Scripts/UI/EnemyHud/enemy_stats_panel.gd ---
+--- LAST MODIFIED: 2026-06-04 16:35:16 ---
+============================================================
+
+extends Control
+class_name EnemyStatsPanel
+
+@export var battler: Battler:
+	set(value):
+		bind_battler(value)
+
+@export var battler_path: NodePath
+@export var follow_target: bool = true
+@export var screen_offset: Vector2 = Vector2(-96.0, -170.0)
+@export var show_active_stats_debug: bool = false
+
+# UI nodes, its should be same node structure as enemy_stats_panel.tscn
+
+@onready var hp_value_label: Label = $PanelRoot/NameRoot/Name
+@onready var hp_bar: ProgressBar = $PanelRoot/StatusBar/BarsRoot/HpBar
+@onready var down_bar: ProgressBar = $PanelRoot/StatusBar/BarsRoot/DownBar
+@onready var affinity_panels: AffinityPanels = $AffinityPanelRoot/AffinityPanels
+@onready var active_stats_root: Control = $StatsPanelRoot
+@onready var primer_icon_slot: UIIconSlot = $ElementalRoot/PrimerIconSlot/UIIconSlot
+@onready var trigger_icon_slot: UIIconSlot = $ElementalRoot/TriggerIconSlot/UIIconSlot
+# @onready var buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/BuffIcon
+# @onready var debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/DebuffIcon
+# @onready var down_label: Label = $StatsPanelRoot/StatusBar/StatusBar/DownStatRoot/DwnLabel
+
+# atk
+@onready var atk_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/BuffIcon
+@onready var atk_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/DebuffIcon
+@onready var m_atk_label: Label = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/AtkMagicLabel
+@onready var p_atk_label: Label = $StatsPanelRoot/StatusBar/StatusBar/AtkStatRoot/AtkPhysicalLabel
+
+# def
+@onready var def_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/DefStatRoot/BuffIcon
+@onready var def_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/DefStatRoot/DebuffIcon
+@onready var m_def_label: Label = $StatsPanelRoot/StatusBar/StatusBar/DefStatRoot/DefMagicLabel
+@onready var p_def_label: Label = $StatsPanelRoot/StatusBar/StatusBar/DefStatRoot/DefPhysicalLabel
+
+# spd
+@onready var spd_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/SpdStatRoot/BuffIcon
+@onready var spd_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/SpdStatRoot/DebuffIcon
+@onready var spd_label: Label = $StatsPanelRoot/StatusBar/StatusBar/SpdStatRoot/SpeedLabel
+
+# down
+@onready var down_buff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/DownStatRoot/BuffIcon
+@onready var down_debuff_icon_rect: TextureRect = $StatsPanelRoot/StatusBar/StatusBar/DownStatRoot/DebuffIcon
+@onready var down_label: Label = $StatsPanelRoot/StatusBar/StatusBar/DownStatRoot/DwnLabel
+
+var _bound_battler: Battler = null
+
+
+func _ready() -> void:
+	if _bound_battler == null and battler_path != NodePath():
+		var resolved_battler: Battler = get_node_or_null(battler_path) as Battler
+		if resolved_battler != null:
+			bind_battler(resolved_battler)
+	elif _bound_battler == null and get_parent() is Battler:
+		bind_battler(get_parent() as Battler)
+	_refresh_panel()
+	set_process(follow_target)
+
+
+func bind_battler(new_battler: Battler) -> void:
+	if _bound_battler == new_battler:
+		_refresh_panel()
+		return
+
+	_unbind_battler()
+	_bound_battler = new_battler
+	battler = new_battler
+
+	if affinity_panels != null:
+		affinity_panels.battler = _bound_battler
+
+	if _bound_battler != null:
+		if not _bound_battler.health_changed.is_connected(_on_battler_health_changed):
+			_bound_battler.health_changed.connect(_on_battler_health_changed)
+		# if not _bound_battler.mana_changed.is_connected(_on_battler_mana_changed):
+			# removed: use DownManager signals instead of mana_changed
+		if not _bound_battler.ui_state_changed.is_connected(_on_battler_ui_state_changed):
+			_bound_battler.ui_state_changed.connect(_on_battler_ui_state_changed)
+		if not _bound_battler.downed.is_connected(_on_battler_downed):
+			_bound_battler.downed.connect(_on_battler_downed)
+
+		# Connect to status manager updates so buff/debuff and reactions update
+		if _bound_battler.status_manager != null:
+			if not _bound_battler.status_manager.status_state_changed.is_connected(_on_status_state_changed):
+				_bound_battler.status_manager.status_state_changed.connect(_on_status_state_changed)
+			if not _bound_battler.status_manager.status_applied.is_connected(_on_status_applied):
+				_bound_battler.status_manager.status_applied.connect(_on_status_applied)
+			if not _bound_battler.status_manager.status_removed.is_connected(_on_status_removed):
+				_bound_battler.status_manager.status_removed.connect(_on_status_removed)
+
+		# Connect down meter updates
+		if _bound_battler.down_manager != null:
+			if not _bound_battler.down_manager.down_meter_updated.is_connected(_on_down_meter_updated):
+				_bound_battler.down_manager.down_meter_updated.connect(_on_down_meter_updated)
+			# initialize down label immediately
+			_on_down_meter_updated(_bound_battler.down_manager.current_meter, _bound_battler.down_manager.max_meter)
+
+	# Defer refresh to avoid race where the Battler's onready children
+	# (like `stats_manager`) may not be initialized yet.
+	call_deferred("_refresh_panel")
+
+	# Also update elemental/buff icons after deferred ready
+	call_deferred("_update_elemental_and_status_icons")
+
+
+func _unbind_battler() -> void:
+	if _bound_battler == null:
+		return
+
+	if _bound_battler.health_changed.is_connected(_on_battler_health_changed):
+		_bound_battler.health_changed.disconnect(_on_battler_health_changed)
+	# removed: disconnect mana_changed (we use DownManager signals)
+	if _bound_battler.ui_state_changed.is_connected(_on_battler_ui_state_changed):
+		_bound_battler.ui_state_changed.disconnect(_on_battler_ui_state_changed)
+	if _bound_battler.downed.is_connected(_on_battler_downed):
+		_bound_battler.downed.disconnect(_on_battler_downed)
+
+	if affinity_panels != null:
+		affinity_panels.battler = null
+
+	_bound_battler = null
+
+	# Clear icons when unbound
+	if primer_icon_slot != null:
+		primer_icon_slot.set_style(null)
+	if trigger_icon_slot != null:
+		trigger_icon_slot.set_style(null)
+	# if buff_icon_rect != null:
+	# 	buff_icon_rect.visible = false
+	# if debuff_icon_rect != null:
+	# 	debuff_icon_rect.visible = false
+	if atk_buff_icon_rect != null:
+		atk_buff_icon_rect.visible = false
+	if atk_debuff_icon_rect != null:
+		atk_debuff_icon_rect.visible = false
+	if m_atk_label != null:
+		m_atk_label.text = ""
+	if p_atk_label != null:
+		p_atk_label.text = ""
+	if def_buff_icon_rect != null:
+		def_buff_icon_rect.visible = false
+	if def_debuff_icon_rect != null:
+		def_debuff_icon_rect.visible = false
+	if m_def_label != null:
+		m_def_label.text = ""
+	if p_def_label != null:
+		p_def_label.text = ""
+	if spd_buff_icon_rect != null:
+		spd_buff_icon_rect.visible = false
+	if spd_debuff_icon_rect != null:
+		spd_debuff_icon_rect.visible = false
+	if spd_label != null:
+		spd_label.text = ""
+	if down_buff_icon_rect != null:
+		down_buff_icon_rect.visible = false
+	if down_debuff_icon_rect != null:
+		down_debuff_icon_rect.visible = false
+	if down_label != null:
+		down_label.text = ""
+
+	# Clear affinity panels when unbound
+	# if primer_icon_slot != null:
+	# 	primer_icon_slot.set_style(null)
+	# if trigger_icon_slot != null:
+	# 	trigger_icon_slot.set_style(null)
+
+
+func _refresh_panel() -> void:
+	if hp_value_label == null or hp_bar == null or down_bar == null or active_stats_root == null:
+		return
+
+	if _bound_battler == null or not is_instance_valid(_bound_battler) or _bound_battler.stats_manager == null:
+		hp_value_label.text = "Monster"
+		hp_bar.value = 0.0
+		down_bar.value = 0.0
+		return
+
+	var max_hp: int = _bound_battler.stats_manager.get_active_max_hp()
+	var max_down: int = _bound_battler.down_manager.max_meter if _bound_battler.down_manager != null else 100
+	var current_hp: int = _bound_battler.current_hp
+	var current_down: int = _bound_battler.down_manager.current_meter if _bound_battler.down_manager != null else 0
+
+	hp_value_label.text = _bound_battler.stats.character_name
+	hp_bar.max_value = float(max_hp)
+	hp_bar.value = float(current_hp)
+	down_bar.max_value = float(max_down)
+	down_bar.value = float(current_down)
+
+	active_stats_root.visible = show_active_stats_debug
+	if follow_target and _bound_battler != null and is_instance_valid(_bound_battler):
+		position = _bound_battler.get_global_transform_with_canvas().origin + screen_offset
+
+
+func _on_battler_health_changed(_new_hp: int) -> void:
+	_refresh_panel()
+
+
+# mana_changed handler removed — down meter updates use DownManager signals
+
+
+func _on_battler_ui_state_changed() -> void:
+	_refresh_panel()
+
+
+func _on_battler_downed(_battler: Battler) -> void:
+	_refresh_panel()
+
+
+func _process(_delta: float) -> void:
+	if not follow_target:
+		return
+	if _bound_battler == null or not is_instance_valid(_bound_battler):
+		return
+	position = _bound_battler.get_global_transform_with_canvas().origin + screen_offset
+
+
+func _update_elemental_and_status_icons() -> void:
+	if _bound_battler == null or not is_instance_valid(_bound_battler):
+		if primer_icon_slot != null:
+			primer_icon_slot.set_style(null)
+		if trigger_icon_slot != null:
+			trigger_icon_slot.set_style(null)
+		# if buff_icon_rect != null:
+		# 	buff_icon_rect.visible = false
+		# if debuff_icon_rect != null:
+		# 	debuff_icon_rect.visible = false
+		if atk_buff_icon_rect != null:
+			atk_buff_icon_rect.visible = false
+		if atk_debuff_icon_rect != null:
+			atk_debuff_icon_rect.visible = false
+		if m_atk_label != null:
+			m_atk_label.text = ""
+		if p_atk_label != null:
+			p_atk_label.text = ""
+		if def_buff_icon_rect != null:
+			def_buff_icon_rect.visible = false
+		if def_debuff_icon_rect != null:
+			def_debuff_icon_rect.visible = false
+		if m_def_label != null:
+			m_def_label.text = ""
+		if p_def_label != null:
+			p_def_label.text = ""
+		if spd_buff_icon_rect != null:
+			spd_buff_icon_rect.visible = false
+		if spd_debuff_icon_rect != null:
+			spd_debuff_icon_rect.visible = false
+		if spd_label != null:
+			spd_label.text = ""
+		if down_buff_icon_rect != null:
+			down_buff_icon_rect.visible = false
+		if down_debuff_icon_rect != null:
+			down_debuff_icon_rect.visible = false
+		if down_label != null:
+			down_label.text = ""
+		return
+
+	# Primer icon
+	if primer_icon_slot != null:
+		var primer_style = UIIconLibrary.create_element_style(_bound_battler.elemental_primer)
+		primer_icon_slot.set_style(primer_style)
+
+	# Trigger / Reaction icon
+	if trigger_icon_slot != null:
+		var reaction = null
+		if _bound_battler.status_manager != null:
+			reaction = _bound_battler.status_manager.active_reactions
+		if reaction != null:
+			trigger_icon_slot.set_style(UIIconLibrary.create_reaction_style(reaction.id))
+		else:
+			trigger_icon_slot.set_style(null)
+
+	# Buff / Debuff icons (show first of each type)
+	var has_buff: bool = false
+	var has_debuff: bool = false
+	# if _bound_battler.status_manager != null:
+	# 	var statuses: Array = _bound_battler.status_manager.get_active_status()
+	# 	for status in statuses:
+	# 		if not has_buff and status.effect_type == StatusEffect.Type.BUFF:
+	# 			if buff_icon_rect != null:
+	# 				buff_icon_rect.texture = UIIconLibrary.create_status_style(status).icon_texture
+	# 				buff_icon_rect.visible = true
+	# 			has_buff = true
+	# 		if not has_debuff and status.effect_type == StatusEffect.Type.DEBUFF:
+	# 			if debuff_icon_rect != null:
+	# 				debuff_icon_rect.texture = UIIconLibrary.create_status_style(status).icon_texture
+	# 				debuff_icon_rect.visible = true
+	# 			has_debuff = true
+	# 		if has_buff and has_debuff:
+	# 			break
+
+	# if not has_buff and buff_icon_rect != null:
+	# 	buff_icon_rect.visible = false
+	# if not has_debuff and debuff_icon_rect != null:
+	# 	debuff_icon_rect.visible = false
+
+	# Down meter label
+	if down_label != null and _bound_battler.down_manager != null:
+		down_label.text = "%d / %d" % [_bound_battler.down_manager.current_meter, _bound_battler.down_manager.max_meter]
+
+
+func _on_status_state_changed() -> void:
+	_update_elemental_and_status_icons()
+
+
+func _on_status_applied(effect) -> void:
+	_update_elemental_and_status_icons()
+
+
+func _on_status_removed(effect) -> void:
+	_update_elemental_and_status_icons()
+
+
+func _on_down_meter_updated(current_down_meter, max_down_meter) -> void:
+	if down_label != null:
+		down_label.text = "%d / %d" % [current_down_meter, max_down_meter]
+
+
+============================================================
+--- FILE: ./Scripts/Battler/stats_manager.gd ---
+--- LAST MODIFIED: 2026-05-30 17:45:51 ---
+============================================================
+
+extends Node
+class_name StatsManager
+
+@onready var battler= get_parent()
+
+#region Equipment bonus
+func get_equipped_items() -> Array[Equipment]:
+	var equipped_items: Array[Equipment] = []
+	if battler.equipped_weapon: equipped_items.append(battler.equipped_weapon)
+	if battler.equipped_armor: equipped_items.append(battler.equipped_armor)
+	if battler.equipped_accessory: equipped_items.append(battler.equipped_accessory)
+	if battler.equipped_pant: equipped_items.append(battler.equipped_pant)
+	if battler.equipped_shoe: equipped_items.append(battler.equipped_shoe)
+	if battler.equipped_necktie: equipped_items.append(battler.equipped_necktie)
+	return equipped_items
+
+# --- Move-based bonuses
+func get_equipped_moves() -> Array[BattleMove]:
+	if not battler:
+		return []
+	if battler.equipped_moves == null:
+		return []
+	return battler.equipped_moves
+
+func _sum_move_flat(stat_key: String) -> float:
+	var total: float = 0.0
+	for m in get_equipped_moves():
+		if m == null:
+			continue
+		if m.stat_flat_bonus.has(stat_key):
+			total += float(m.stat_flat_bonus[stat_key])
+	return total
+
+func _sum_move_pct(stat_key: String) -> float:
+	var total: float = 0.0
+	for m in get_equipped_moves():
+		if m == null:
+			continue
+		if m.stat_pct_bonus.has(stat_key):
+			total += float(m.stat_pct_bonus[stat_key])
+	return total
+
+func get_eq_bonus_max_hp() -> int:
+	var bonus = 0
+	for item in get_equipped_items():
+		bonus += item.bonus_max_hp
+	return bonus
+
+func get_eq_bonus_strength() -> int:
+	var bonus = 0
+	for item in get_equipped_items():
+		bonus += item.bonus_strength
+	return bonus
+
+func get_eq_bonus_magic() -> int:
+	var bonus = 0
+	for item in get_equipped_items():
+		bonus += item.bonus_magic
+	return bonus
+
+func get_eq_bonus_physical_def() -> int:
+	var bonus = 0
+	for item in get_equipped_items():
+		bonus += item.bonus_physical_def
+	return bonus
+
+func get_eq_bonus_magic_def() -> int:
+	var bonus = 0
+	for item in get_equipped_items():
+		bonus += item.bonus_magic_def
+	return bonus
+
+func get_eq_bonus_luck() -> int:
+	var bonus = 0
+	for item in get_equipped_items():
+		bonus += item.bonus_luck
+	return bonus
+
+func get_eq_bonus_speed() -> int:
+	var bonus = 0
+	for item in get_equipped_items():
+		bonus += item.bonus_speed
+	return bonus
+
+func get_eq_bonus_crit_chance() -> float:
+	var bonus = 0.0
+	for item in get_equipped_items():
+		bonus += item.bonus_crit_rate
+	return bonus
+
+func get_eq_bonus_crit_dmg() -> float:
+	var bonus = 0.0
+	for item in get_equipped_items():
+		bonus += item.bonus_crit_dmg
+	return bonus
+
+# Family of getters that combine base stats + equipment bonuses
+func get_active_set_bonus() -> Array[String]:
+	var families = []
+	var active_bonuses: Array[String] = []
+	for equipment in get_equipped_items():
+		families.append(equipment.family)
+	for family in families:
+		if family != "None" and families.count(family) >= 2: # If we have 2 or more pieces of the same family equipped
+			active_bonuses.append(family)
+	return active_bonuses
+#endregion
+
+
+
+#region Active Stats Getters
+
+func get_active_max_hp() -> int:
+	var base_hp = battler.stats.max_hp + get_eq_bonus_max_hp()
+	base_hp += int(roundi(_sum_move_flat("max_hp")))
+	var pct = 1.0 + _sum_move_pct("max_hp")
+	# status multipliers (if present) should still apply
+	var status_mult = 1.0
+	if battler.status_manager:
+		status_mult = battler.status_manager.get_stats_multiplier("max_hp")
+	return max(1, roundi(float(base_hp) * pct * status_mult))
+
+func get_active_strength() -> int:
+	var total_strength = battler.stats.strength + get_eq_bonus_strength()
+	# apply flat move bonuses
+	total_strength += int(roundi(_sum_move_flat("strength")))
+	# combine status multiplier with move percent bonuses
+	var status_mult = battler.status_manager.get_stats_multiplier("strength")
+	var move_pct = 1.0 + _sum_move_pct("strength")
+	return max(0, roundi(float(total_strength) * status_mult * move_pct))
+		
+func get_active_magic() -> int:
+	var total_magic = battler.stats.magic + get_eq_bonus_magic()
+	total_magic += int(roundi(_sum_move_flat("magic")))
+	var status_mult = battler.status_manager.get_stats_multiplier("magic")
+	var move_pct = 1.0 + _sum_move_pct("magic")
+	return max(0, roundi(float(total_magic) * status_mult * move_pct))
+
+func get_active_def(is_magic: bool) -> int:
+	if battler.status_manager.has_zero_defense():
+		return 0
+	var base_def = battler.stats.magic_def if is_magic else battler.stats.physical_def
+	var eq_def = get_eq_bonus_magic_def() if is_magic else get_eq_bonus_physical_def()
+	var total_def = base_def + eq_def
+	# add move flat bonuses for specific defense types
+	if is_magic:
+		total_def += int(roundi(_sum_move_flat("magic_def")))
+	else:
+		total_def += int(roundi(_sum_move_flat("physical_def")))
+
+	var multiplier = battler.status_manager.get_stats_multiplier("defense")
+	var adrenaline_multiplier = battler.get_adrenaline_defense_multiplier()
+	var move_pct = 1.0
+	if is_magic:
+		move_pct += _sum_move_pct("magic_def")
+	else:
+		move_pct += _sum_move_pct("physical_def")
+	return max(0, roundi(float(total_def) * multiplier * adrenaline_multiplier * move_pct))
+
+func get_active_luck() -> int:
+	var total = battler.stats.luck + get_eq_bonus_luck()
+	total += int(roundi(_sum_move_flat("luck")))
+	var move_pct = 1.0 + _sum_move_pct("luck")
+	return max(0, roundi(float(total) * move_pct))
+
+func get_active_speed() -> int:
+	var total_speed = battler.stats.speed + get_eq_bonus_speed()
+	total_speed += int(roundi(_sum_move_flat("speed")))
+	var status_mult = battler.status_manager.get_stats_multiplier("speed")
+	var move_pct = 1.0 + _sum_move_pct("speed")
+	return max(0, roundi(float(total_speed) * status_mult * move_pct))
+
+func get_active_crit_chance() -> float:
+	var total_crit_rate = battler.stats.crit_rate
+	total_crit_rate += get_eq_bonus_crit_chance()
+	# move flat and pct (pct applied multiplicatively after status mult)
+	total_crit_rate += _sum_move_flat("crit_chance")
+	total_crit_rate += (get_active_luck() / 1000.0)
+	var status_mult = 1.0
+	if battler.status_manager:
+		status_mult = battler.status_manager.get_stats_multiplier("crit_chance")
+	var move_pct = 1.0 + _sum_move_pct("crit_chance")
+	return total_crit_rate * status_mult * move_pct
+
+func get_active_crit_dmg() -> float:
+	var total_crit_dmg = 1.5 + battler.stats.crit_dmg
+	# equipment
+	for equipment in get_equipped_items():
+		if "bonus_crit_dmg" in equipment:
+			total_crit_dmg += equipment.bonus_crit_dmg
+	# move flat
+	total_crit_dmg += _sum_move_flat("crit_dmg")
+	# status multipliers
+	var status_mult = 1.0
+	if battler.status_manager:
+		status_mult = battler.status_manager.get_stats_multiplier("crit_dmg")
+	# move pct
+	var move_pct = 1.0 + _sum_move_pct("crit_dmg")
+	return total_crit_dmg * status_mult * move_pct
+
+func get_stat_debug_breakdown(stat_key: String) -> Dictionary:
+	var base_value: float = 0.0
+	var equipment_bonus: float = 0.0
+	var move_flat_bonus: float = _sum_move_flat(stat_key)
+	var move_pct_bonus: float = _sum_move_pct(stat_key)
+	var status_multiplier: float = 1.0
+	var extra_multiplier: float = 1.0
+	var active_value: float = 0.0
+
+	match stat_key:
+		"max_hp":
+			base_value = float(battler.stats.max_hp)
+			equipment_bonus = float(get_eq_bonus_max_hp())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("max_hp")
+			active_value = float(get_active_max_hp())
+		"strength":
+			base_value = float(battler.stats.strength)
+			equipment_bonus = float(get_eq_bonus_strength())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("strength")
+			active_value = float(get_active_strength())
+		"magic":
+			base_value = float(battler.stats.magic)
+			equipment_bonus = float(get_eq_bonus_magic())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("magic")
+			active_value = float(get_active_magic())
+		"physical_def":
+			base_value = float(battler.stats.physical_def)
+			equipment_bonus = float(get_eq_bonus_physical_def())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("defense")
+			extra_multiplier = battler.get_adrenaline_defense_multiplier()
+			active_value = float(get_active_def(false))
+		"magic_def":
+			base_value = float(battler.stats.magic_def)
+			equipment_bonus = float(get_eq_bonus_magic_def())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("defense")
+			extra_multiplier = battler.get_adrenaline_defense_multiplier()
+			active_value = float(get_active_def(true))
+		"luck":
+			base_value = float(battler.stats.luck)
+			equipment_bonus = float(get_eq_bonus_luck())
+			active_value = float(get_active_luck())
+		"speed":
+			base_value = float(battler.stats.speed)
+			equipment_bonus = float(get_eq_bonus_speed())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("speed")
+			active_value = float(get_active_speed())
+		"crit_chance":
+			base_value = float(battler.stats.crit_rate)
+			equipment_bonus = float(get_eq_bonus_crit_chance())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("crit_chance")
+			active_value = float(get_active_crit_chance())
+		"crit_dmg":
+			base_value = 1.5 + float(battler.stats.crit_dmg)
+			equipment_bonus = float(get_eq_bonus_crit_dmg())
+			if battler.status_manager:
+				status_multiplier = battler.status_manager.get_stats_multiplier("crit_dmg")
+			active_value = float(get_active_crit_dmg())
+		_:
+			active_value = 0.0
+
+	return {
+		"base": base_value,
+		"equipment": equipment_bonus,
+		"move_flat": move_flat_bonus,
+		"move_pct": move_pct_bonus,
+		"status_mult": status_multiplier,
+		"extra_mult": extra_multiplier,
+		"active": active_value,
+	}
+#endregion
+
+
+============================================================
+--- FILE: ./Scripts/Battler/status_manager.gd ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+extends Node
+class_name StatusManager
+
+signal status_applied(effect)
+signal status_removed(effect)
+signal chain_reaction_triggered(reaction)
+signal status_state_changed
+signal tick_damage_taken(amount: int, effect_name: String)
+signal tick_down_meter_increased(amount: int)
+signal request_ally_heal(amount: int, is_enemy: bool)
+
+@onready var battler = get_parent() 
+var active_status: Array[StatusEffect] = []
+var active_reactions: StatusEffect = null 
+var reaction_duration: int = 0
+
+#region Friendly Fire States
+var brainwashed: bool = false 
+var shares_damage_with_party: bool = false 
+var affects_both_parties: bool = false 
+#endregion
+
+#region Status Effect Management
+func apply_status_effect(effect: StatusEffect):
+	var effect_instance = effect.duplicate(true)
+	
+	if effect_instance.duration_turns <= 0:
+		effect_instance.duration_turns = 2
+		
+	# Debug: show incoming effect flags and instance copy
+	print("[DEBUG] apply_status_effect: effect_name=", effect.effect_name, " effect.is_chain_reaction=", effect.is_chain_reaction, " effect.guarantees_next_crit=", effect.guarantees_next_crit)
+	print("[DEBUG] apply_status_effect: instance.guarantees_next_crit=", effect_instance.guarantees_next_crit)
+	
+	if effect.is_chain_reaction:
+		_trigger_chain_reaction(effect_instance)
+		print("Applied chain reaction: ", effect_instance.effect_name, " to ", battler.stats.character_name)
+	else:
+		active_status.append(effect_instance)
+		print("Applied status effect: ", effect_instance.effect_name, " to ", battler.stats.character_name)
+		emit_signal("status_applied", effect_instance)
+		_emit_status_state_changed()
+
+func clear_status_effects():
+	for status in active_status:
+		emit_signal("status_removed", status)
+	active_status.clear()
+	remove_active_reaction() # Use the cleanup function!
+	_emit_status_state_changed()
+	print("Cleared all status effects from ", battler.stats.character_name)
+
+func override_old_chain_reactions():
+	var removed_any: bool = false
+	for i in range(active_status.size() -1, -1, -1):
+		if active_status[i].is_chain_reaction:
+			emit_signal("status_removed", active_status[i])
+			active_status.remove_at(i)
+			removed_any = true
+	if removed_any:
+		_emit_status_state_changed()
+
+func _trigger_chain_reaction(reaction: StatusEffect):
+	if active_reactions != null:
+		emit_signal("status_removed", active_reactions)
+	active_reactions = reaction
+	emit_signal("status_applied", reaction)
+	emit_signal("chain_reaction_triggered", reaction)
+	_emit_status_state_changed()
+
+	if reaction.is_conductive:
+		_handle_conductor_reaction(reaction)
+
+# --- BUG 2 FIX: CLEAN UP THE FLAGS SO THEY DON'T BLEED ---
+func remove_active_reaction():
+	if active_reactions != null:
+		emit_signal("status_removed", active_reactions)
+	active_reactions = null
+	brainwashed = false
+	shares_damage_with_party = false
+	affects_both_parties = false
+	_emit_status_state_changed()
+	print("Removed active chain reaction and cleared flags from ", battler.stats.character_name)
+
+func process_turn_start():
+	# Tick normal status effects
+	for i in range(active_status.size() -1, -1, -1):
+		var status = active_status[i]
+		_process_tick(status)
+
+		status.duration_turns -= 1
+		if status.duration_turns < 0:
+			print(status.effect_name, " has worn off from ", battler.stats.character_name, "!")
+			emit_signal("status_removed", status)
+			active_status.remove_at(i)
+			_emit_status_state_changed()
+
+	# Tick active chain reaction
+	if active_reactions != null:
+		_process_tick(active_reactions) 
+		active_reactions.duration_turns -= 1 
+		if active_reactions.duration_turns < 0:
+			print(active_reactions.effect_name, " has worn off from ", battler.stats.character_name, "!")
+			remove_active_reaction() # Use the cleanup function!
+
+# --- BUG 3 FIX: INDENTATION PULLED OUT OF THE FOR LOOP ---
+func check_removal_triggers(attack_type: String):
+	for i in range(active_status.size() -1, -1, -1):
+		var status = active_status[i]
+		if (attack_type == "physical" and status.removes_on_physical_hit) or (attack_type == "magic" and status.removes_on_magic_hit):
+			print(status.effect_name, " was removed from ", battler.stats.character_name, " due to ", attack_type, " hit!")
+			emit_signal("status_removed", status)
+			active_status.remove_at(i)
+			_emit_status_state_changed()
+
+	# THIS MUST BE OUTSIDE THE FOR LOOP!
+	if active_reactions != null:
+		if (attack_type == "physical" and active_reactions.removes_on_physical_hit) or (attack_type == "magic" and active_reactions.removes_on_magic_hit):
+			print("SHATTER! ", active_reactions.effect_name, " was removed due to ", attack_type, " hit!")
+			remove_active_reaction() # Use the cleanup function!
+
+#endregion
+
+#region Helper Functions
+func has_heal_block() -> bool:
+	for status in active_status:
+		if status.disables_healing: return true 
+	if active_reactions != null and active_reactions.disables_healing: return true
+	return false
+
+func is_stunned() -> bool:
+	for status in active_status:
+		if status.is_stunned: return true 
+	if active_reactions != null and active_reactions.is_stunned: return true
+	return false
+
+func has_zero_defense() -> bool: 
+	for status in active_status:
+		if status.sets_defense_to_zero: return true 
+	if active_reactions != null and active_reactions.sets_defense_to_zero: return true
+	return false
+
+func has_flipped_weakness() -> bool: 
+	for status in active_status:
+		if status.flips_weaknesses: return true 
+	if active_reactions != null and active_reactions.flips_weaknesses: return true
+	return false
+
+func has_magic_lock() -> bool:
+	for status in active_status:
+		if status.locks_magic: return true
+	if active_reactions != null and active_reactions.locks_magic: return true
+	return false
+
+func has_physical_lock() -> bool:
+	for status in active_status:
+		if status.locks_physical: return true
+	if active_reactions != null and active_reactions.locks_physical: return true
+	return false
+
+func has_instant_down_exposure() -> bool:
+	for status in active_status:
+		if status.get("causes_instant_down"): return true
+	if active_reactions != null and active_reactions.get("causes_instant_down"): return true
+	return false
+
+func guaranteed_crit() -> bool:
+	for i in range(active_status.size() - 1, -1, -1):
+		if active_status[i].guarantees_next_crit:
+			var name = active_status[i].effect_name
+			emit_signal("status_removed", active_status[i])
+			active_status.remove_at(i) 
+			_emit_status_state_changed()
+			print("guaranteed_crit: consumed from active_status -> ", name)
+			return true
+			
+	if active_reactions != null and active_reactions.guarantees_next_crit:
+		print("guaranteed_crit: consumed from active_reactions -> ", active_reactions.effect_name)
+		remove_active_reaction()
+		return true
+	return false
+
+func has_guaranteed_crit() -> bool:
+	for status in active_status:
+		if status.guarantees_next_crit:
+			return true
+	if active_reactions != null and active_reactions.guarantees_next_crit:
+		return true
+	return false
+
+func count_debuffs() -> int:
+	var debuff_count = 0
+	for status in active_status:
+		if status.effect_type == StatusEffect.Type.DEBUFF: debuff_count += 1
+	if active_reactions != null and active_reactions.effect_type == StatusEffect.Type.DEBUFF: debuff_count += 1
+	return debuff_count
+
+#region Conductive & Proxy AoE
+func has_conductive_reaction() -> bool:
+	if active_reactions != null and active_reactions.is_conductive: return true
+	for status in active_status:
+		if status.is_conductive: return true
+	return false
+
+func get_conductive_reaction() -> StatusEffect:
+	if active_reactions != null and active_reactions.is_conductive: return active_reactions
+	for status in active_status:
+		if status.is_conductive: return status
+	return null
+
+func apply_conductive_damage(base_damage: int, jumps: int = 0) -> int:
+	var conductive = get_conductive_reaction()
+	if conductive == null: return base_damage
+	var final_damage = base_damage
+	for i in range(jumps):
+		final_damage = int(final_damage * (1.0 - conductive.decay_per_jump))
+		final_damage = max(1, final_damage)
+	return final_damage
+#endregion
+
+#region Friendly Fire Helpers
+func is_brainwashed() -> bool: return brainwashed
+func set_brainwash(state: bool):
+	brainwashed = state
+	_emit_status_state_changed()
+	if state: print(battler.stats.character_name, " has been BRAINWASHED!")
+	else: print(battler.stats.character_name, " is no longer brainwashed!")
+
+func should_share_damage_party_wide() -> bool: return shares_damage_with_party
+func set_party_wide_damage(state: bool):
+	shares_damage_with_party = state
+	_emit_status_state_changed()
+func affects_both_teams() -> bool: return affects_both_parties
+func set_affects_both_parties(state: bool):
+	affects_both_parties = state
+	_emit_status_state_changed()
+#endregion
+
+func _process_tick(status):
+	if status.dot_dmg > 0: emit_signal("tick_damage_taken", status.dot_dmg, status.effect_name)
+	if status.down_meter_fill_per_turn > 0 and not battler.is_down: emit_signal("tick_down_meter_increased", status.down_meter_fill_per_turn)
+	if status.heals_lowest_ally_per_turn > 0 :
+		var is_enemy = (battler.get_parent().name == "EnemyParty")
+		emit_signal("request_ally_heal", status.heals_lowest_ally_per_turn, is_enemy)
+
+func get_stats_multiplier(stat_type: String) -> float:
+	var total_mult = 1.0
+	var apply_mult = func(val: float): return 1.0 + val 
+	for status in active_status: total_mult *= apply_mult.call(_get_val_from_status(status, stat_type))
+	if active_reactions != null: total_mult *= apply_mult.call(_get_val_from_status(active_reactions, stat_type))
+	return max(0.1, total_mult) 
+
+func get_down_meter_fill_multiplier() -> float:
+	var mult = 1.0
+	var apply_mult = func(val: float): return 1.0 + val 
+	for status in active_status: mult *= apply_mult.call(_get_val_from_status(status, "down_meter_fill"))
+	if active_reactions != null: mult *= apply_mult.call(_get_val_from_status(active_reactions, "down_meter_fill"))
+	return max(0.1, mult) 
+
+func _get_val_from_status(status: StatusEffect, stat_type: String) -> float:
+	match stat_type:
+		"strength": return status.stat_mult_strength
+		"magic": return status.stat_mult_magic
+		"defense": return status.stat_mult_defense
+		"speed": return status.stat_mult_speed
+		"accuracy": return status.stat_mult_accuracy
+		"crit_chance": return status.stat_mult_crit_chance
+		"crit_dmg": return status.stat_mult_crit_dmg
+		"down_meter_fill": return status.stat_mult_down_meter_fill
+	return 0.0
+	
+
+func _handle_conductor_reaction(reaction: StatusEffect): pass
+
+func _emit_status_state_changed() -> void:
+	emit_signal("status_state_changed")
+
+func get_active_status() -> Array[StatusEffect]:
+	var out = active_status.duplicate()
+	if active_reactions != null: out.append(active_reactions)
+	return out
+#endregion
+
+
+============================================================
+--- FILE: ./Scripts/Battler/affinity_manager.gd ---
+--- LAST MODIFIED: 2026-05-07 12:36:15 ---
+============================================================
+
+extends Node
+class_name AffinityManager
+
+@onready var battler: Battler = get_parent() as Battler
+
+var temporary_elemental_overrides: Dictionary = {}
+var temporary_physical_overrides: Dictionary = {}
+
+func get_base_affinity(is_magic: bool, element: GlobalData.Element = GlobalData.Element.NEUTRAL, phys_type: GlobalData.PhysicalType = GlobalData.PhysicalType.NONE) -> BattlerStats.Affinity:
+	if battler == null or battler.stats == null:
+		return BattlerStats.Affinity.NORMAL
+	if is_magic:
+		return battler.stats.get_elemental_affinity(element)
+	return battler.stats.get_physical_affinity(phys_type)
+
+func get_current_affinity(is_magic: bool, element: GlobalData.Element = GlobalData.Element.NEUTRAL, phys_type: GlobalData.PhysicalType = GlobalData.PhysicalType.NONE) -> BattlerStats.Affinity:
+	var affinity: BattlerStats.Affinity = get_base_affinity(is_magic, element, phys_type)
+
+	if is_magic and temporary_elemental_overrides.has(element):
+		affinity = temporary_elemental_overrides[element]
+	elif not is_magic and temporary_physical_overrides.has(phys_type):
+		affinity = temporary_physical_overrides[phys_type]
+
+	if battler != null and battler.status_manager != null and battler.status_manager.has_flipped_weakness():
+		affinity = _flip_affinity(affinity)
+
+	return affinity
+
+func get_damage_multiplier(is_magic: bool, element: GlobalData.Element = GlobalData.Element.NEUTRAL, phys_type: GlobalData.PhysicalType = GlobalData.PhysicalType.NONE) -> float:
+	match get_current_affinity(is_magic, element, phys_type):
+		BattlerStats.Affinity.WEAK:
+			return 2.0
+		BattlerStats.Affinity.NORMAL:
+			return 1.0
+		BattlerStats.Affinity.RESIST:
+			return 0.6
+		BattlerStats.Affinity.BLOCK:
+			return 0.0
+		_:
+			return 1.0
+
+func is_weakness_hit(is_magic: bool, element: GlobalData.Element = GlobalData.Element.NEUTRAL, phys_type: GlobalData.PhysicalType = GlobalData.PhysicalType.NONE) -> bool:
+	return get_current_affinity(is_magic, element, phys_type) == BattlerStats.Affinity.WEAK
+
+func is_blocked(is_magic: bool, element: GlobalData.Element = GlobalData.Element.NEUTRAL, phys_type: GlobalData.PhysicalType = GlobalData.PhysicalType.NONE) -> bool:
+	return get_current_affinity(is_magic, element, phys_type) == BattlerStats.Affinity.BLOCK
+
+func set_element_override(element: GlobalData.Element, affinity: BattlerStats.Affinity) -> void:
+	temporary_elemental_overrides[element] = affinity
+
+func set_physical_override(phys_type: GlobalData.PhysicalType, affinity: BattlerStats.Affinity) -> void:
+	temporary_physical_overrides[phys_type] = affinity
+
+func clear_overrides() -> void:
+	temporary_elemental_overrides.clear()
+	temporary_physical_overrides.clear()
+
+func get_elemental_affinity_map() -> Dictionary:
+	if battler == null or battler.stats == null:
+		return {}
+	var result: Dictionary = {}
+	for element_name in GlobalData.Element.keys():
+		var element_value: GlobalData.Element = GlobalData.Element[element_name]
+		result[element_value] = get_current_affinity(true, element_value, GlobalData.PhysicalType.NONE)
+	return result
+
+func get_physical_affinity_map() -> Dictionary:
+	if battler == null or battler.stats == null:
+		return {}
+	var result: Dictionary = {}
+	for phys_name in GlobalData.PhysicalType.keys():
+		var phys_value: GlobalData.PhysicalType = GlobalData.PhysicalType[phys_name]
+		result[phys_value] = get_current_affinity(false, GlobalData.Element.NEUTRAL, phys_value)
+	return result
+
+func _flip_affinity(affinity: BattlerStats.Affinity) -> BattlerStats.Affinity:
+	match affinity:
+		BattlerStats.Affinity.WEAK:
+			return BattlerStats.Affinity.RESIST
+		BattlerStats.Affinity.RESIST:
+			return BattlerStats.Affinity.WEAK
+		BattlerStats.Affinity.BLOCK:
+			return BattlerStats.Affinity.NORMAL
+		BattlerStats.Affinity.NORMAL:
+			return BattlerStats.Affinity.NORMAL
+		_:
+			return BattlerStats.Affinity.NORMAL
+
+
+============================================================
+--- FILE: ./Scripts/Battler/down_manager.gd ---
+--- LAST MODIFIED: 2026-05-04 12:13:39 ---
+============================================================
+
+extends Node
+class_name DownManager
+
+signal character_downed(battler)
+signal down_meter_updated(current_down_meter, max_down_meter)
+
+@onready var battler = get_parent()
+
+var current_meter: int = 0
+var max_meter: int = 100
+var is_downed: bool = false
+
+func increase_meter(amount: int):
+	if is_downed:
+		return
+
+	current_meter += amount
+	if current_meter >= max_meter:
+		current_meter = max_meter
+		is_downed = true
+		emit_signal("character_downed", battler)
+	else:
+		emit_signal("down_meter_updated", current_meter, max_meter)
+
+func reset_meter():
+	current_meter = 0
+	is_downed = false
+	emit_signal("down_meter_updated", current_meter, max_meter)
+
+
+============================================================
+--- FILE: ./Resources/Equipment.gd ---
+--- LAST MODIFIED: 2026-04-28 12:40:10 ---
+============================================================
+
+extends Resource
+
+class_name Equipment
+
+enum Slot { WEAPON, ARMOR, SHOE, NECKTIE, PANTS, ACCESSORY }
+
+@export var id: String = "" #wpn_starter_sword
+@export var equip_name: String = "Mock up Sword"
+@export var equip_desc: String = "Training Sword for Beginner"
+@export var slot_type: Slot = Slot.WEAPON
+# @export var attack_type: GlobalData.PhysicalType = GlobalData.PhysicalType.SLASH
+@export var weapon_attack_move: BattleMove
+
+@export var set_family: String = "None"
+
+
+@export_group("Stat Bonuses")
+@export var bonus_max_hp:int = 0
+@export var bonus_strength:int = 0
+@export var bonus_magic:int = 0
+@export var bonus_physical_def:int = 0
+@export var bonus_magic_def:int = 0
+@export var bonus_luck:int=0
+@export var bonus_speed:int=0
+
+@export_group("Crit Bonuses")
+@export var bonus_crit_rate:float= 0.0
+@export var bonus_crit_dmg:float= 0.0
+
+@export_group("Firearm")
+@export var ammo:int = 0
+@export var bullet_type:GlobalData.Element = GlobalData.Element.NEUTRAL
+
+
+
+
+============================================================
+--- FILE: ./Resources/Consumable.gd ---
+--- LAST MODIFIED: 2026-05-09 08:11:45 ---
+============================================================
+
+extends Resource
+class_name Consumable
+
+@export var id: String = "" # Unique item id, e.g. itm_health_potion
+@export var item_name: String = "" # Friendly name shown in UI
+@export var description: String = "" # Long description for tooltips / UI
+
+@export_group("Targeting")
+enum TargetScope { SELF, LOWEST_ALLY, SINGLE_ALLY, ALL_ALLIES, SINGLE_ENEMY, ALL_ENEMIES, EVERYONE }
+@export var target_scope: TargetScope = TargetScope.SELF
+
+@export_group("Healing Data")
+@export var heals_hp: int = 0 # Flat HP heal applied per target
+@export var heals_mp: int = 0 # Flat MP heal applied per target
+
+@export_group("Cure")
+@export var cures_status: bool = false # If true, clears all status effects from the target(s)
+@export var cures_specific: Array[String] = [] # Optional list of specific status IDs to remove (future)
+
+@export_group("Effects")
+@export var applied_buff: StatusEffect # Applied to target(s) as a status (use StatusEffect resources)
+@export var applied_debuff: StatusEffect # Applied to target(s) as a debuff
+
+@export_group("UI / Metadata")
+@export var icon_path: String = "" # res:// path to icon for inventory UI
+@export var rarity: int = 0 # Numeric rarity for sorting/filtering in UI
+@export var stackable: bool = true # Whether multiple of this item stack in inventory
+
+# Template / Notes for designers (not used at runtime):
+# - Consider adding `hp_percent` or `mp_percent` for percent-based heals.
+# - Use `target_scope` to indicate how a BattleManager should route this item.
+# - Status application is performed via `StatusManager.apply_status_effect`, which will duplicate the StatusEffect instance.
+
+
+============================================================
+--- FILE: ./Resources/ElementAffinityEntry.gd ---
+--- LAST MODIFIED: 2026-05-07 12:36:15 ---
+============================================================
+
+extends Resource
+class_name ElementAffinityEntry
+
+@export var element: GlobalData.Element = GlobalData.Element.NEUTRAL
+@export var affinity: BattlerStats.Affinity = BattlerStats.Affinity.NORMAL
+
+
+============================================================
+--- FILE: ./Resources/Move.gd ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+extends Resource
+class_name BattleMove
+
+enum Target {SINGLE_ENEMY, ALL_ENEMIES, SINGLE_ALLY, ALL_ALLIES, SELF}
+enum MoveCategory {OFFENSE, HEALING, STATUS, SUPPORT, UTILITY}
+enum MoveTemplate {AUTO, ATTACK, HEAL, STATUS, SUPPORT, UTILITY}
+enum TurnOrderManipulation {NONE, PLACE_BEFORE_ACTOR, PLACE_AFTER_ACTOR, HASTEN_TARGET, DELAY_TARGET}
+
+@export var id: String="" # Unique identifier for the move, used for referencing in code and data structures
+@export_group("Visual & Info")
+@export var move_name: String = "New Move"
+@export_multiline var description: String = "A new move."
+@export var icon: Texture2D = null # Direct per-move texture override (highest icon priority)
+@export var ui_icon_name: StringName = &"" # Optional key resolved by UIIconLibrary key map (element_*, template_*, move_*, etc.)
+@export var template_mode: MoveTemplate = MoveTemplate.AUTO
+@export var vfx_scene: PackedScene = null
+
+# Target
+@export var target_type: Target = Target.SINGLE_ENEMY
+
+@export_group("Damage")
+@export var power: int = 5
+@export var mp_cost: int=0
+@export var is_magic: bool=false
+@export var element: GlobalData.Element = GlobalData.Element.NEUTRAL
+@export var chance_applying_element: float = 0.0
+
+@export var physical_type: GlobalData.PhysicalType = GlobalData.PhysicalType.NONE
+
+@export_group("Turn Order")
+@export var action_value_bonus: int = 0
+@export var action_value_speed_scale: float = 10.0
+@export var turn_order_manipulation: TurnOrderManipulation = TurnOrderManipulation.NONE
+@export var turn_order_amount: int = 1
+
+# Healing
+@export_group("Healing & Support")
+@export var heals_hp: int = 0
+@export var heals_mp: int = 0
+@export var cures_status: bool = false
+
+@export_group("Status Effect")
+@export var applied_status: StatusEffect = null
+@export var status_chance: float = 1.0
+
+@export_group("Move Stat Modifiers")
+# Flat bonuses applied to stats while this move is equipped. Keys: "strength","magic","speed","luck","physical_def","magic_def","crit_chance","crit_dmg","max_hp","max_mp"
+@export var stat_flat_bonus: Dictionary = {}
+# Percent bonuses (0.15 == +15%) applied multiplicatively alongside status multipliers. Keys same as stat_flat_bonus.
+@export var stat_pct_bonus: Dictionary = {}
+
+func get_move_category() -> MoveCategory:
+	if power > 0:
+		return MoveCategory.OFFENSE
+	if heals_hp > 0 or heals_mp > 0:
+		return MoveCategory.HEALING
+	if applied_status != null:
+		return MoveCategory.STATUS
+	if cures_status:
+		return MoveCategory.SUPPORT
+	return MoveCategory.UTILITY
+
+func get_move_template() -> MoveTemplate:
+	if template_mode != MoveTemplate.AUTO:
+		return template_mode
+
+	match get_move_category():
+		MoveCategory.OFFENSE:
+			return MoveTemplate.ATTACK
+		MoveCategory.HEALING:
+			return MoveTemplate.HEAL
+		MoveCategory.STATUS:
+			return MoveTemplate.STATUS
+		MoveCategory.SUPPORT:
+			return MoveTemplate.SUPPORT
+		MoveCategory.UTILITY:
+			return MoveTemplate.UTILITY
+
+	return MoveTemplate.UTILITY
+
+func get_move_template_label() -> String:
+	match get_move_template():
+		MoveTemplate.ATTACK:
+			return "Attack Template"
+		MoveTemplate.HEAL:
+			return "Heal Template"
+		MoveTemplate.STATUS:
+			return "Status Template"
+		MoveTemplate.SUPPORT:
+			return "Support Template"
+		MoveTemplate.UTILITY:
+			return "Utility Template"
+		_:
+			return "Auto Template"
+
+func get_move_category_label() -> String:
+	match get_move_category():
+		MoveCategory.OFFENSE:
+			return "Attack"
+		MoveCategory.HEALING:
+			return "Heal"
+		MoveCategory.STATUS:
+			return "Status"
+		MoveCategory.SUPPORT:
+			return "Support"
+		_:
+			return "Utility"
+
+func get_target_label() -> String:
+	match target_type:
+		Target.SINGLE_ENEMY:
+			return "Single Enemy"
+		Target.ALL_ENEMIES:
+			return "All Enemies"
+		Target.SINGLE_ALLY:
+			return "Single Ally"
+		Target.ALL_ALLIES:
+			return "All Allies"
+		Target.SELF:
+			return "Self"
+	return "Unknown"
+
+func _append_icon_candidate(candidates: PackedStringArray, value: StringName) -> void:
+	if value != &"" and not candidates.has(String(value)):
+		candidates.append(String(value))
+
+func get_icon_candidates() -> PackedStringArray:
+	var candidates: PackedStringArray = PackedStringArray()
+
+	_append_icon_candidate(candidates, ui_icon_name)
+
+	if icon != null:
+		_append_icon_candidate(candidates, &"custom_texture")
+
+	var template_key: String = "template_%s" % get_move_template_label().to_lower().replace(" ", "_")
+	_append_icon_candidate(candidates, StringName(template_key))
+
+	var category_key: String = "move_%s" % get_move_category_label().to_lower().replace(" ", "_")
+	_append_icon_candidate(candidates, StringName(category_key))
+
+	if is_magic and element != GlobalData.Element.NEUTRAL:
+		var element_key: String = "element_%s" % GlobalData.Element.keys()[element].to_lower()
+		_append_icon_candidate(candidates, StringName(element_key))
+	elif not is_magic and physical_type != GlobalData.PhysicalType.NONE:
+		# PhysicalType enum was simplified to a single PHYSICAL value.
+		# Guard against old serialized numeric values that may be out of range.
+		var phys_keys := GlobalData.PhysicalType.keys()
+		var phys_name: String = "physical_physical"
+		if physical_type >= 0 and physical_type < phys_keys.size():
+			phys_name = "physical_%s" % phys_keys[physical_type].to_lower()
+		_append_icon_candidate(candidates, StringName(phys_name))
+
+	match target_type:
+		Target.ALL_ENEMIES, Target.ALL_ALLIES:
+			_append_icon_candidate(candidates, &"target_aoe")
+		Target.SELF:
+			_append_icon_candidate(candidates, &"target_self")
+
+	return candidates
+
+func get_icon_key() -> StringName:
+	var candidates := get_icon_candidates()
+	if candidates.size() > 0:
+		return StringName(candidates[0])
+	return &""
+
+func get_placeholder_icon_name() -> StringName:
+	if ui_icon_name != &"":
+		return ui_icon_name
+
+	match get_move_template():
+		MoveTemplate.ATTACK:
+			if target_type == Target.ALL_ENEMIES or target_type == Target.ALL_ALLIES:
+				return &"Group"
+			if is_magic:
+				# All magic elements use the generic magic icon
+				return &"ColorRect"
+			return &"Sword"
+		MoveTemplate.HEAL:
+			return &"Heal"
+		MoveTemplate.STATUS:
+			if applied_status != null and applied_status.effect_type == StatusEffect.Type.BUFF:
+				return &"Buff"
+			return &"Debuff"
+		MoveTemplate.SUPPORT:
+			return &"Heal"
+		MoveTemplate.UTILITY:
+			return &"Node"
+		_:
+			return &"Node"
+
+func get_icon_tags() -> PackedStringArray:
+	return get_icon_candidates()
+
+func get_button_label() -> String:
+	var label_parts: PackedStringArray = PackedStringArray()
+	label_parts.append(get_move_template_label())
+	label_parts.append(get_target_label())
+
+	if is_magic and element != GlobalData.Element.NEUTRAL:
+		label_parts.append(GlobalData.Element.keys()[element].capitalize())
+	elif not is_magic and physical_type != GlobalData.PhysicalType.NONE:
+		# Use a stable, human-friendly label for physical moves.
+		# If serialized data contains old enum indices, default to "Physical".
+		var phys_label := "Physical"
+		var phys_keys := GlobalData.PhysicalType.keys()
+		if physical_type >= 0 and physical_type < phys_keys.size():
+			phys_label = phys_keys[physical_type].capitalize()
+		label_parts.append(phys_label)
+
+	return "%s [%s]" % [move_name, ", ".join(label_parts)]
+
+func get_action_value(attacker: Battler = null) -> int:
+	var speed_component: float = 0.0
+	if attacker != null and attacker.stats_manager != null:
+		speed_component = float(attacker.stats_manager.get_active_speed()) * action_value_speed_scale
+
+	return max(1, roundi(speed_component + float(action_value_bonus)))
+
+
+============================================================
+--- FILE: ./Resources/PhysicalAffinityEntry.gd ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+extends Resource
+class_name PhysicalAffinityEntry
+
+@export var affinity: BattlerStats.Affinity = BattlerStats.Affinity.NORMAL
+
+
+============================================================
+--- FILE: ./Resources/Stats.gd ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+extends Resource
+class_name BattlerStats
+
+enum Affinity {WEAK, NORMAL, RESIST, BLOCK}
+@export var id: String = "enm_monster"
+@export var character_name: String = "Monster" 
+@export var element: GlobalData.Element = GlobalData.Element.NEUTRAL
+
+@export_group("Affinities")
+@export var elemental_affinities: Array[ElementAffinityEntry] = []
+@export var physical_affinity: BattlerStats.Affinity = BattlerStats.Affinity.NORMAL
+
+func get_elemental_affinity(element_type: GlobalData.Element) -> Affinity:
+	for entry in elemental_affinities:
+		if entry != null and entry.element == element_type:
+			return entry.affinity
+	return Affinity.NORMAL
+
+func get_physical_affinity(physical_type: GlobalData.PhysicalType) -> Affinity:
+	# Physical type is consolidated; return the single configured physical affinity.
+	return physical_affinity
+
+func get_elemental_affinity_map() -> Dictionary:
+	var result: Dictionary = {}
+	for entry in elemental_affinities:
+		if entry != null:
+			result[entry.element] = entry.affinity
+	return result
+
+func get_physical_affinity_map() -> Dictionary:
+	var result: Dictionary = {}
+	# Map the consolidated physical affinity to the PHYSICAL enum key
+	result[GlobalData.PhysicalType.PHYSICAL] = physical_affinity
+	return result
+
+@export_group("Base Stats")
+@export var max_hp: int = 50
+@export var max_mp: int = 20
+@export var speed: int = 10
+
+@export_group("Offense")
+@export var strength: int = 10
+@export var magic: int = 10
+
+@export_group("Defense")
+@export var physical_def: int = 5
+@export var magic_def: int = 5
+
+@export_group("Crit")
+@export var luck: int = 5
+@export var crit_rate: float = 0.0
+@export var crit_dmg: float = 0.0
+
+
+
+
+============================================================
+--- FILE: ./Resources/chain_reaction_importer.gd ---
+--- LAST MODIFIED: 2026-05-07 12:36:15 ---
+============================================================
+
+@tool
+extends Node
+
+# --- CONFIGURATION ---
+@export var json_file_path: String = "res://reactions.json"
+@export var output_directory: String = "res://Resources/Reactions/"
+
+# Clickable checkbox in the Godot Inspector
+@export var run_importer: bool = false:
+	set(value):
+		if value:
+			_import_json()
+			run_importer = false # Reset the button immediately
+
+func _import_json():
+	print("--- Starting JSON Import ---")
+	
+	if not FileAccess.file_exists(json_file_path): 
+		print("ERROR: Could not find JSON at ", json_file_path)
+		return
+		
+	# Ensure output directory exists (make sure path ends with a slash)
+	if output_directory.ends_with("/") == false:
+		output_directory += "/"
+	if not DirAccess.dir_exists_absolute(output_directory):
+		DirAccess.make_dir_recursive_absolute(output_directory)
+		
+	# 1. Read the whole file as text
+	var file_string = FileAccess.get_file_as_string(json_file_path)
+	
+	# 2. Parse it into a Godot Array of Dictionaries
+	var parsed_data = JSON.parse_string(file_string)
+	
+	if parsed_data == null or typeof(parsed_data) != TYPE_ARRAY:
+		print("ERROR: Invalid JSON format. Make sure the file starts with [ and ends with ]")
+		return
+		
+	# 3. Loop through every reaction in the JSON
+	for data in parsed_data:
+		var new_reaction = StatusEffect.new()
+
+		new_reaction.id = data.get("id", "")
+		new_reaction.effect_name = data.get("name", "")
+		new_reaction.description = data.get("description", "")
+		new_reaction.effect_type = data.get("effect_type", 1)
+		new_reaction.duration_turns = data.get("duration_turns", 1)
+		new_reaction.is_chain_reaction = data.get("is_chain_reaction", true)
+
+		# Supports multiple recipes for one chain reaction.
+		# Accepted JSON forms:
+		# 1) "reaction_recipes": [{"primer": 1, "trigger": 2}, ...]
+		# 2) "reaction_recipes": [[1, 2], ...]
+		if data.has("reaction_recipes") and typeof(data["reaction_recipes"]) == TYPE_ARRAY:
+			for recipe in data["reaction_recipes"]:
+				if typeof(recipe) == TYPE_DICTIONARY:
+					if recipe.has("primer") and recipe.has("trigger"):
+						new_reaction.reaction_recipes.append(Vector2i(int(recipe["primer"]), int(recipe["trigger"])))
+				elif typeof(recipe) == TYPE_ARRAY and recipe.size() >= 2:
+					new_reaction.reaction_recipes.append(Vector2i(int(recipe[0]), int(recipe[1])))
+
+		if data.has("reaction_primer"):
+			new_reaction.reaction_primer = int(data.get("reaction_primer", 0))
+			new_reaction.reaction_trigger = int(data.get("reaction_trigger", 0))
+
+		# Damage block
+		if data.has("damage"):
+			var dmg = data["damage"]
+			new_reaction.dot_dmg = int(dmg.get("dot_dmg", 0))
+			new_reaction.heals_lowest_ally_per_turn = int(dmg.get("heals_lowest_ally", 0))
+			new_reaction.heal_attacker_mp = int(dmg.get("heals_attacker_mp", 0))
+			new_reaction.down_meter_fill_per_turn = int(dmg.get("down_meter_fill", 0))
+
+		# Locks / flags
+		if data.has("locks"):
+			var locks = data["locks"]
+			new_reaction.is_stunned = bool(locks.get("is_stunned", false))
+			new_reaction.guarantees_next_crit = bool(locks.get("guarantees_crit", false))
+			new_reaction.locks_magic = bool(locks.get("locks_magic", false))
+			new_reaction.locks_physical = bool(locks.get("locks_physical", false))
+			# disables_dodge is future/planned
+			new_reaction.disables_healing = bool(locks.get("disables_healing", false))
+			new_reaction.clears_all_statuses = bool(locks.get("clears_statuses", false))
+
+		# Stat multipliers: JSON uses multiplicative factors (1 = no change). Convert to StatusEffect's delta format.
+		if data.has("stat_multipliers"):
+			var m = data["stat_multipliers"]
+			new_reaction.stat_mult_defense = float(m.get("defense", 1.0)) - 1.0
+			new_reaction.stat_mult_magic = float(m.get("magic", 1.0)) - 1.0
+			new_reaction.stat_mult_strength = float(m.get("strength", 1.0)) - 1.0
+			new_reaction.stat_mult_accuracy = float(m.get("accuracy", 1.0)) - 1.0
+
+		# Macro / extra flags
+		if data.has("macro"):
+			var macro = data["macro"]
+			new_reaction.chance_friendly_fire = float(macro.get("causes_friendly_fire", 0.0))
+			new_reaction.flips_weaknesses = bool(macro.get("randomizes_weakness", false))
+			# spreads_radium_on_down, scales_with_debuffs, changes_turn_queue are future/planned
+			new_reaction.is_conductive = bool(macro.get("is_conductive", false))
+			new_reaction.decay_per_jump = float(macro.get("decay_per_jump", 0.0))
+			new_reaction.base_stun_chance = float(macro.get("base_stun_chance", 0.0))
+
+		# Additional optional mappings (best-effort)
+		# is_aoe, affects_self_and_targets are future/planned
+		new_reaction.applies_to_all_enemies = bool(data.get("applies_to_all_enemies", false))
+		new_reaction.applies_to_all_allies = bool(data.get("applies_to_all_allies", false))
+		# removes_buffs, add_random_nerfs, mp_steal_amount, true_damage_multiplier, is_true_damage are future/planned
+		new_reaction.removes_on_physical_hit = bool(data.get("removes_on_physical_hit", false))
+		new_reaction.removes_on_magic_hit = bool(data.get("removes_on_magic_hit", false))
+		# spreads_on_down_to_party, spreads_when_down, steals_stats are future/planned
+		
+
+		# 4. Save to hard drive as .tres
+		var save_id = new_reaction.id if new_reaction.id != "" else new_reaction.effect_name.replace(" ", "_")
+		var save_path = output_directory + save_id + ".tres"
+		var error = ResourceSaver.save(new_reaction, save_path)
+
+		if error == OK:
+			print("Successfully generated: ", save_path)
+		else:
+			print("Error saving: ", save_path, " (err=", error, ")")
+			
+	print("--- JSON Import Complete! ---")
+
+
+============================================================
+--- FILE: ./Resources/StatusEffect.gd ---
+--- LAST MODIFIED: 2026-05-07 12:36:15 ---
+============================================================
+
+@tool
+extends Resource
+class_name StatusEffect
+
+enum Type { BUFF, DEBUFF, CROWD_CONTROL}
+
+@export var id: String = ""
+@export var effect_name: String = ""
+@export_multiline var description: String = ""
+@export var effect_type: Type = Type.DEBUFF
+@export var duration_turns: int = 1
+
+@export var is_conductive: bool = false # For reactions that can jump to nearby targets, like Shock
+@export var decay_per_jump: float = 0.0 # For conductive reactions, how much the effect weakens with each jump
+@export var base_stun_chance: float = 0.0 # For conductive reactions, the chance to stun on each jump
+
+
+@export_group("Damage & Healing Over Time")
+@export var dot_dmg: int = 0
+@export var heals_lowest_ally_per_turn: int = 0
+@export var down_meter_fill_per_turn: int = 0
+
+
+@export_group("Stat Modifiers (Percentages)")
+# Use decimals! e.g., 0.5 is +50% Buff, -0.3 is -30% Debuff
+@export var stat_mult_strength: float = 0.0
+@export var stat_mult_magic: float = 0.0
+@export var stat_mult_defense: float = 0.0
+@export var stat_mult_speed: float = 0.0
+@export var stat_mult_accuracy: float = 0.0
+@export var stat_mult_crit_chance: float = 0.0
+@export var stat_mult_crit_dmg: float = 0.0
+@export var stat_mult_down_meter_fill: float = 0.0
+
+@export_group("Combat Locks & Overrides")
+@export var is_stunned: bool = false # Skips turn
+@export var locks_magic: bool = false
+@export var locks_physical: bool = false
+@export var disables_healing: bool = false
+@export var sets_defense_to_zero: bool = false
+@export var flips_weaknesses: bool = false
+
+@export_group("Combo & Reaction Triggers")
+@export var is_chain_reaction: bool = false
+@export var reaction_primer: int = 0
+@export var reaction_trigger: int = 0
+# Each entry is Vector2i(primer, trigger) using GlobalData.Element enum values.
+# This allows one reaction to be triggered by multiple recipes (useful for ascended variants).
+@export var reaction_recipes: Array[Vector2i] = []
+@export var refresh_recipe_preview: bool = false:
+	set(value):
+		if value:
+			rebuild_reaction_recipe_preview()
+		refresh_recipe_preview = false
+@export_multiline var reaction_recipe_preview: String = ""
+@export var damage_scales_with_debuffs: bool = false
+@export var clears_all_statuses: bool = false
+@export var guarantees_next_crit: bool = false
+@export var reaction_burst_mult: float = 1.0
+
+@export_group("AOE & Targeting")
+@export var applies_to_all_enemies: bool = false
+@export var applies_to_all_allies: bool = false
+@export var affects_both_parties: bool = false
+
+@export_group("Friendly Fire & Target Manipulation")
+# Chance (0.0-1.0) that the target will attack allies instead (or cause friendly-fire behavior)
+@export var chance_friendly_fire: float = 0.0
+
+@export_group("Interactions & Flags")
+# Heal MP amount applied to attacker when effect triggers
+@export var heal_attacker_mp: int = 0
+
+@export_group("Niche Effects")
+@export var removes_on_physical_hit: bool = false
+@export var removes_on_magic_hit: bool = false
+
+# --- FUTURE: Ascended & Advanced Effects (Planned) ---
+# Uncomment and wire these when implementing advanced chain reactions and Ascended mechanics.
+# @export var disables_dodge: bool = false
+# @export var changes_turn_queue: bool = false
+# @export var spreads_radium_on_down: bool = false
+# @export var spreads_when_down: bool = false
+# @export var spreads_on_down_to_party: bool = false
+# @export var forces_target_change: bool = false
+# @export var shuffles_turn_order: bool = false
+# @export var is_aoe: bool = false
+# @export var affects_self_and_targets: bool = false
+# @export var is_weaken_down_meter: bool = false
+# @export var scales_with_debuffs: bool = false (NOTE: use damage_scales_with_debuffs instead)
+# @export var removes_buffs: bool = false
+# @export var add_random_nerfs: int = 0
+# @export var mp_steal_amount: int = 0
+# @export var ignores_def: bool = false
+# @export var flip_all_resistances: bool = false (NOTE: use flips_weaknesses instead)
+# @export var true_damage_multiplier: float = 1.0
+# @export var is_true_damage: bool = false
+# @export var steals_stats: bool = false
+
+func matches_reaction_recipe(primer: int, trigger: int) -> bool:
+	if not is_chain_reaction:
+		return false
+
+	# New path: support multiple recipes per reaction resource.
+	for recipe in reaction_recipes:
+		if (recipe.x == primer and recipe.y == trigger) or (recipe.x == trigger and recipe.y == primer):
+			return true
+
+	# Backward compatibility: old single-pair fields still work.
+	return (reaction_primer == primer and reaction_trigger == trigger) or (reaction_primer == trigger and reaction_trigger == primer)
+
+func rebuild_reaction_recipe_preview() -> void:
+	var lines: PackedStringArray = []
+
+	for recipe in reaction_recipes:
+		lines.append(_format_recipe_line(recipe.x, recipe.y))
+
+	# Show legacy single-pair recipe too, so old data is still visible while editing.
+	if reaction_primer != 0 or reaction_trigger != 0:
+		lines.append("legacy: " + _format_recipe_line(reaction_primer, reaction_trigger))
+
+	if lines.is_empty():
+		reaction_recipe_preview = "No recipes configured."
+	else:
+		reaction_recipe_preview = "\n".join(lines)
+
+func _format_recipe_line(primer: int, trigger: int) -> String:
+	return _element_name(primer) + " + " + _element_name(trigger)
+
+func _element_name(value: int) -> String:
+	var names: PackedStringArray = GlobalData.Element.keys()
+	if value >= 0 and value < names.size():
+		return names[value]
+	return "UNKNOWN(" + str(value) + ")"
+
+============================================================
+--- FILE: ./Scenes/battler/battler.gd ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+extends CharacterBody2D
+class_name Battler
+
+enum BattlerType {
+	PLAYER,
+	ENEMY
+}
+
+signal health_changed(new_hp)
+signal mana_changed(new_mp)
+signal downed(battler)
+signal request_ally_heal(amount: int, is_enemy: bool)
+signal request_item_broadcast(item: Consumable, scope: int)
+signal damage_taken(amount: int, is_crit: bool, is_weakness: bool)
+signal damage_resolved(amount: int, current_hp: int, max_hp: int, down_meter: int, is_weakness: bool, is_crit: bool, is_resist: bool, is_block: bool, attacker: Battler)
+signal adrenaline_changed(is_active: bool, stacks: int)
+signal threat_changed(value: int)
+signal primer_changed(new_primer: int)
+signal ui_state_changed
+
+#region Exports
+@export var battler_type: BattlerType
+@export var stats: BattlerStats
+@export var basic_atk: BattleMove
+@export var skills_list: Array[BattleMove] = []
+
+# Equipment
+@export var equipped_weapon: Equipment
+@export var equipped_armor: Equipment
+@export var equipped_accessory: Equipment
+@export var equipped_necktie: Equipment
+@export var equipped_shoe: Equipment
+@export var equipped_pant: Equipment
+@export var equipped_moves: Array[BattleMove] = [] # Player-selected moves (max 5 recommended)
+#endregion
+
+#region Runtime State
+@onready var stats_manager: StatsManager = $StatsManager
+@onready var status_manager: StatusManager = $StatusManager
+@onready var affinity_manager: AffinityManager = $AffinityManager
+@onready var down_manager: DownManager = $DownManager
+
+var current_hp: int
+var current_mp: int
+var is_down: bool
+var threat: int = 0
+var is_adrenaline_active: bool = false
+var adrenaline_stacks: int = 0
+var adrenaline_dodge_bonus: float = 0.15
+var adrenaline_max_stacks: int = 5
+var elemental_primer: GlobalData.Element = GlobalData.Element.NEUTRAL
+var reaction_cooldowns: Dictionary = {}
+#endregion
+
+#region Lifecycle
+func _ready():
+	# Initialize stats based on the manager (which includes equipment)
+	current_hp = stats_manager.get_active_max_hp()
+	current_mp = stats.max_mp
+	down_manager.reset_meter()
+
+	# Enforce equipped moves slot limit (max 5)
+	if equipped_moves != null and equipped_moves.size() > 5:
+		while equipped_moves.size() > 5:
+			equipped_moves.pop_back()
+
+	# Connect signals from StatusManager
+	status_manager.tick_damage_taken.connect(_on_tick_damage_taken)
+	status_manager.tick_down_meter_increased.connect(_on_tick_down_meter_increased)
+	status_manager.status_state_changed.connect(_on_status_state_changed)
+	status_manager.request_ally_heal.connect(func(amt, is_enemy):
+		emit_signal("request_ally_heal", amt, is_enemy))
+
+	# Connect signal from DownManager
+	down_manager.character_downed.connect(func(battler):
+		is_down = true
+		emit_signal("downed", battler))
+
+	emit_signal("ui_state_changed")
+
+	# Register with PartyManager autoload (if present)
+	if get_tree().get_root().has_node("PartyManager"):
+		var pm = get_tree().get_root().get_node("PartyManager")
+		if pm != null and pm.has_method("register_battler"):
+			pm.register_battler(self)
+
+
+func set_equipped_moves(new_moves: Array[BattleMove]) -> void:
+	equipped_moves.clear()
+	for move in new_moves:
+		if move == null:
+			continue
+		if equipped_moves.size() >= 5:
+			break
+		equipped_moves.append(move)
+	emit_signal("ui_state_changed")
+
+
+func get_equipped_moves() -> Array[BattleMove]:
+	return equipped_moves
+
+func _on_tick_damage_taken(amount: int, effect_name: String):
+	take_hp_damage(amount)
+	print(stats.character_name, " took ", amount, " damage from ", effect_name)
+	emit_signal("ui_state_changed")
+
+func _on_tick_down_meter_increased(amount: int):
+	down_manager.increase_meter(amount)
+	print(stats.character_name, " had their down meter increased by ", amount)
+	emit_signal("ui_state_changed")
+
+func _on_status_state_changed() -> void:
+	emit_signal("ui_state_changed")
+
+func _set_elemental_primer(new_primer: GlobalData.Element) -> void:
+	if elemental_primer == new_primer:
+		return
+	elemental_primer = new_primer
+	emit_signal("primer_changed", elemental_primer)
+	emit_signal("ui_state_changed")
+
+func get_ui_snapshot() -> Dictionary:
+	return {
+		"name": stats.character_name,
+		"current_hp": current_hp,
+		"max_hp": stats_manager.get_active_max_hp(),
+		"current_mp": current_mp,
+		"max_mp": stats.max_mp,
+		"is_down": down_manager.is_downed,
+		"down_meter": down_manager.current_meter,
+		"primer": elemental_primer,
+		
+		"threat": threat,
+		"is_adrenaline_active": is_adrenaline_active,
+		"adrenaline_stacks": adrenaline_stacks,
+		"active_status": status_manager.active_status,
+		"active_reaction": status_manager.active_reactions
+	}
+#endregion
+
+#region Move Validation
+func can_use_move(move: BattleMove) -> bool:
+	if current_mp < move.mp_cost:
+		print("Not enough MP to use ", move.move_name)
+		return false
+	if move.is_magic and status_manager.has_magic_lock():
+		print("Cannot use magic moves due to a status effect!")
+		return false
+	if not move.is_magic and status_manager.has_physical_lock():
+		print("Cannot use physical moves due to a status effect!")
+		return false
+	return true
+
+func get_evasion_chance_against(attacker: Battler = null) -> float:
+	var target_speed: float = float(stats_manager.get_active_speed())
+	var target_luck: float = float(stats_manager.get_active_luck())
+	var attacker_speed: float = target_speed
+	var attacker_luck: float = target_luck
+
+	if attacker != null:
+		attacker_speed = float(attacker.stats_manager.get_active_speed())
+		attacker_luck = float(attacker.stats_manager.get_active_luck())
+
+	var base_chance: float = 0.05
+	var speed_delta: float = (target_speed - attacker_speed) * 0.003
+	var luck_delta: float = (target_luck - attacker_luck) * 0.002
+	var adrenaline_bonus: float = get_adrenaline_dodge_bonus()
+
+	return clampf(base_chance + speed_delta + luck_delta + adrenaline_bonus, 0.0, 0.85)
+
+func roll_dodge(attacker: Battler = null) -> bool:
+	var evasion_chance: float = get_evasion_chance_against(attacker)
+	var roll: float = randf()
+	var dodged: bool = roll < evasion_chance
+	print(stats.character_name, " dodge roll: ", roll, " vs ", evasion_chance)
+	return dodged
+
+func enter_adrenaline_state(stack_amount: int = 1) -> void:
+	is_adrenaline_active = true
+	adrenaline_stacks = clampi(max(adrenaline_stacks, stack_amount), 1, adrenaline_max_stacks)
+	add_threat(10 * adrenaline_stacks)
+	emit_signal("adrenaline_changed", is_adrenaline_active, adrenaline_stacks)
+
+func double_down_adrenaline() -> void:
+	if not is_adrenaline_active:
+		enter_adrenaline_state(1)
+		return
+	adrenaline_stacks = clampi(adrenaline_stacks + 1, 1, adrenaline_max_stacks)
+	add_threat(10 * adrenaline_stacks)
+	emit_signal("adrenaline_changed", is_adrenaline_active, adrenaline_stacks)
+
+func consume_adrenaline_state() -> void:
+	is_adrenaline_active = false
+	adrenaline_stacks = 0
+	emit_signal("adrenaline_changed", is_adrenaline_active, adrenaline_stacks)
+
+func is_in_adrenaline_state() -> bool:
+	return is_adrenaline_active
+
+func get_adrenaline_stack_count() -> int:
+	return adrenaline_stacks
+
+func get_adrenaline_dodge_bonus() -> float:
+	if not is_adrenaline_active or adrenaline_stacks <= 0:
+		return 0.0
+	if adrenaline_stacks == 1:
+		return adrenaline_dodge_bonus
+	if adrenaline_stacks == 2:
+		return adrenaline_dodge_bonus * 0.5
+	return 0.0
+
+func get_adrenaline_defense_multiplier() -> float:
+	if not is_adrenaline_active or adrenaline_stacks <= 0:
+		return 1.0
+	return max(0.5, 1.0 - (0.1 * float(adrenaline_stacks - 1)))
+
+func get_adrenaline_damage_multiplier() -> float:
+	if not is_adrenaline_active or adrenaline_stacks <= 0:
+		return 1.0
+	return 1.0 + (0.12 * float(adrenaline_stacks))
+
+func get_adrenaline_mp_gain_multiplier() -> float:
+	if not is_adrenaline_active or adrenaline_stacks <= 0:
+		return 1.0
+	return 1.0 + (0.10 * float(adrenaline_stacks))
+
+func get_adrenaline_down_meter_multiplier() -> float:
+	if not is_adrenaline_active or adrenaline_stacks <= 0:
+		return 1.0
+	if adrenaline_stacks >= 5:
+		return 100.0
+	return 1.0 + (0.25 * float(adrenaline_stacks))
+
+func add_threat(amount: int) -> void:
+	threat = max(0, threat + amount)
+	emit_signal("threat_changed", threat)
+
+func set_threat(value: int) -> void:
+	threat = max(0, value)
+	emit_signal("threat_changed", threat)
+
+func clear_threat() -> void:
+	set_threat(0)
+
+func get_threat_value() -> int:
+	return threat
+#endregion
+
+#region Defense And Damage
+func take_damage(power: int, is_magic: bool, element: GlobalData.Element = GlobalData.Element.NEUTRAL, phys_type: GlobalData.PhysicalType = GlobalData.PhysicalType.NONE, attacker_is_crit: bool = false, _crit_mult: float = 1.0, attacker: Battler = null) -> bool:
+	
+	# 1. Elements and Reactions
+	var reaction_multiplier := 1.0
+	if is_magic:
+		reaction_multiplier = apply_element(element)
+
+	var defense = stats_manager.get_active_def(is_magic)
+	var affinity_multiplier: float = affinity_manager.get_damage_multiplier(is_magic, element, phys_type)
+	var is_weakness: bool = affinity_manager.is_weakness_hit(is_magic, element, phys_type)
+
+	var is_resist: bool = affinity_manager.get_current_affinity(is_magic, element, phys_type) == BattlerStats.Affinity.RESIST
+	if affinity_manager.is_blocked(is_magic, element, phys_type):
+		print(stats.character_name, " NULLIFIED the attack! (0 Damage)")
+		emit_signal("damage_resolved", 0, current_hp, stats_manager.get_active_max_hp(), down_manager.current_meter, false, false, false, true, null)
+		return false
+
+	# 3. Strict Crit Logic (Physical Only)
+	var final_crit = false
+	if not is_magic:
+		if attacker_is_crit:
+			final_crit = true
+			print("CRITICAL HIT! (Natural Roll)")
+		
+		# This safely checks AND consumes the mark in one go!
+		if status_manager.guaranteed_crit():
+			final_crit = true
+			print("CRITICAL HIT! (Target was Exposed)")
+
+	# 4. Final Math
+	# NOTE: Crit bonus is now applied to base power BEFORE weakness/reaction scaling
+	# This ensures crits are not reduced by weakness multipliers
+	var final_multiplier = affinity_multiplier * reaction_multiplier
+	
+	# Randomize base power around the move's midpoint with a strict +/- 5 range.
+	var randomized_power: int = randi_range(max(1, power - 5), max(1, power + 5))
+
+	# Damage Calculation (Multipliers apply BEFORE defense!)
+	var final_damage = roundi((randomized_power * final_multiplier) - defense)
+	final_damage = max(1, final_damage)
+
+	take_hp_damage(final_damage)
+	emit_signal("damage_taken", final_damage, final_crit, is_weakness)
+	print(stats.character_name, " took ", final_damage, " damage!")
+	# Emit a post-calculation UI-friendly signal so UI logic can react without being
+	# tightly coupled to the combat flow. Provide affinity info for resist/block.
+	emit_signal("damage_resolved", final_damage, current_hp, stats_manager.get_active_max_hp(), down_manager.current_meter, is_weakness, final_crit, is_resist, false, attacker)
+
+	# 5. Down Meter Math
+	if not down_manager.is_downed:
+		var downpwr: int = 0
+		
+		if status_manager.has_instant_down_exposure():
+			downpwr = 100
+			print(stats.character_name, " was EXPOSED! INSTANT DOWN!")
+		elif is_weakness or final_crit:
+			# Weakness and Crit hits fill 10-20 down meter
+			downpwr = randi_range(10, 20)
+		else:
+			# Normal attacks fill less than 5 (1-4)
+			downpwr = randi_range(1, 4)
+
+		# Apply attacker Adrenaline multiplier and status multiplier
+		if not status_manager.has_instant_down_exposure():
+			var down_mult = status_manager.get_down_meter_fill_multiplier()
+			var attacker_down_mult: float = attacker.get_adrenaline_down_meter_multiplier() if attacker != null else 1.0
+			downpwr = roundi(float(downpwr) * down_mult * attacker_down_mult)
+			if attacker != null and attacker.is_in_adrenaline_state() and attacker.get_adrenaline_stack_count() >= 5:
+				downpwr = 100
+
+		print("Down power : ", downpwr)
+		down_manager.increase_meter(downpwr)
+        
+		# ---> NEW: The Cleanup (Shatter Logic) <---
+		# We use your existing `is_magic` bool to tell the StatusManager what kind of hit this was
+		var hit_type = "magic" if is_magic else "physical"
+		status_manager.check_removal_triggers(hit_type)
+
+	if attacker != null and is_adrenaline_active:
+		consume_adrenaline_state()
+
+	return is_weakness
+
+#endregion
+
+#region Elemental Reactions
+func apply_element(incoming_element: GlobalData.Element) -> float:
+	if incoming_element == GlobalData.Element.NEUTRAL:
+		return 1.0
+
+	if elemental_primer == GlobalData.Element.NEUTRAL:
+		_set_elemental_primer(incoming_element)
+		var element_name = GlobalData.Element.keys()[incoming_element]
+		print(stats.character_name, " is primed: ", element_name)
+		return 1.0
+	else:
+		return trigger_reaction(elemental_primer, incoming_element)
+
+func trigger_reaction(primer: GlobalData.Element, trigger: GlobalData.Element) -> float:
+	var applied_status = ItemDatabase.find_chain_reaction(primer, trigger)
+
+	if applied_status != null:
+		# Cooldown Check
+		if reaction_cooldowns.has(applied_status.id) and reaction_cooldowns[applied_status.id] > 0:
+			print(stats.character_name, " RESISTED the reaction! (On Cooldown)")
+			_set_elemental_primer(trigger)
+			return 1.0
+
+		print("CHAIN REACTION TRIGGERED: ", applied_status.effect_name, "!")
+		print("[DEBUG] applied_status.is_chain_reaction=", applied_status.is_chain_reaction, " guarantees_next_crit=", applied_status.guarantees_next_crit)
+		var burst_multiplier: float = applied_status.reaction_burst_mult
+
+		# Scaling Math
+		if applied_status.damage_scales_with_debuffs:
+			var debuff_count = status_manager.count_debuffs()
+			burst_multiplier += (debuff_count * 0.5)
+			print("Reaction scaled by ", debuff_count, " debuffs. Multiplier is now ", burst_multiplier, "x!")
+
+		if applied_status.clears_all_statuses:
+			status_manager.clear_status_effects()
+		# temporary test for stealing buffs with a reaction - if the applied status is "Splinter", we also apply a "Stolen Defense" buff to the target
+		if applied_status.effect_name == "Splinter" :
+			var steal_buff = StatusEffect.new()
+			steal_buff.effect_name = "Stolen Defense"
+			steal_buff.stat_mult_defense = 0.5 # +50% defense
+			steal_buff.duration_turns = 2
+
+		# Remove old reactions so they don't stack infinitely
+		status_manager.override_old_chain_reactions()
+		
+		# Apply the reaction
+		status_manager.apply_status_effect(applied_status)
+		print("[DEBUG] after apply_status_effect: active_reactions=", status_manager.active_reactions != null, " active_status_count=", status_manager.active_status.size())
+		
+		# Setup friendly fire behaviors
+		_setup_friendly_fire(applied_status)
+		
+		_set_elemental_primer(GlobalData.Element.NEUTRAL)
+		reaction_cooldowns[applied_status.id] = 3
+		emit_signal("ui_state_changed")
+
+		return burst_multiplier
+	else:
+		_set_elemental_primer(trigger)
+		var element_name = GlobalData.Element.keys()[trigger]
+		print(stats.character_name, " is primed: ", element_name)
+		return 1.0
+
+#region Friendly Fire Setup
+func _setup_friendly_fire(reaction: StatusEffect):
+	# Type 1: Chain reaction affects whole party (AoE to allies)
+	if reaction.applies_to_all_allies:
+		status_manager.set_party_wide_damage(true)
+		print("PARTY-WIDE AoE EFFECT!")
+	
+	# Type 2: Brainwash - target attacks their own party
+	if reaction.chance_friendly_fire > 0.0:
+		if randf() < reaction.chance_friendly_fire:
+			status_manager.set_brainwash(true)
+			print("BRAINWASH EFFECT TRIGGERED!")
+	
+	# Type 3: Affects both parties
+	if reaction.affects_both_parties:
+		status_manager.set_affects_both_parties(true)
+		print("EFFECT SPREADS TO BOTH PARTIES!")
+#endregion
+
+#region Resource Management (Molecular Heals)
+func heal_hp(amount: int):
+	if status_manager.has_heal_block():
+		print(stats.character_name, " is affected by a heal block and cannot be healed!")
+		return
+		
+	set_current_hp(current_hp + amount)
+	emit_signal("ui_state_changed")
+	print(stats.character_name, " healed for ", amount, " HP!")
+
+func take_hp_damage(amount: int) -> void:
+	if amount <= 0:
+		return
+	set_current_hp(current_hp - amount)
+
+func set_current_hp(value: int) -> void:
+	current_hp = clampi(value, 0, stats_manager.get_active_max_hp())
+	emit_signal("health_changed", current_hp)
+
+func heal_mp(amount: int):
+	if amount <= 0:
+		return
+	set_current_mp(current_mp + amount)
+	print(stats.character_name, " healed for ", amount, " MP!")
+
+func spend_mp(amount: int) -> int:
+	if amount <= 0:
+		return 0
+	var spent: int = min(current_mp, amount)
+	set_current_mp(current_mp - spent)
+	return spent
+
+func set_current_mp(value: int) -> void:
+	current_mp = clampi(value, 0, stats.max_mp)
+	emit_signal("mana_changed", current_mp)
+	emit_signal("ui_state_changed")
+	
+func consume_item(item: Consumable):
+	print(stats.character_name, " Used ", item.item_name)
+
+	# Route items through the molecular functions!
+	# Single-target (self) behaviour
+	if item.target_scope == Consumable.TargetScope.SELF or item.target_scope == Consumable.TargetScope.SINGLE_ALLY:
+		if item.heals_hp > 0:
+			heal_hp(item.heals_hp)
+		if item.heals_mp > 0:
+			heal_mp(item.heals_mp)
+		if item.cures_status:
+			status_manager.clear_status_effects()
+			_set_elemental_primer(GlobalData.Element.NEUTRAL)
+			print(stats.character_name, " was cured of all ailments!")
+		if item.applied_buff != null:
+			status_manager.apply_status_effect(item.applied_buff)
+		if item.applied_debuff != null:
+			status_manager.apply_status_effect(item.applied_debuff)
+
+	# Lowest ally heal (uses existing BattleManager handler to heal lowest ally)
+	elif item.target_scope == Consumable.TargetScope.LOWEST_ALLY:
+		if item.heals_hp > 0:
+			emit_signal("request_ally_heal", item.heals_hp, false)
+		# Broadcast the item so a BattleManager can handle multi-target buffs/debuffs
+		if item.applied_buff != null or item.applied_debuff != null or item.cures_status:
+			emit_signal("request_item_broadcast", item, int(item.target_scope))
+
+	# Party / enemy / global scope: emit a broadcast so a higher-level manager applies the item to the proper targets.
+	else:
+		# For wide effects we only broadcast the item; BattleManager should listen to `request_item_broadcast` and apply per-party logic.
+		emit_signal("request_item_broadcast", item, int(item.target_scope))
+
+func apply_status_effect(effect: StatusEffect):
+	"""Wrapper for clean API access to status manager"""
+	status_manager.apply_status_effect(effect)
+#endregion
+
+#region Turn
+func process_turn_start():
+	# Tick down reaction cool downs
+	for reaction in reaction_cooldowns.keys():
+		if reaction_cooldowns[reaction] > 0:
+			reaction_cooldowns[reaction] -= 1
+
+	status_manager.process_turn_start()
+	emit_signal("ui_state_changed")
+
+#endregion
+
+func _exit_tree() -> void:
+	# Unregister from PartyManager (if present)
+	if get_tree().get_root().has_node("PartyManager"):
+		var pm = get_tree().get_root().get_node("PartyManager")
+		if pm != null and pm.has_method("unregister_battler"):
+			pm.unregister_battler(self)
+
+
+============================================================
+--- FILE: ./Scenes/battle manager/battlemanager.gd ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+extends Node
+
+signal adrenaline_ui_requested(battler: Battler, payload: Dictionary)
+signal party_member_swapped(outgoing: Battler, incoming: Battler, is_enemy_party: bool)
+signal turn_started(active_battler: Battler)
+
+@export var max_active_players: int = 1
+@export var max_active_enemies: int = 1
+
+var player_party: Array[Battler] = []
+var enemy_party: Array[Battler] = []
+var player_active_party: Array[Battler] = []
+var enemy_active_party: Array[Battler] = []
+var player_reserve_party: Array[Battler] = []
+var enemy_reserve_party: Array[Battler] = []
+var turn_queue: Array[Battler] = []
+var turn_action_values: Dictionary = {}
+var next_round_action_values: Dictionary = {}
+var has_built_initial_turn_queue: bool = false
+var has_resolved_all_out_attack: bool = false
+var adrenaline_battlers: Array[Battler] = []
+var overdrive_parties: Dictionary = {false: false, true: false}
+var current_turn_battler: Battler = null
+
+#region AoE & Conductive Tracking
+var last_reaction_triggered: StatusEffect = null # Track the last reaction to apply AoE
+var conductive_targets: Array[Battler] = [] # Targets to spread conductive damage to
+#endregion
+
+func _ready() -> void:
+	print("Battle Scene Ready!")
+
+	_populate_party_lists()
+	_connect_party_signals()
+	_initialize_battle_formations()
+
+	# 2. Run the Test Simulation!
+
+#region Turn Queue Logic
+func build_turn_queue(use_action_value: bool = false) -> void:
+	turn_queue.clear()
+	turn_action_values.clear()
+	turn_queue.append_array(player_active_party)
+	turn_queue.append_array(enemy_active_party)
+
+	for battler in turn_queue:
+		if use_action_value and next_round_action_values.has(battler.get_instance_id()):
+			_set_turn_action_value(battler, int(next_round_action_values[battler.get_instance_id()]))
+		else:
+			_set_turn_action_value(battler, _calculate_turn_action_value(battler))
+
+	# Sort
+	turn_queue.sort_custom(_sort_by_action_value)
+	next_round_action_values.clear()
+	has_built_initial_turn_queue = true
+
+	print("Turn Queue Built! Turn order:")
+	for battler in turn_queue:
+		print("- ", battler.stats.character_name, " (AV: ", get_battler_turn_action_value(battler), ")")
+	if turn_queue.size() > 0:
+		current_turn_battler = turn_queue[0]
+
+func _sort_by_action_value(a: Battler, b: Battler) -> bool:
+	var a_action_value: int = get_battler_turn_action_value(a)
+	var b_action_value: int = get_battler_turn_action_value(b)
+	if a_action_value == b_action_value:
+		return a.stats_manager.get_active_speed() > b.stats_manager.get_active_speed()
+	return a_action_value > b_action_value
+
+func _calculate_turn_action_value(battler: Battler, move: BattleMove = null) -> int:
+	if battler == null:
+		return 0
+
+	var base_value: int = battler.stats_manager.get_active_speed() * 10
+	if move != null:
+		return max(1, move.get_action_value(battler))
+	return max(1, base_value)
+
+func _set_turn_action_value(battler: Battler, value: int) -> void:
+	if battler == null:
+		return
+	turn_action_values[battler.get_instance_id()] = value
+
+
+func _set_next_round_action_value(battler: Battler, value: int) -> void:
+	if battler == null:
+		return
+	next_round_action_values[battler.get_instance_id()] = value
+
+
+func _set_turn_value_for_rounds(battler: Battler, value: int, affect_current_round: bool = true, affect_next_round: bool = true) -> void:
+	if battler == null:
+		return
+	if affect_current_round:
+		_set_turn_action_value(battler, value)
+	if affect_next_round:
+		_set_next_round_action_value(battler, value)
+
+
+func _shift_turn_value(battler: Battler, delta: int, affect_current_round: bool = true, affect_next_round: bool = true) -> void:
+	if battler == null:
+		return
+	var current_value: int = get_battler_turn_action_value(battler)
+	_set_turn_value_for_rounds(battler, max(1, current_value + delta), affect_current_round, affect_next_round)
+	if affect_current_round and battler in turn_queue:
+		turn_queue.sort_custom(_sort_by_action_value)
+
+
+func _place_battler_before(reference: Battler, target: Battler, amount: int = 1, affect_current_round: bool = true, affect_next_round: bool = true) -> void:
+	if reference == null or target == null:
+		return
+	var reference_value: int = get_battler_turn_action_value(reference)
+	var new_value: int = max(1, reference_value + maxi(1, amount))
+	_set_turn_value_for_rounds(target, new_value, affect_current_round, affect_next_round)
+	if affect_current_round and target in turn_queue:
+		turn_queue.sort_custom(_sort_by_action_value)
+
+
+func _place_battler_after(reference: Battler, target: Battler, amount: int = 1, affect_current_round: bool = true, affect_next_round: bool = true) -> void:
+	if reference == null or target == null:
+		return
+	var reference_value: int = get_battler_turn_action_value(reference)
+	var new_value: int = max(1, reference_value - maxi(1, amount))
+	_set_turn_value_for_rounds(target, new_value, affect_current_round, affect_next_round)
+	if affect_current_round and target in turn_queue:
+		turn_queue.sort_custom(_sort_by_action_value)
+
+func get_battler_turn_action_value(battler: Battler) -> int:
+	if battler == null:
+		return 0
+	var key: int = battler.get_instance_id()
+	if turn_action_values.has(key):
+		return int(turn_action_values[key])
+	return _calculate_turn_action_value(battler)
+
+func reschedule_battler_turn(battler: Battler, move: BattleMove = null) -> void:
+	if battler == null or battler.current_hp <= 0 or not is_battler_active(battler):
+		return
+
+	_set_next_round_action_value(battler, _calculate_turn_action_value(battler, move))
+
+
+func _rebuild_turn_queue_if_needed() -> bool:
+	if not _has_active_battlers():
+		return false
+	build_turn_queue(has_built_initial_turn_queue)
+	return not turn_queue.is_empty()
+
+
+func apply_turn_order_manipulation(source: Battler, target: Battler, manipulation: BattleMove.TurnOrderManipulation, amount: int = 1) -> void:
+	if source == null or target == null:
+		return
+
+	var clamped_amount: int = maxi(1, amount)
+	match manipulation:
+		BattleMove.TurnOrderManipulation.PLACE_BEFORE_ACTOR:
+			_place_battler_before(source, target, clamped_amount, true, true)
+		BattleMove.TurnOrderManipulation.PLACE_AFTER_ACTOR:
+			_place_battler_after(source, target, clamped_amount, true, true)
+		BattleMove.TurnOrderManipulation.HASTEN_TARGET:
+			_shift_turn_value(target, clamped_amount, true, true)
+		BattleMove.TurnOrderManipulation.DELAY_TARGET:
+			_shift_turn_value(target, -clamped_amount, true, true)
+		_:
+			return
+
+
+func _has_active_battlers() -> bool:
+	for battler in player_active_party + enemy_active_party:
+		if battler != null and battler.current_hp > 0:
+			return true
+	return false
+
+func get_highest_threat_target(targets: Array[Battler]) -> Battler:
+	var chosen_target: Battler = null
+	for battler in targets:
+		if battler == null or battler.current_hp <= 0:
+			continue
+		if chosen_target == null or battler.get_threat_value() > chosen_target.get_threat_value():
+			chosen_target = battler
+	return chosen_target
+
+func get_adrenaline_battlers() -> Array[Battler]:
+	return adrenaline_battlers.duplicate()
+
+func get_adrenaline_ui_payload(battler: Battler) -> Dictionary:
+	return {
+		"name": battler.stats.character_name,
+		"stacks": battler.get_adrenaline_stack_count(),
+		"is_active": battler.is_in_adrenaline_state(),
+		"threat": battler.get_threat_value(),
+		"evasion_bonus": battler.get_adrenaline_dodge_bonus(),
+		"damage_multiplier": battler.get_adrenaline_damage_multiplier(),
+		"mp_multiplier": battler.get_adrenaline_mp_gain_multiplier(),
+		"down_meter_multiplier": battler.get_adrenaline_down_meter_multiplier()
+	}
+
+func request_adrenaline_ui(battler: Battler) -> void:
+	if battler == null:
+		return
+	adrenaline_ui_requested.emit(battler, get_adrenaline_ui_payload(battler))
+
+func get_active_party(is_enemy_party: bool) -> Array[Battler]:
+	return enemy_active_party if is_enemy_party else player_active_party
+
+func get_reserve_party(is_enemy_party: bool) -> Array[Battler]:
+	return enemy_reserve_party if is_enemy_party else player_reserve_party
+
+func is_battler_active(battler: Battler) -> bool:
+	return battler in player_active_party or battler in enemy_active_party
+
+func swap_party_member(outgoing: Battler, incoming: Battler) -> bool:
+	if outgoing == null or incoming == null:
+		return false
+
+	var outgoing_is_enemy: bool = outgoing in enemy_party
+	var incoming_is_enemy: bool = incoming in enemy_party
+	var outgoing_is_player: bool = outgoing in player_party
+	var incoming_is_player: bool = incoming in player_party
+
+	if not ((outgoing_is_enemy and incoming_is_enemy) or (outgoing_is_player and incoming_is_player)):
+		printerr("Swap failed: both battlers must be from the same party")
+		return false
+
+	var is_enemy_party: bool = outgoing_is_enemy and incoming_is_enemy
+	var active_party: Array[Battler] = get_active_party(is_enemy_party)
+	var reserve_party: Array[Battler] = get_reserve_party(is_enemy_party)
+
+	if outgoing not in active_party:
+		printerr("Swap failed: outgoing battler is not currently active")
+		return false
+	if incoming not in reserve_party:
+		printerr("Swap failed: incoming battler is not in reserves")
+		return false
+	if incoming.current_hp <= 0:
+		printerr("Swap failed: incoming battler has no HP")
+		return false
+
+	active_party.erase(outgoing)
+	reserve_party.erase(incoming)
+	active_party.append(incoming)
+
+	if outgoing.current_hp > 0:
+		reserve_party.append(outgoing)
+
+	if outgoing in turn_queue:
+		turn_queue.erase(outgoing)
+	if incoming not in turn_queue and incoming.current_hp > 0:
+		_set_turn_action_value(incoming, _calculate_turn_action_value(incoming))
+		turn_queue.append(incoming)
+	turn_queue.sort_custom(_sort_by_action_value)
+
+	party_member_swapped.emit(outgoing, incoming, is_enemy_party)
+	print("SWAP: ", outgoing.stats.character_name, " -> ", incoming.stats.character_name)
+	return true
+
+func _initialize_battle_formations() -> void:
+	player_active_party.clear()
+	player_reserve_party.clear()
+	enemy_active_party.clear()
+	enemy_reserve_party.clear()
+	has_resolved_all_out_attack = false
+
+	_split_party_into_active_and_reserve(player_party, player_active_party, player_reserve_party, max_active_players)
+	_split_party_into_active_and_reserve(enemy_party, enemy_active_party, enemy_reserve_party, max_active_enemies)
+
+	print("Player active: ", player_active_party.size(), " reserve: ", player_reserve_party.size())
+	print("Enemy active: ", enemy_active_party.size(), " reserve: ", enemy_reserve_party.size())
+
+func _populate_party_lists() -> void:
+	var party_manager = _get_party_manager()
+	if party_manager != null:
+		player_party = _collect_party_by_container(party_manager.get_player_party(), $PlayerParty)
+		enemy_party = _collect_party_by_container(party_manager.get_enemy_party(), $EnemyParty)
+
+	# Fallback to node scanning for any missing side.
+	if player_party.is_empty() or enemy_party.is_empty():
+		_populate_party_lists_from_nodes()
+
+func _collect_party_by_container(source_list: Array, container: Node) -> Array:
+	var result: Array[Battler] = []
+	for battler in source_list:
+		if battler == null:
+			continue
+		if container != null and container.is_ancestor_of(battler):
+			result.append(battler)
+	return result
+
+func _populate_party_lists_from_nodes() -> void:
+	player_party.clear()
+	enemy_party.clear()
+
+	for child in $PlayerParty.get_children():
+		if child is Battler:
+			player_party.append(child)
+
+	for child in $EnemyParty.get_children():
+		if child is Battler:
+			enemy_party.append(child)
+
+func _connect_party_signals() -> void:
+	for battler in player_party + enemy_party:
+		if battler == null:
+			continue
+		battler.request_ally_heal.connect(_on_battler_request_ally_heal)
+		battler.adrenaline_changed.connect(_on_battler_adrenaline_changed.bind(battler))
+		battler.down_manager.character_downed.connect(_on_battler_downed)
+
+func _get_party_manager() -> Node:
+	if get_tree() == null:
+		return null
+	var root = get_tree().root
+	if root.has_node("PartyManager"):
+		return root.get_node("PartyManager")
+	return null
+
+func _split_party_into_active_and_reserve(full_party: Array[Battler], active_party: Array[Battler], reserve_party: Array[Battler], max_active: int) -> void:
+	var clamped_max_active: int = maxi(1, max_active)
+
+	for battler in full_party:
+		if active_party.size() < clamped_max_active:
+			active_party.append(battler)
+		else:
+			reserve_party.append(battler)
+
+func start_next_turn() -> Battler:
+	if turn_queue.is_empty():
+		if _rebuild_turn_queue_if_needed():
+			return start_next_turn()
+		print("Queue Empty !")
+		current_turn_battler = null
+		return null
+	var curr_battler: Battler = turn_queue.pop_front()
+	if not is_battler_active(curr_battler) or curr_battler.current_hp <= 0:
+		return start_next_turn()
+	current_turn_battler = curr_battler
+	print("\n--- ", curr_battler.stats.character_name, "'s Turn! ---")
+	turn_started.emit(curr_battler)
+	curr_battler.process_turn_start()
+
+	# TODO: Check for skip_turn status effects here later!
+	return curr_battler
+
+func get_current_turn_battler() -> Battler:
+	return current_turn_battler
+
+#endregion
+
+#region Down State Helpers
+func is_battler_down(battler: Battler) -> bool:
+	return battler.down_manager.is_downed
+
+func is_party_down(party: Array[Battler]) -> bool:
+	for battler in party:
+		if battler.current_hp > 0 and not battler.down_manager.is_downed:
+			return false
+	return true
+
+func check_party_downs() -> bool:
+	var player_all_down = is_party_down(player_party)
+	var enemy_all_down = is_party_down(enemy_party)
+
+	if player_all_down:
+		print("PLAYER PARTY ALL DOWN! Enemy Overdrive triggered!")
+		_trigger_all_out_attack(enemy_party, player_party, true)
+		set_party_overdrive(true, true)
+
+	if enemy_all_down:
+		print("ENEMY PARTY ALL DOWN! Battle won!")
+		_trigger_all_out_attack(player_party, enemy_party, false)
+		set_party_overdrive(false, true)
+
+	return player_all_down or enemy_all_down
+
+func set_party_overdrive(is_enemy_party: bool, active: bool) -> void:
+	if overdrive_parties.get(is_enemy_party, false) == active:
+		return
+
+	overdrive_parties[is_enemy_party] = active
+	# Overdrive no longer toggles an 'ascended' state; keep placeholder for future behavior.
+
+	var party_name: String = "Enemy" if is_enemy_party else "Player"
+	if active:
+		print(party_name, " party entered OVERDRIVE placeholder state!")
+	else:
+		print(party_name, " party exited OVERDRIVE placeholder state!")
+
+func _get_full_party(is_enemy_party: bool) -> Array[Battler]:
+	return enemy_party if is_enemy_party else player_party
+
+func _on_battler_downed(battler: Battler) -> void:
+	print(battler.stats.character_name, " has entered DOWN STATE!")
+	check_party_downs()
+
+
+func _grant_extra_turn(attacker: Battler) -> void:
+	if attacker == null or attacker.current_hp <= 0 or not is_battler_active(attacker):
+		return
+
+	var highest_action_value: int = 0
+	for queued_battler in turn_queue:
+		highest_action_value = max(highest_action_value, get_battler_turn_action_value(queued_battler))
+
+	var boosted_value: int = max(highest_action_value + 1, get_battler_turn_action_value(attacker) + 1)
+	_set_turn_action_value(attacker, boosted_value)
+
+	if attacker not in turn_queue:
+		turn_queue.append(attacker)
+
+	turn_queue.sort_custom(_sort_by_action_value)
+	print(attacker.stats.character_name, " gained an EXTRA TURN from Down!")
+
+
+func _trigger_all_out_attack(attacking_party: Array[Battler], defending_party: Array[Battler], attackers_are_enemy: bool) -> void:
+	if has_resolved_all_out_attack:
+		return
+	has_resolved_all_out_attack = true
+
+	var active_attackers: Array[Battler] = []
+	for attacker in attacking_party:
+		if attacker != null and attacker.current_hp > 0:
+			active_attackers.append(attacker)
+
+	if active_attackers.is_empty():
+		return
+
+	var offense_sum: int = 0
+	for attacker in active_attackers:
+		offense_sum += max(attacker.stats_manager.get_active_strength(), attacker.stats_manager.get_active_magic())
+
+	var offense_average: float = float(offense_sum) / float(active_attackers.size())
+	var all_out_damage: int = max(30, roundi(offense_average * 2.4))
+	var attacker_party_name: String = "Enemy" if attackers_are_enemy else "Player"
+	print(attacker_party_name, " party triggers ALL-OUT ATTACK!")
+
+	for target in defending_party:
+		if target == null or target.current_hp <= 0:
+			continue
+		var burst_damage: int = max(1, all_out_damage + randi_range(-6, 6))
+		target.take_hp_damage(burst_damage)
+		target.emit_signal("damage_resolved", burst_damage, target.current_hp, target.stats_manager.get_active_max_hp(), target.down_manager.current_meter, true, true, false, false, null)
+		print("ALL-OUT hits ", target.stats.character_name, " for ", burst_damage, " (def/affinity bypass)")
+
+func _on_battler_adrenaline_changed(is_active: bool, stacks: int, battler: Battler) -> void:
+	if is_active:
+		if battler not in adrenaline_battlers:
+			adrenaline_battlers.append(battler)
+		print(battler.stats.character_name, " entered Adrenaline at stack ", stacks)
+	else:
+		if battler in adrenaline_battlers:
+			adrenaline_battlers.erase(battler)
+		print(battler.stats.character_name, " left Adrenaline")
+
+#endregion
+
+#region Move
+func execute_move(attacker: Battler, move: BattleMove, primary_target: Battler = null) -> void:
+	print("\n>>> ", attacker.stats.character_name, " uses ", move.move_name, "! <<<")
+
+	# Spend MP once per move execution. Validation happens earlier in Battler.can_use_move().
+	if move.mp_cost > 0:
+		attacker.spend_mp(move.mp_cost)
+
+	# Check if attacker is brainwashed and redirect targets
+	if attacker.status_manager.is_brainwashed():
+		print("  (", attacker.stats.character_name, " is BRAINWASHED - attacking own allies!)")
+
+	var targets: Array[Battler] = _get_move_targets(attacker, move, primary_target)
+
+	for target in targets:
+		if not _should_process_move_target(attacker, move, target):
+			continue
+
+		_apply_move_effects(attacker, move, target)
+
+	# --- D) POST-MOVE: Handle AoE Reactions ---
+	_process_post_move_aoe(attacker, targets)
+
+func _get_move_targets(attacker: Battler, move: BattleMove, primary_target: Battler = null) -> Array[Battler]:
+	var targets: Array[Battler] = []
+	var attacker_is_enemy: bool = attacker in enemy_party
+	var ally_active_party: Array[Battler] = get_active_party(attacker_is_enemy)
+	var enemy_active_party_for_attacker: Array[Battler] = get_active_party(not attacker_is_enemy)
+
+	match move.target_type:
+		BattleMove.Target.SINGLE_ENEMY, BattleMove.Target.SINGLE_ALLY:
+			if primary_target != null:
+				targets.append(primary_target)
+		BattleMove.Target.ALL_ENEMIES:
+			if attacker.status_manager.is_brainwashed():
+				targets.append_array(ally_active_party)
+			else:
+				targets.append_array(enemy_active_party_for_attacker)
+		BattleMove.Target.ALL_ALLIES:
+			targets.append_array(ally_active_party)
+		BattleMove.Target.SELF:
+			targets.append(attacker)
+
+	return targets
+
+func _should_process_move_target(attacker: Battler, move: BattleMove, target: Battler) -> bool:
+	if target.current_hp <= 0:
+		return false
+
+	print("-> Targeting ", target.stats.character_name)
+
+	# Placeholder dodge / evasion check.
+	if move.power > 0 and target.roll_dodge(attacker):
+		print("-> ", target.stats.character_name, " dodged the attack!")
+		return false
+
+	return true
+
+func _apply_move_effects(attacker: Battler, move: BattleMove, target: Battler) -> void:
+	# --- A) DEAL DAMAGE ---
+	if move.power > 0:
+		_apply_move_damage(attacker, move, target)
+
+	# --- B) HEAL HP / MP ---
+	if move.heals_hp > 0:
+		_apply_move_healing(target, move.heals_hp)
+
+	if move.heals_mp > 0:
+		_apply_move_mana_restore(attacker, target, move.heals_mp)
+
+	# --- C) APPLY STATUS EFFECTS ---
+	if move.applied_status != null:
+		_apply_move_status(attacker, move, target)
+
+	# --- D) TURN ORDER MANIPULATION ---
+	if move.turn_order_manipulation != BattleMove.TurnOrderManipulation.NONE:
+		apply_turn_order_manipulation(attacker, target, move.turn_order_manipulation, move.turn_order_amount)
+
+func _apply_move_damage(attacker: Battler, move: BattleMove, target: Battler) -> void:
+	var was_downed_before_hit: bool = target.down_manager.is_downed
+	var total_power: int = move.power
+	var scaling_stat: int = attacker.stats_manager.get_active_magic() if move.is_magic else attacker.stats_manager.get_active_strength()
+	var stat_bonus: int = roundi(float(scaling_stat) * 0.2)
+	total_power += stat_bonus
+	if attacker.is_in_adrenaline_state():
+		total_power = roundi(float(total_power) * attacker.get_adrenaline_damage_multiplier())
+	total_power = max(1, total_power)
+
+	var is_crit := false
+	if not move.is_magic:
+		var final_crit_chance: float = attacker.stats_manager.get_active_crit_chance()
+		print("[DEBUG] Checking guaranteed crit for ", target.stats.character_name)
+		for s in target.status_manager.active_status:
+			print("[DEBUG]  status: ", s.effect_name, " guarantees_next_crit=", s.guarantees_next_crit)
+		if target.status_manager.active_reactions != null:
+			print("[DEBUG]  active_reaction: ", target.status_manager.active_reactions.effect_name, " guarantees_next_crit=", target.status_manager.active_reactions.guarantees_next_crit)
+		if target.status_manager.has_guaranteed_crit():
+			print("Guaranteed crit triggered on ", target.stats.character_name, "!")
+			final_crit_chance = 1.0
+			is_crit = true
+		var crit_roll := randf()
+		if crit_roll <= final_crit_chance:
+			is_crit = true
+			print("CRITICAL HIT! (Roll: ", crit_roll, " <= ", final_crit_chance, ")")
+
+	# Apply crit bonus to base power BEFORE weakness/reaction scaling
+	if is_crit:
+		var crit_dmg_mult: float = attacker.stats_manager.get_active_crit_dmg()
+		total_power = roundi(float(total_power) * crit_dmg_mult)
+		total_power = max(1, total_power)
+	var was_weakness_hit: bool = target.take_damage(total_power, move.is_magic, move.element, move.physical_type, is_crit, 1.0, attacker)
+	if was_weakness_hit:
+		attacker.enter_adrenaline_state()
+
+	if not was_downed_before_hit and target.down_manager.is_downed:
+		_grant_extra_turn(attacker)
+
+func _apply_move_healing(target: Battler, heal_amount: int) -> void:
+	target.heal_hp(heal_amount)
+	print(target.stats.character_name, " healed for ", heal_amount, " HP!")
+
+func _apply_move_mana_restore(attacker: Battler, target: Battler, mana_amount: int) -> void:
+	var mp_restore: int = mana_amount
+	if attacker.is_in_adrenaline_state():
+		mp_restore = roundi(float(mp_restore) * attacker.get_adrenaline_mp_gain_multiplier())
+	target.set_current_mp(target.current_mp + mp_restore)
+	print(target.stats.character_name, " restored ", mp_restore, " MP!")
+
+func _apply_move_status(_attacker: Battler, move: BattleMove, target: Battler) -> void:
+	if randf() <= move.status_chance:
+		target.apply_status_effect(move.applied_status)
+	else:
+		print("The status effect missed ", target.stats.character_name, "!")
+
+#endregion
+
+#region AoE & Conductive Reaction Handling
+func _process_post_move_aoe(attacker: Battler, initial_targets: Array[Battler]) -> void:
+	# Process chain reactions triggered on each of the primary targets.
+	# Previously this only checked the attacker's active_reactions which
+	# prevented reactions applied to targets from spreading. Iterate through
+	# initial_targets and handle any chain reactions found on those targets.
+	for origin in initial_targets:
+		if origin == null:
+			continue
+		var active_reaction: StatusEffect = origin.status_manager.active_reactions
+		if active_reaction == null or not active_reaction.is_chain_reaction:
+			continue
+
+		var origin_is_enemy: bool = origin in enemy_party
+		var ally_active_party: Array[Battler] = get_active_party(origin_is_enemy)
+		var enemy_active_party_for_origin: Array[Battler] = get_active_party(not origin_is_enemy)
+
+		if active_reaction.applies_to_all_enemies:
+			for enemy in enemy_active_party_for_origin:
+				if enemy.current_hp > 0 and enemy not in initial_targets:
+					_apply_aoe_reaction(origin, enemy, active_reaction)
+
+		if active_reaction.applies_to_all_allies:
+			for ally in ally_active_party:
+				if ally.current_hp > 0 and ally not in initial_targets:
+					_apply_aoe_reaction(origin, ally, active_reaction)
+
+		if active_reaction.is_conductive:
+			_apply_conductive_spread(origin, initial_targets, active_reaction)
+
+		if active_reaction.affects_both_parties:
+			var all_battlers = player_active_party + enemy_active_party
+			for battler in all_battlers:
+				if battler.current_hp > 0 and battler not in initial_targets:
+					_apply_aoe_reaction(origin, battler, active_reaction)
+
+func _apply_aoe_reaction(_attacker: Battler, target: Battler, reaction: StatusEffect) -> void:
+	print("AoE SPREAD: ", reaction.effect_name, " hits ", target.stats.character_name, "!")
+	target.status_manager.apply_status_effect(reaction)
+	if reaction.dot_dmg > 0:
+		var reduced_damage: int = int(reaction.dot_dmg * 0.7)
+		target.take_damage(reduced_damage, false)
+
+func _apply_conductive_spread(attacker: Battler, initial_targets: Array[Battler], reaction: StatusEffect) -> void:
+	var attacker_is_player = attacker in player_party
+	var potential_targets = enemy_active_party if attacker_is_player else player_active_party
+	if initial_targets.is_empty():
+		return
+	var source_primer: GlobalData.Element = GlobalData.Element.NEUTRAL
+	if reaction.reaction_primer != int(GlobalData.Element.NEUTRAL):
+		source_primer = reaction.reaction_primer
+	elif reaction.reaction_recipes.size() > 0:
+		source_primer = reaction.reaction_recipes[0].x
+	else:
+		source_primer = initial_targets[0].elemental_primer
+	var jump_index: int = 1
+
+	print("CONDUCTIVE SPREAD triggered for ", reaction.effect_name)
+
+	for target in potential_targets:
+		if target.current_hp <= 0 or target in initial_targets:
+			continue
+		if target.elemental_primer != source_primer:
+			continue
+		if jump_index > 3:
+			break
+
+		var conductive_damage: int = target.status_manager.apply_conductive_damage(reaction.dot_dmg, jump_index)
+		print("  -> Conductive jump ", jump_index, " to ", target.stats.character_name, " (Damage: ", conductive_damage, ")")
+		target.take_damage(conductive_damage, false)
+		target.status_manager.apply_status_effect(reaction)
+		if reaction.base_stun_chance > 0.0 and randf() < reaction.base_stun_chance:
+			var stun_effect = StatusEffect.new()
+			stun_effect.is_stunned = true
+			stun_effect.duration_turns = 1
+			target.status_manager.apply_status_effect(stun_effect)
+			print("  -> CONDUCTIVE STUN on ", target.stats.character_name, "!")
+		jump_index += 1
+
+func _is_valid_aoe_target(target: Battler, initial_targets: Array[Battler]) -> bool:
+	return target.current_hp > 0 and target not in initial_targets
+#endregion
+
+#region Healing
+func _on_battler_request_ally_heal(amount: int, is_enemy: bool) -> void:
+	var target_party = enemy_active_party if is_enemy else player_active_party
+	var lowest_hp_battler: Battler = null
+	var lowest_hp_percentage: float = 100.0
+
+	for battler in target_party:
+		if battler.current_hp > 0:
+			var hp_percent = float(battler.current_hp) / float(battler.stats.max_hp)
+			if hp_percent < lowest_hp_percentage:
+				lowest_hp_percentage = hp_percent
+				lowest_hp_battler = battler
+
+	if lowest_hp_battler != null:
+		lowest_hp_battler.heal_hp(amount)
+		print("MUTATION TRIGGERED: ", lowest_hp_battler.stats.character_name, " was healed for ", amount, " HP!")
+
+#endregion
+
+#region Battle Tester
+func run_test_battle() -> void:
+	print("\n==================================")
+	print("   STARTING COMBAT SIMULATION   ")
+	print("==================================\n")
+
+	var hero = player_party[0]
+	var slime = enemy_active_party[0] if enemy_active_party.size() > 0 else enemy_party[0]
+
+	print("--- TEST 1: Equipment, Slash Weakness, and Crits ---")
+	var hero_attack = hero.get_basic_attack()
+	execute_move(hero, hero_attack, slime)
+
+	print("\n--- TEST 2: Magic & Elemental Primers ---")
+	if hero.skills_list.size() > 0:
+		var hero_spell = hero.skills_list[0]
+		execute_move(hero, hero_spell, slime)
+#endregion
+

@@ -1,0 +1,2893 @@
+
+============================================================
+--- FILE: ./jsonimport.tscn ---
+--- LAST MODIFIED: 2026-05-21 18:51:48 ---
+============================================================
+
+[gd_scene format=3 uid="uid://c25b700wpokha"]
+
+[ext_resource type="Script" uid="uid://crnf1kxh0xyut" path="res://Resources/chain_reaction_importer.gd" id="1_043ua"]
+
+[node name="Node" type="Node" unique_id=1712176768]
+script = ExtResource("1_043ua")
+
+
+============================================================
+--- FILE: ./Scenes/combat_gym.tscn ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+[gd_scene format=3 uid="uid://drp82uarm5sjg"]
+
+[ext_resource type="Script" uid="uid://cujtno760tx2" path="res://Scripts/test_combat_gym.gd" id="1_nqkjc"]
+[ext_resource type="Script" uid="uid://d1rfmpj3ie3ip" path="res://Resources/Move.gd" id="2_1bv32"]
+[ext_resource type="PackedScene" uid="uid://vey4iwqmr78t" path="res://Scenes/battle manager/battle_arena.tscn" id="2_wnuto"]
+[ext_resource type="PackedScene" uid="uid://bqjrcn7hjvtor" path="res://Scenes/UI/EnemyHud/enemy_stats_panel.tscn" id="3_enemyhud"]
+[ext_resource type="PackedScene" uid="uid://bss2vlh54x5rb" path="res://Scenes/UI/skill_menu.tscn" id="3_skillmenu"]
+[ext_resource type="Script" uid="uid://du0mcmwag1pen" path="res://Resources/Stats.gd" id="4_1bv32"]
+[ext_resource type="Script" uid="uid://xyjeoprc8rta" path="res://Resources/ElementAffinityEntry.gd" id="4_60cw4"]
+[ext_resource type="PackedScene" uid="uid://dikhhlb2frkt5" path="res://Scenes/battler/battler.tscn" id="15_rperh"]
+[ext_resource type="Script" uid="uid://7272tw1kw6cp" path="res://Resources/Equipment.gd" id="16_l4kvx"]
+[ext_resource type="Resource" uid="uid://c0vkoko0p3x2r" path="res://Resources/Moves/Basic atk.tres" id="17_hf1gq"]
+[ext_resource type="Resource" uid="uid://ch6djndd7fns0" path="res://Resources/Equipment/test_weapon.tres" id="18_l4kvx"]
+[ext_resource type="Script" uid="uid://j0r7ctwoj6l0" path="res://Resources/StatusEffect.gd" id="19_statfx"]
+
+[sub_resource type="Resource" id="Resource_l0e8c"]
+script = ExtResource("4_60cw4")
+element = 1
+affinity = 0
+metadata/_custom_type_script = "uid://xyjeoprc8rta"
+
+[sub_resource type="Resource" id="Resource_60cw4"]
+script = ExtResource("4_60cw4")
+element = 4
+affinity = 2
+metadata/_custom_type_script = "uid://xyjeoprc8rta"
+
+[sub_resource type="Resource" id="Resource_ukifm"]
+script = ExtResource("4_1bv32")
+id = "ply_mc"
+character_name = "Null Tester"
+elemental_affinities = Array[ExtResource("4_60cw4")]([SubResource("Resource_l0e8c"), SubResource("Resource_60cw4")])
+physical_affinity = 3
+max_hp = 100
+max_mp = 100
+speed = 3
+magic = 30
+metadata/_custom_type_script = "uid://du0mcmwag1pen"
+
+[sub_resource type="Resource" id="Resource_c5se7"]
+script = ExtResource("2_1bv32")
+id = "Phy_Punch"
+move_name = "Punch"
+target_type = 1
+physical_type = 1
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_fire_single"]
+script = ExtResource("2_1bv32")
+id = "mv_fire_single"
+move_name = "Flame Test"
+power = 10
+mp_cost = 2
+is_magic = true
+element = 1
+chance_applying_element = 1.0
+stat_flat_bonus = {
+"magic": 4,
+"strength": 4
+}
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_earth_single"]
+script = ExtResource("2_1bv32")
+id = "mv_earth_single"
+move_name = "Stone Test"
+power = 10
+mp_cost = 2
+is_magic = true
+element = 2
+chance_applying_element = 1.0
+stat_flat_bonus = {
+"magic_def": 4,
+"physical_def": 4
+}
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_dark_single"]
+script = ExtResource("2_1bv32")
+id = "mv_dark_single"
+move_name = "Shade Test"
+power = 10
+mp_cost = 2
+is_magic = true
+element = 3
+chance_applying_element = 1.0
+stat_flat_bonus = {
+"crit_chance": 0.08,
+"luck": 3
+}
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_light_single"]
+script = ExtResource("2_1bv32")
+id = "mv_light_single"
+move_name = "Radiant Test"
+power = 10
+mp_cost = 2
+is_magic = true
+element = 4
+chance_applying_element = 1.0
+stat_flat_bonus = {
+"max_hp": 10,
+"speed": 3
+}
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_fire_all"]
+script = ExtResource("2_1bv32")
+id = "mv_fire_all"
+move_name = "Ignite Field"
+target_type = 1
+power = 7
+mp_cost = 4
+is_magic = true
+element = 1
+chance_applying_element = 1.0
+stat_flat_bonus = {
+"magic": 2,
+"strength": 2
+}
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_earth_trigger"]
+script = ExtResource("2_1bv32")
+id = "mv_earth_trigger"
+move_name = "Seismic Trigger"
+power = 8
+mp_cost = 3
+is_magic = true
+element = 2
+chance_applying_element = 1.0
+stat_flat_bonus = {
+"magic_def": 2,
+"physical_def": 2
+}
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_relay"]
+script = ExtResource("2_1bv32")
+id = "mv_relay"
+move_name = "Tactical Relay"
+template_mode = 4
+target_type = 2
+mp_cost = 3
+is_magic = true
+turn_order_manipulation = 2
+turn_order_amount = 4
+stat_flat_bonus = {
+"speed": 2
+}
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_haste"]
+script = ExtResource("2_1bv32")
+id = "mv_haste"
+move_name = "Quick Order"
+template_mode = 4
+target_type = 2
+mp_cost = 3
+is_magic = true
+turn_order_manipulation = 3
+turn_order_amount = 5
+stat_flat_bonus = {
+"crit_chance": 0.03,
+"speed": 4
+}
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_mv_delay"]
+script = ExtResource("2_1bv32")
+id = "mv_delay"
+move_name = "Order Jam"
+template_mode = 3
+mp_cost = 3
+is_magic = true
+turn_order_manipulation = 4
+turn_order_amount = 5
+stat_flat_bonus = {
+"magic_def": 2,
+"physical_def": 2
+}
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_buff_strength"]
+script = ExtResource("19_statfx")
+id = "buff_strength"
+effect_name = "Rally Strength"
+description = "Increase ally strength for 2 turns."
+effect_type = 0
+duration_turns = 2
+stat_mult_strength = 0.35
+metadata/_custom_type_script = "uid://j0r7ctwoj6l0"
+
+[sub_resource type="Resource" id="Resource_mv_buff_strength"]
+script = ExtResource("2_1bv32")
+id = "mv_buff_strength"
+move_name = "Rally Strength"
+template_mode = 4
+target_type = 2
+mp_cost = 3
+is_magic = true
+applied_status = SubResource("Resource_buff_strength")
+stat_flat_bonus = {
+"strength": 5
+}
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_buff_speed"]
+script = ExtResource("19_statfx")
+id = "buff_speed"
+effect_name = "Quick Step"
+description = "Increase ally speed for 2 turns."
+effect_type = 0
+duration_turns = 2
+stat_mult_speed = 0.4
+metadata/_custom_type_script = "uid://j0r7ctwoj6l0"
+
+[sub_resource type="Resource" id="Resource_mv_buff_speed"]
+script = ExtResource("2_1bv32")
+id = "mv_buff_speed"
+move_name = "Quick Step"
+template_mode = 4
+target_type = 2
+mp_cost = 3
+is_magic = true
+applied_status = SubResource("Resource_buff_speed")
+stat_flat_bonus = {
+"speed": 5
+}
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_0mfjd"]
+script = ExtResource("4_60cw4")
+element = 1
+metadata/_custom_type_script = "uid://xyjeoprc8rta"
+
+[sub_resource type="Resource" id="Resource_pg5ye"]
+script = ExtResource("4_1bv32")
+id = "ply_pty2"
+character_name = "INT Tester"
+elemental_affinities = Array[ExtResource("4_60cw4")]([SubResource("Resource_0mfjd")])
+max_hp = 100
+max_mp = 100
+speed = 3
+strength = 50
+magic = 30
+metadata/_custom_type_script = "uid://du0mcmwag1pen"
+
+[sub_resource type="Resource" id="Resource_ed0pe"]
+script = ExtResource("2_1bv32")
+id = "Phy_Punch"
+move_name = "Punch"
+physical_type = 1
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_a8fv2"]
+script = ExtResource("16_l4kvx")
+id = "test_sword"
+weapon_attack_move = ExtResource("17_hf1gq")
+bonus_max_hp = 2
+bonus_strength = 3
+bonus_magic = 4
+bonus_crit_rate = 0.2
+bonus_crit_dmg = 0.5
+metadata/_custom_type_script = "uid://7272tw1kw6cp"
+
+[sub_resource type="Resource" id="Resource_pl0bs"]
+script = ExtResource("16_l4kvx")
+id = "armor_test"
+equip_name = "Mock up Kevlar"
+equip_desc = "Kevlar"
+slot_type = 1
+bonus_physical_def = 5
+bonus_magic_def = 5
+metadata/_custom_type_script = "uid://7272tw1kw6cp"
+
+[sub_resource type="Resource" id="Resource_v2qia"]
+script = ExtResource("16_l4kvx")
+id = "shoe_test"
+equip_name = "Mock up Abbibas"
+equip_desc = "running shoe for Beginner"
+slot_type = 2
+bonus_luck = 4
+bonus_speed = 4
+metadata/_custom_type_script = "uid://7272tw1kw6cp"
+
+[sub_resource type="Resource" id="Resource_8ow6m"]
+script = ExtResource("2_1bv32")
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[sub_resource type="Resource" id="Resource_kwgu1"]
+script = ExtResource("4_60cw4")
+element = 4
+affinity = 0
+metadata/_custom_type_script = "uid://xyjeoprc8rta"
+
+[sub_resource type="Resource" id="Resource_4dlrh"]
+script = ExtResource("4_60cw4")
+element = 2
+affinity = 2
+metadata/_custom_type_script = "uid://xyjeoprc8rta"
+
+[sub_resource type="Resource" id="Resource_hf1gq"]
+script = ExtResource("4_1bv32")
+id = "enm_monster2"
+character_name = "Coyote"
+elemental_affinities = Array[ExtResource("4_60cw4")]([SubResource("Resource_kwgu1"), SubResource("Resource_4dlrh")])
+max_hp = 4000
+speed = 4
+strength = 8
+magic = 9
+physical_def = 70
+magic_def = 65
+metadata/_custom_type_script = "uid://du0mcmwag1pen"
+
+[sub_resource type="Resource" id="Resource_lu6nk"]
+script = ExtResource("2_1bv32")
+move_name = "Punch"
+physical_type = 1
+metadata/_custom_type_script = "uid://d1rfmpj3ie3ip"
+
+[node name="CombatGYM" type="Control" unique_id=1231679415 node_paths=PackedStringArray("battle_manager", "damage_label", "damage_popup_container", "button_container", "skill_menu", "target_button_container", "player_party_stats_label", "enemy_party_stats_label", "turn_manipulation_container", "turn_order_container", "last_move_used_label")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
+script = ExtResource("1_nqkjc")
+move_button_scene = ExtResource("3_skillmenu")
+battle_manager = NodePath("Battle_arena")
+damage_label = NodePath("Battlelogs")
+damage_popup_container = NodePath("DamagePopupLayer")
+button_container = NodePath("TargetButtons")
+skill_menu = NodePath("BattleMoves")
+target_button_container = NodePath("TargetButtons")
+player_party_stats_label = NodePath("PlayerParty/PartyCurrentStats")
+enemy_party_stats_label = NodePath("EnemyParty/PartyCurrentStats")
+turn_manipulation_container = NodePath("TurnManipulator")
+turn_order_container = NodePath("TurnOrder")
+last_move_used_label = NodePath("LastUsedMove")
+
+[node name="DamagePopupLayer" type="Control" parent="." unique_id=2055511227]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Battle_arena" parent="." unique_id=143384498 instance=ExtResource("2_wnuto")]
+max_active_players = 2
+max_active_enemies = 2
+
+[node name="Hero" parent="Battle_arena/PlayerParty" parent_id_path=PackedInt32Array(143384498, 704442100) index="0" unique_id=1167692167]
+stats = SubResource("Resource_ukifm")
+basic_atk = SubResource("Resource_c5se7")
+skills_list = Array[ExtResource("2_1bv32")]([SubResource("Resource_mv_fire_single"), SubResource("Resource_mv_earth_single"), SubResource("Resource_mv_dark_single"), SubResource("Resource_mv_light_single"), SubResource("Resource_mv_fire_all"), SubResource("Resource_mv_earth_trigger"), SubResource("Resource_mv_relay"), SubResource("Resource_mv_haste"), SubResource("Resource_mv_delay"), SubResource("Resource_mv_buff_strength"), SubResource("Resource_mv_buff_speed")])
+equipped_moves = Array[ExtResource("2_1bv32")]([null, null, null, null, null])
+
+[node name="Hero2" parent="Battle_arena/PlayerParty" parent_id_path=PackedInt32Array(143384498, 704442100) index="1" unique_id=97719253 instance=ExtResource("15_rperh")]
+stats = SubResource("Resource_pg5ye")
+basic_atk = SubResource("Resource_ed0pe")
+skills_list = Array[ExtResource("2_1bv32")]([SubResource("Resource_mv_fire_single"), SubResource("Resource_mv_earth_single"), SubResource("Resource_mv_dark_single"), SubResource("Resource_mv_light_single"), SubResource("Resource_mv_fire_all"), SubResource("Resource_mv_earth_trigger"), SubResource("Resource_mv_relay"), SubResource("Resource_mv_haste"), SubResource("Resource_mv_delay"), SubResource("Resource_mv_buff_strength"), SubResource("Resource_mv_buff_speed")])
+equipped_weapon = SubResource("Resource_a8fv2")
+equipped_armor = SubResource("Resource_pl0bs")
+equipped_shoe = SubResource("Resource_v2qia")
+
+[node name="Slime" parent="Battle_arena/EnemyParty" parent_id_path=PackedInt32Array(143384498, 1938227301) index="0" unique_id=1094677972]
+battler_type = 1
+skills_list = Array[ExtResource("2_1bv32")]([SubResource("Resource_8ow6m")])
+
+[node name="EnemyStatsPanel" parent="Battle_arena/EnemyParty/Slime" index="4" unique_id=1388621674 instance=ExtResource("3_enemyhud")]
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 171.0
+offset_top = 77.0
+offset_right = 171.0
+offset_bottom = 77.0
+grow_horizontal = 1
+grow_vertical = 1
+follow_target = false
+
+[node name="Slime2" parent="Battle_arena/EnemyParty" parent_id_path=PackedInt32Array(143384498, 1938227301) index="1" unique_id=540048331 instance=ExtResource("15_rperh")]
+battler_type = 1
+stats = SubResource("Resource_hf1gq")
+basic_atk = SubResource("Resource_lu6nk")
+skills_list = Array[ExtResource("2_1bv32")]([SubResource("Resource_8ow6m")])
+equipped_armor = ExtResource("18_l4kvx")
+
+[node name="Battlelogs" type="Label" parent="." unique_id=1155352905]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 70.0
+offset_right = 880.0
+offset_bottom = 560.0
+text = "logs"
+
+[node name="BattleMoves" parent="." unique_id=1497715568 instance=ExtResource("3_skillmenu")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 882.0
+offset_top = 96.0
+offset_right = 1176.0
+offset_bottom = 586.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="TargetButtons" type="VBoxContainer" parent="." unique_id=1965324103]
+layout_mode = 0
+offset_left = 1126.0
+offset_top = 335.0
+offset_right = 1331.0
+offset_bottom = 433.0
+
+[node name="PlayerParty" type="VBoxContainer" parent="." unique_id=527507764]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 610.0
+offset_right = 640.0
+offset_bottom = 748.0
+
+[node name="PartyCurrentStats" type="Label" parent="PlayerParty" unique_id=1568291982]
+layout_mode = 2
+text = "Party"
+
+[node name="EnemyParty" type="VBoxContainer" parent="." unique_id=1924701946]
+layout_mode = 0
+offset_left = 726.0
+offset_top = 610.0
+offset_right = 1346.0
+offset_bottom = 748.0
+
+[node name="PartyCurrentStats" type="Label" parent="EnemyParty" unique_id=1356810402]
+layout_mode = 2
+text = "party"
+horizontal_alignment = 2
+
+[node name="TurnManipulator" type="HBoxContainer" parent="." unique_id=1278202140]
+layout_mode = 0
+offset_left = 920.0
+offset_top = 20.0
+offset_right = 1346.0
+offset_bottom = 60.0
+
+[node name="TurnOrder" type="HBoxContainer" parent="." unique_id=2057287998]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 3.0
+offset_right = 910.0
+offset_bottom = 43.0
+
+[node name="Turn" type="Label" parent="TurnOrder" unique_id=1291834396]
+layout_mode = 2
+text = "Turn"
+
+[node name="LastUsedMove" type="Label" parent="." unique_id=69459991]
+layout_mode = 0
+offset_left = 650.0
+offset_top = 4.0
+offset_right = 690.0
+offset_bottom = 27.0
+text = "Move"
+horizontal_alignment = 1
+
+[node name="Popup Pos(Player Party)" type="Control" parent="." unique_id=937287994]
+anchors_preset = 0
+offset_left = 470.0
+offset_top = 337.0
+offset_right = 510.0
+offset_bottom = 377.0
+
+[node name="Popup Pos(Enemy Party)" type="Control" parent="." unique_id=366448827]
+anchors_preset = 0
+offset_left = 1188.0
+offset_top = 512.0
+offset_right = 1228.0
+offset_bottom = 552.0
+
+[editable path="Battle_arena"]
+[editable path="Battle_arena/PlayerParty/Hero"]
+[editable path="Battle_arena/PlayerParty/Hero2"]
+
+
+============================================================
+--- FILE: ./Scenes/battle_template.tscn ---
+--- LAST MODIFIED: 2026-05-22 17:36:16 ---
+============================================================
+
+[gd_scene format=3 uid="uid://battle_template_scene"]
+
+[ext_resource type="Script" path="res://Scripts/test_combat_gym.gd" id="1_nqkjc"]
+[ext_resource type="PackedScene" path="res://Scenes/battle manager/battle_arena_template.tscn" id="2_wnuto"]
+
+[node name="BattleTemplate" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
+script = ExtResource("1_nqkjc")
+battle_manager = NodePath("Battle_arena")
+damage_label = NodePath("Battlelogs")
+button_container = NodePath("BattleMoves")
+player_party_stats_label = NodePath("PlayerParty/PartyCurrentStats")
+enemy_party_stats_label = NodePath("EnemyParty/PartyCurrentStats")
+turn_manipulation_container = NodePath("TurnManipulator")
+turn_order_container = NodePath("TurnOrder")
+last_move_used_label = NodePath("LastUsedMove")
+
+[node name="Battle_arena" parent="." unique_id=143384498 instance=ExtResource("2_wnuto")]
+max_active_players = 2
+max_active_enemies = 2
+
+[node name="Battlelogs" type="Label" parent="." unique_id=1155352905]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 70.0
+offset_right = 880.0
+offset_bottom = 560.0
+text = "logs"
+
+[node name="BattleMoves" type="VBoxContainer" parent="." unique_id=1497715568]
+layout_mode = 0
+offset_left = 920.0
+offset_top = 70.0
+offset_right = 1346.0
+offset_bottom = 560.0
+
+[node name="PlayerParty" type="VBoxContainer" parent="." unique_id=527507764]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 610.0
+offset_right = 640.0
+offset_bottom = 748.0
+
+[node name="PartyCurrentStats" type="Label" parent="PlayerParty" unique_id=1568291982]
+layout_mode = 2
+text = "Drop battler scenes into Battle_arena/PlayerParty"
+
+[node name="EnemyParty" type="VBoxContainer" parent="." unique_id=1924701946]
+layout_mode = 0
+offset_left = 726.0
+offset_top = 610.0
+offset_right = 1346.0
+offset_bottom = 748.0
+
+[node name="PartyCurrentStats" type="Label" parent="EnemyParty" unique_id=1356810402]
+layout_mode = 2
+text = "Drop battler scenes into Battle_arena/EnemyParty"
+horizontal_alignment = 2
+
+[node name="TurnManipulator" type="HBoxContainer" parent="." unique_id=1278202140]
+layout_mode = 0
+offset_left = 920.0
+offset_top = 20.0
+offset_right = 1346.0
+offset_bottom = 60.0
+
+[node name="TurnOrder" type="HBoxContainer" parent="." unique_id=2057287998]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 900.0
+offset_bottom = 60.0
+
+[node name="Turn" type="Label" parent="TurnOrder" unique_id=1291834396]
+layout_mode = 2
+text = "Turn"
+
+[node name="LastUsedMove" type="Label" parent="." unique_id=69459991]
+layout_mode = 0
+offset_left = 650.0
+offset_top = 4.0
+offset_right = 690.0
+offset_bottom = 27.0
+text = "Move"
+horizontal_alignment = 1
+
+[editable path="Battle_arena"]
+
+============================================================
+--- FILE: ./Scenes/battler/battler.tscn ---
+--- LAST MODIFIED: 2026-05-07 12:36:15 ---
+============================================================
+
+[gd_scene format=3 uid="uid://dikhhlb2frkt5"]
+
+[ext_resource type="Script" uid="uid://bix0nre4oyvm8" path="res://Scenes/battler/battler.gd" id="1_7jvhn"]
+[ext_resource type="Script" uid="uid://bgerfanvn3s2c" path="res://Scripts/Battler/stats_manager.gd" id="2_exy5k"]
+[ext_resource type="Script" uid="uid://xb0o13dljng8" path="res://Scripts/Battler/status_manager.gd" id="3_bqepd"]
+[ext_resource type="Script" uid="uid://dfwonxve02444" path="res://Scripts/Battler/down_manager.gd" id="4_g1s5l"]
+[ext_resource type="Script" path="res://Scripts/Battler/affinity_manager.gd" id="5_affm1"]
+
+[node name="Battler" type="CharacterBody2D" unique_id=1167692167]
+script = ExtResource("1_7jvhn")
+
+[node name="StatsManager" type="Node" parent="." unique_id=816831854]
+script = ExtResource("2_exy5k")
+
+[node name="StatusManager" type="Node" parent="." unique_id=102106077]
+script = ExtResource("3_bqepd")
+
+[node name="AffinityManager" type="Node" parent="." unique_id=218746981]
+script = ExtResource("5_affm1")
+
+[node name="DownManager" type="Node" parent="." unique_id=8045499]
+script = ExtResource("4_g1s5l")
+
+
+============================================================
+--- FILE: ./Scenes/battle manager/battle_arena_template.tscn ---
+--- LAST MODIFIED: 2026-05-22 17:36:16 ---
+============================================================
+
+[gd_scene format=3 uid="uid://battle_arena_template_scene"]
+
+[ext_resource type="Script" path="res://Scenes/battle manager/battlemanager.gd" id="1_76ps5"]
+
+[node name="Battle_arena" type="Node2D"]
+script = ExtResource("1_76ps5")
+
+[node name="PlayerParty" type="Node2D" parent="."]
+
+[node name="EnemyParty" type="Node2D" parent="."]
+
+============================================================
+--- FILE: ./Scenes/battle manager/battle_arena.tscn ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+[gd_scene format=3 uid="uid://vey4iwqmr78t"]
+
+[ext_resource type="Script" uid="uid://xlpgodoxh5r5" path="res://Scenes/battle manager/battlemanager.gd" id="1_76ps5"]
+[ext_resource type="PackedScene" uid="uid://dikhhlb2frkt5" path="res://Scenes/battler/battler.tscn" id="2_hsv08"]
+[ext_resource type="Resource" uid="uid://k28y7cm7evjx" path="res://Resources/Party/Player/hero_stats.tres" id="3_thb7o"]
+[ext_resource type="Resource" uid="uid://c0vkoko0p3x2r" path="res://Resources/Moves/Basic atk.tres" id="4_3lcit"]
+[ext_resource type="Resource" uid="uid://iestkwd56067" path="res://Resources/Party/Enemy/slime.tres" id="8_jgk8b"]
+[ext_resource type="Resource" uid="uid://ch6djndd7fns0" path="res://Resources/Equipment/test_weapon.tres" id="8_mmcye"]
+[ext_resource type="Resource" uid="uid://bicpmwrttbekf" path="res://Resources/Equipment/test_armor.tres" id="9_jgk8b"]
+[ext_resource type="Resource" uid="uid://gpdpm4lb403i" path="res://Resources/Equipment/test_shoe.tres" id="10_tmkku"]
+
+[node name="Battle_arena" type="Node2D" unique_id=143384498]
+script = ExtResource("1_76ps5")
+
+[node name="PlayerParty" type="Node2D" parent="." unique_id=704442100]
+
+[node name="Hero" parent="PlayerParty" unique_id=1167692167 instance=ExtResource("2_hsv08")]
+stats = ExtResource("3_thb7o")
+basic_atk = ExtResource("4_3lcit")
+equipped_weapon = ExtResource("8_mmcye")
+equipped_armor = ExtResource("9_jgk8b")
+equipped_shoe = ExtResource("10_tmkku")
+
+[node name="EnemyParty" type="Node2D" parent="." unique_id=1938227301]
+
+[node name="Slime" parent="EnemyParty" unique_id=1094677972 instance=ExtResource("2_hsv08")]
+stats = ExtResource("8_jgk8b")
+basic_atk = ExtResource("4_3lcit")
+equipped_armor = ExtResource("8_mmcye")
+
+
+
+============================================================
+--- FILE: ./Scenes/UI/skill_menu.tscn ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+[gd_scene format=3 uid="uid://bss2vlh54x5rb"]
+
+[ext_resource type="Script" uid="uid://dv3qkh81p8n6o" path="res://Scripts/UI/skill_menu.gd" id="1_skillmenu"]
+[ext_resource type="PackedScene" uid="uid://nies8luc08by" path="res://Scenes/UI/buttons/movebutton/button.tscn" id="1_twl2r"]
+[ext_resource type="PackedScene" uid="uid://5duydqceduse" path="res://Scenes/UI/buttons/Backbutton/back_btn.tscn" id="3_w3o0p"]
+[ext_resource type="Texture2D" uid="uid://b1pe6y3h742ut" path="res://Arts/UI/ActionMenuHud/Star 1.svg" id="4_12fxv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wbbne"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0, 0.6313726, 0.84313726, 1)
+corner_radius_top_left = 500
+corner_radius_top_right = 500
+corner_radius_bottom_right = 500
+corner_radius_bottom_left = 500
+corner_detail = 15
+
+[sub_resource type="Animation" id="Animation_12fxv"]
+length = 20.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 5.01, 10, 15, 20),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(193, -5), Vector2(122, -17), Vector2(25.999992, 23), Vector2(122, -17), Vector2(193, -5)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Pivot:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 5.01, 10, 15, 20),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 2.4294983187761066, 1.3229595, 0.21991149, 0.0]
+}
+
+[sub_resource type="Animation" id="Animation_ilow5"]
+resource_name = "StarSpin"
+length = 4.0
+capture_included = true
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Pivot:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(-0.04166666, 0.975, 1.9833333, 3, 4),
+"transitions": PackedFloat32Array(1.0319062, 1.0319062, 1.0319062, 1.0319062, 1.0319062),
+"update": 2,
+"values": [Vector2(193, -5), Vector2(128, -18), Vector2(36.999992, 14.000008), Vector2(128, -18), Vector2(193, -5)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Pivot:rotation")
+tracks/1/interp = 3
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(-0.024999976, 0.98333335, 1.9916667, 3, 4),
+"transitions": PackedFloat32Array(1.0319062, 1.0319062, 1.0319062, 1.0319062, 1.0319062),
+"update": 0,
+"values": [0.0, -2.8483772, -0.74700093, -2.8483772, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_25ed2"]
+_data = {
+&"RESET": SubResource("Animation_12fxv"),
+&"StarSpin": SubResource("Animation_ilow5")
+}
+
+[node name="SkillMenu" type="Control" unique_id=201069723]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_skillmenu")
+
+[node name="MenuRoot" type="Control" parent="." unique_id=526938408]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Bg" type="Panel" parent="MenuRoot" unique_id=193761881]
+layout_mode = 0
+offset_right = 291.0
+offset_bottom = 291.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_wbbne")
+
+[node name="EquipDisplay" type="Control" parent="MenuRoot/Bg" unique_id=999000001]
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 16.0
+offset_top = 196.0
+offset_right = 275.0
+offset_bottom = 236.0
+grow_horizontal = 2
+
+[node name="SlotGroup" type="HBoxContainer" parent="MenuRoot/Bg/EquipDisplay" unique_id=999000002]
+layout_mode = 0
+
+[node name="Slot1" type="Label" parent="MenuRoot/Bg/EquipDisplay/SlotGroup" unique_id=999000011]
+custom_minimum_size = Vector2(48, 24)
+layout_mode = 2
+text = "Empty"
+
+[node name="Slot2" type="Label" parent="MenuRoot/Bg/EquipDisplay/SlotGroup" unique_id=999000012]
+custom_minimum_size = Vector2(48, 24)
+layout_mode = 2
+text = "Empty"
+
+[node name="Slot3" type="Label" parent="MenuRoot/Bg/EquipDisplay/SlotGroup" unique_id=999000013]
+custom_minimum_size = Vector2(48, 24)
+layout_mode = 2
+text = "Empty"
+
+[node name="Slot4" type="Label" parent="MenuRoot/Bg/EquipDisplay/SlotGroup" unique_id=999000014]
+custom_minimum_size = Vector2(48, 24)
+layout_mode = 2
+text = "Empty"
+
+[node name="Slot5" type="Label" parent="MenuRoot/Bg/EquipDisplay/SlotGroup" unique_id=999000015]
+custom_minimum_size = Vector2(48, 24)
+layout_mode = 2
+text = "Empty"
+
+[node name="StarRoot" type="Control" parent="MenuRoot/Bg" unique_id=489014377]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+metadata/_edit_lock_ = true
+
+[node name="Pivot" type="Control" parent="MenuRoot/Bg/StarRoot" unique_id=2111058115]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 193.0
+offset_top = -5.0
+offset_right = 192.99945
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(18.152, 18.187)
+
+[node name="Star" type="TextureRect" parent="MenuRoot/Bg/StarRoot/Pivot" unique_id=1861401722]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 495.0
+offset_bottom = 495.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 6.2831855
+scale = Vector2(0.07, 0.07)
+texture = ExtResource("4_12fxv")
+metadata/_edit_lock_ = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="MenuRoot/Bg/StarRoot" unique_id=1425589643]
+root_node = NodePath("")
+libraries/ = SubResource("AnimationLibrary_25ed2")
+speed_scale = -1.764
+
+[node name="Buttons" type="Control" parent="MenuRoot/Bg" unique_id=2101449145]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 27.0
+offset_top = 27.0
+offset_right = 307.0
+offset_bottom = 247.0
+grow_horizontal = 2
+
+[node name="ButtonGroup" type="VBoxContainer" parent="MenuRoot/Bg/Buttons" unique_id=175944674]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 2
+
+[node name="Row1" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/ButtonGroup" unique_id=728485782]
+layout_mode = 2
+
+[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row1" unique_id=2138649226]
+layout_mode = 2
+
+[node name="MoveButton" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row1" unique_id=1373420282 instance=ExtResource("1_twl2r")]
+custom_minimum_size = Vector2(180, 24)
+layout_mode = 2
+
+[node name="Row2" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/ButtonGroup" unique_id=2717019]
+layout_mode = 2
+
+[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row2" unique_id=1882757572]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+
+[node name="MoveButton" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row2" unique_id=1607383650 instance=ExtResource("1_twl2r")]
+custom_minimum_size = Vector2(180, 24)
+layout_mode = 2
+
+[node name="Row3" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/ButtonGroup" unique_id=1311547174]
+layout_mode = 2
+
+[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row3" unique_id=1942775367]
+custom_minimum_size = Vector2(24, 0)
+layout_mode = 2
+
+[node name="MoveButton" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row3" unique_id=1629129954 instance=ExtResource("1_twl2r")]
+custom_minimum_size = Vector2(180, 24)
+layout_mode = 2
+
+[node name="Row4" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/ButtonGroup" unique_id=920005389]
+layout_mode = 2
+
+[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row4" unique_id=499572467]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+
+[node name="MoveButton" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row4" unique_id=2037395088 instance=ExtResource("1_twl2r")]
+custom_minimum_size = Vector2(180, 24)
+layout_mode = 2
+
+[node name="Row5" type="HBoxContainer" parent="MenuRoot/Bg/Buttons/ButtonGroup" unique_id=478109068]
+layout_mode = 2
+
+[node name="LeftSpacer" type="Container" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row5" unique_id=1547588387]
+custom_minimum_size = Vector2(48, 0)
+layout_mode = 2
+
+[node name="MoveButton" parent="MenuRoot/Bg/Buttons/ButtonGroup/Row5" unique_id=2043823848 instance=ExtResource("1_twl2r")]
+custom_minimum_size = Vector2(180, 24)
+layout_mode = 2
+
+[node name="BackBtnRoot" type="Control" parent="." unique_id=110921427]
+visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="BackBtn" parent="BackBtnRoot" unique_id=430696281 instance=ExtResource("3_w3o0p")]
+layout_mode = 1
+offset_left = 12.0
+offset_top = 231.0
+offset_right = 12.0
+offset_bottom = 231.0
+
+
+============================================================
+--- FILE: ./Scenes/UI/action_menu.tscn ---
+--- LAST MODIFIED: 2026-05-25 12:30:16 ---
+============================================================
+
+[gd_scene format=3 uid="uid://daqokcco8w08i"]
+
+[ext_resource type="Texture2D" uid="uid://b1pe6y3h742ut" path="res://Arts/UI/ActionMenuHud/Star 1.svg" id="1_45ea4"]
+[ext_resource type="FontFile" uid="uid://dy4ruh0opke57" path="res://Arts/Fonts/Bangers/Bangers-Regular.ttf" id="2_65171"]
+[ext_resource type="Texture2D" uid="uid://c6470w1nns8d0" path="res://Arts/UI/ActionMenuHud/Magic.svg" id="3_65171"]
+[ext_resource type="Texture2D" uid="uid://cr665x4c8vult" path="res://Arts/UI/ActionMenuHud/Vector.svg" id="4_65171"]
+[ext_resource type="Texture2D" uid="uid://bombqgt3gkabk" path="res://Arts/UI/ActionMenuHud/Vector-1.svg" id="5_mhie5"]
+[ext_resource type="Texture2D" uid="uid://bjcj55fi8yitr" path="res://Arts/UI/ActionMenuHud/Vector-2.svg" id="6_yxm5i"]
+[ext_resource type="LabelSettings" uid="uid://o3l27mah6cep" path="res://Arts/UI/ActionMenuHud/TitleBangerFont.tres" id="7_yxm5i"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mhie5"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0, 0.6313726, 0.84313726, 1)
+corner_radius_top_left = 500
+corner_radius_top_right = 500
+corner_radius_bottom_right = 500
+corner_radius_bottom_left = 500
+corner_detail = 20
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ep2ra"]
+content_margin_left = 29.0
+content_margin_top = 2.0
+content_margin_right = 0.0
+texture = ExtResource("3_65171")
+expand_margin_left = 8.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jteyg"]
+texture = ExtResource("4_65171")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mhie5"]
+texture = ExtResource("4_65171")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_yxm5i"]
+texture = ExtResource("4_65171")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_kvmpf"]
+texture = ExtResource("4_65171")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_l1e3b"]
+content_margin_left = 38.0
+content_margin_top = 2.0
+content_margin_bottom = 7.0
+texture = ExtResource("4_65171")
+expand_margin_left = 19.0
+expand_margin_right = 8.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_betu1"]
+texture = ExtResource("4_65171")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_dj6sn"]
+texture = ExtResource("4_65171")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_xpg6b"]
+texture = ExtResource("4_65171")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_c8yqx"]
+texture = ExtResource("4_65171")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_pm1vu"]
+content_margin_right = 1.0
+content_margin_bottom = 12.0
+texture = ExtResource("5_mhie5")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_v2krj"]
+texture = ExtResource("5_mhie5")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_tobsp"]
+texture = ExtResource("5_mhie5")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_x0kr7"]
+texture = ExtResource("5_mhie5")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_aoyi1"]
+texture = ExtResource("5_mhie5")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ygdq4"]
+content_margin_left = 29.0
+content_margin_right = 1.0
+content_margin_bottom = 7.0
+texture = ExtResource("6_yxm5i")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bguh7"]
+texture = ExtResource("6_yxm5i")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4xidu"]
+texture = ExtResource("6_yxm5i")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_ckgp5"]
+texture = ExtResource("6_yxm5i")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_j5jdn"]
+texture = ExtResource("6_yxm5i")
+
+[node name="ActionMenu" type="Control" unique_id=1305986002]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Bg" type="Control" parent="." unique_id=1729979860]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BG1" type="Panel" parent="Bg" unique_id=973900652]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -82.0
+offset_top = -82.0
+offset_right = 82.0
+offset_bottom = 82.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_mhie5")
+
+[node name="Polygon2D" type="Polygon2D" parent="Bg/BG1" unique_id=594655096]
+position = Vector2(-0.99999523, -44.999992)
+scale = Vector2(0.99999994, 1.3043463)
+color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+polygon = PackedVector2Array(32, 146.4335, 135, 146.4335, 153, 169, 84.2738, 169, 15, 169)
+
+[node name="TextureRect" type="TextureRect" parent="Bg/BG1" unique_id=306613908]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 4.0
+offset_right = 550.0
+offset_bottom = 539.0
+scale = Vector2(0.076, 0.076)
+texture = ExtResource("1_45ea4")
+
+[node name="Magic_btn" type="Control" parent="Bg" unique_id=1040465705]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+
+[node name="MainBtn" type="Button" parent="Bg/Magic_btn" unique_id=727597840]
+layout_mode = 0
+offset_left = 50.0
+offset_top = -79.0
+offset_right = 178.55882
+offset_bottom = -32.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_65171")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxTexture_ep2ra")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_jteyg")
+theme_override_styles/hover = SubResource("StyleBoxTexture_mhie5")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_yxm5i")
+theme_override_styles/focus = SubResource("StyleBoxTexture_kvmpf")
+text = "Magic"
+
+[node name="Attack_btn" type="Control" parent="Bg" unique_id=1749764081]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -36.0
+offset_top = 45.0
+offset_right = 4.0
+offset_bottom = 85.0
+grow_horizontal = 0
+
+[node name="MainBtn" type="Button" parent="Bg/Attack_btn" unique_id=1722692900]
+layout_mode = 0
+offset_left = 57.0
+offset_top = -79.0
+offset_right = 185.55882
+offset_bottom = -32.0
+rotation = 0.010471975
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_65171")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxTexture_l1e3b")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_betu1")
+theme_override_styles/hover = SubResource("StyleBoxTexture_dj6sn")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_xpg6b")
+theme_override_styles/focus = SubResource("StyleBoxTexture_c8yqx")
+text = "Attack"
+
+[node name="Def_btn" type="Control" parent="Bg" unique_id=1048338027]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -36.0
+offset_top = 45.0
+offset_right = 4.0
+offset_bottom = 85.0
+grow_horizontal = 0
+
+[node name="MainBtn" type="Button" parent="Bg/Def_btn" unique_id=182539484]
+layout_mode = 0
+offset_left = 45.0
+offset_top = -28.0
+offset_right = 188.54785
+offset_bottom = 19.0
+rotation = 0.010471975
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_65171")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxTexture_pm1vu")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_v2krj")
+theme_override_styles/hover = SubResource("StyleBoxTexture_tobsp")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_x0kr7")
+theme_override_styles/focus = SubResource("StyleBoxTexture_aoyi1")
+text = "Defend"
+
+[node name="Item_btn" type="Control" parent="Bg" unique_id=947494807]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -36.0
+offset_top = 45.0
+offset_right = 4.0
+offset_bottom = 85.0
+grow_horizontal = 0
+
+[node name="MainBtn" type="Button" parent="Bg/Item_btn" unique_id=1557395953]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 15.0
+offset_right = 175.54785
+offset_bottom = 62.0
+rotation = 0.06806784
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_65171")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxTexture_ygdq4")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_bguh7")
+theme_override_styles/hover = SubResource("StyleBoxTexture_4xidu")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_ckgp5")
+theme_override_styles/focus = SubResource("StyleBoxTexture_j5jdn")
+text = "Item"
+
+[node name="Title" type="Control" parent="." unique_id=480877090]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="BG" type="Control" parent="Title" unique_id=81210008]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Polygon2D2" type="Polygon2D" parent="Title/BG" unique_id=1356325859]
+position = Vector2(-58.000004, -59.999996)
+scale = Vector2(1.0651163, 1.1454545)
+color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+polygon = PackedVector2Array(908.821, 423.4127, 1042.1398, 427.77777, 1069.3668, 397.22223, 857.1834, 385, 867.5109, 419.92062, 884.4105, 420.79364, 874, 444, 899.4324, 422.53967)
+
+[node name="Polygon2D" type="Polygon2D" parent="Title/BG" unique_id=793263095]
+position = Vector2(-57.000004, -61)
+scale = Vector2(1.0651163, 1.1454545)
+color = Color(0, 0.6313726, 0.84313726, 1)
+polygon = PackedVector2Array(907, 423, 1046, 426, 1055.2838, 393.73016, 874.083, 388.49207, 864.69434, 420.79364, 884.4105, 420.79364, 874, 444, 898, 422)
+
+[node name="Label" type="Label" parent="Title/BG" unique_id=670044316]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 878.0
+offset_top = 390.0
+offset_right = 1056.0
+offset_bottom = 417.0
+text = "CHOOSE YOUR ACTION"
+label_settings = ExtResource("7_yxm5i")
+
+
+============================================================
+--- FILE: ./Scenes/UI/damage_value_popups.tscn ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+[gd_scene format=3 uid="uid://dodod127opv28"]
+
+[ext_resource type="Script" uid="uid://5oxvpyqfqcdb" path="res://Scripts/UI/damage_value_popups.gd" id="1_0dmgv"]
+[ext_resource type="LabelSettings" uid="uid://gsfcftcu68a" path="res://Arts/UI/DmgValueUI/DmgValLabel.tres" id="1_hdj2b"]
+[ext_resource type="LabelSettings" uid="uid://tuk30trd4rc" path="res://Arts/UI/DmgValueUI/DamageTypeLable_Base.tres" id="2_brw4h"]
+[ext_resource type="LabelSettings" uid="uid://pawsarv51fbs" path="res://Arts/UI/DmgValueUI/DamageTypeLable_Outline.tres" id="3_4e2gf"]
+[ext_resource type="LabelSettings" uid="uid://tqbb7mxxi6bj" path="res://Arts/UI/DmgValueUI/DamageTypeLable_Shadow.tres" id="4_ns0to"]
+[ext_resource type="FontFile" uid="uid://dy4ruh0opke57" path="res://Arts/Fonts/Bangers/Bangers-Regular.ttf" id="6_ns0to"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gm3wk"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0, 0.41343415, 0.28402492, 1)
+skew = Vector2(0.145, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.0504, 0.22148001, 0.84, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ll0rd"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.039215688, 0.8392157, 0.6, 1)
+skew = Vector2(0.145, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(0.050980393, 0.21960784, 0.8392157, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vgr7d"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.53, 0.53, 0.53, 1)
+skew = Vector2(0.145, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.0504, 0.22148001, 0.84, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4a00r"]
+content_margin_left = 2.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+bg_color = Color(0.84, 0.84, 0.84, 1)
+skew = Vector2(0.145, 0)
+border_width_left = 1
+border_width_top = 1
+border_width_bottom = 1
+border_color = Color(0.050980393, 0.21960784, 0.8392157, 1)
+corner_detail = 1
+
+[sub_resource type="LabelSettings" id="LabelSettings_vgr7d"]
+font = ExtResource("6_ns0to")
+font_size = 75
+font_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_4a00r"]
+font = ExtResource("6_ns0to")
+font_size = 75
+font_color = Color(0, 0.63, 0.84, 0)
+outline_size = 1
+outline_color = Color(0, 0.6313726, 0.8392157, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_fj1xk"]
+font = ExtResource("6_ns0to")
+font_size = 75
+font_color = Color(0, 0.6313726, 0.8392157, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_skmp6"]
+font = ExtResource("6_ns0to")
+font_size = 75
+font_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_mcesn"]
+font = ExtResource("6_ns0to")
+font_size = 75
+font_color = Color(0, 0.63, 0.84, 0)
+outline_size = 1
+outline_color = Color(0.047058824, 0, 0.84313726, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_qtv03"]
+font = ExtResource("6_ns0to")
+font_size = 75
+font_color = Color(0.047058824, 0, 0.84313726, 1)
+
+[node name="DamageValueUI" type="Control" unique_id=525153592]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0dmgv")
+
+[node name="Root" type="Control" parent="." unique_id=1944020655]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="dmg_value" type="Label" parent="Root" unique_id=457544947]
+layout_mode = 0
+offset_right = 74.0
+offset_bottom = 57.0
+text = "999"
+label_settings = ExtResource("1_hdj2b")
+horizontal_alignment = 2
+vertical_alignment = 3
+uppercase = true
+
+[node name="StatsBar_Root" type="Control" parent="Root" unique_id=51909800]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Bg" type="Polygon2D" parent="Root/StatsBar_Root" unique_id=1408752458]
+z_index = -1
+position = Vector2(-50.40949, 3)
+scale = Vector2(1.6066898, 1)
+color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+polygon = PackedVector2Array(70, 39, 79.140884, 25, 121, 25, 116, 39)
+
+[node name="Bars_Root" type="Control" parent="Root/StatsBar_Root/Bg" unique_id=231268155]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 79.140884
+offset_top = 26.0
+offset_right = 110.10516
+offset_bottom = 39.0
+
+[node name="Target_current_health" type="ProgressBar" parent="Root/StatsBar_Root/Bg/Bars_Root" unique_id=1730149705]
+layout_mode = 0
+offset_left = -1.0863082
+offset_right = 41.236736
+offset_bottom = 5.0
+theme_override_styles/background = SubResource("StyleBoxFlat_gm3wk")
+theme_override_styles/fill = SubResource("StyleBoxFlat_ll0rd")
+value = 100.0
+show_percentage = false
+
+[node name="Target_current_DownMeter" type="ProgressBar" parent="Root/StatsBar_Root/Bg/Bars_Root" unique_id=547708906]
+layout_mode = 0
+offset_left = -0.46390986
+offset_top = 5.0
+offset_right = 41.859135
+offset_bottom = 10.0
+theme_override_styles/background = SubResource("StyleBoxFlat_vgr7d")
+theme_override_styles/fill = SubResource("StyleBoxFlat_4a00r")
+value = 82.68
+show_percentage = false
+
+[node name="DamageType_Root" type="Control" parent="Root" unique_id=441833688]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Weak_Root" type="Control" parent="Root/DamageType_Root" unique_id=1598820451]
+visible = false
+anchors_preset = 0
+
+[node name="Weak_Base" type="Label" parent="Root/DamageType_Root/Weak_Root" unique_id=1674235526]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "WEAK !"
+label_settings = ExtResource("2_brw4h")
+
+[node name="Weak_Outline" type="Label" parent="Root/DamageType_Root/Weak_Root" unique_id=1581750898]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "WEAK !"
+label_settings = ExtResource("3_4e2gf")
+
+[node name="Weak_Shadow" type="Label" parent="Root/DamageType_Root/Weak_Root" unique_id=343599277]
+z_index = -2
+layout_mode = 0
+offset_left = 7.999997
+offset_top = -40.0
+offset_right = 180.0
+offset_bottom = 46.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "WEAK !"
+label_settings = ExtResource("4_ns0to")
+
+[node name="Critical_Root" type="Control" parent="Root/DamageType_Root" unique_id=1102782083]
+visible = false
+anchors_preset = 0
+offset_left = -22.0
+offset_top = 1.0
+offset_right = -22.0
+offset_bottom = 1.0
+
+[node name="Critical_Base" type="Label" parent="Root/DamageType_Root/Critical_Root" unique_id=4235834]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "CRITICAL !"
+label_settings = ExtResource("2_brw4h")
+horizontal_alignment = 1
+
+[node name="Critical_Outline" type="Label" parent="Root/DamageType_Root/Critical_Root" unique_id=633028734]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "CRITICAL !"
+label_settings = ExtResource("3_4e2gf")
+horizontal_alignment = 1
+
+[node name="Critical_Shadow" type="Label" parent="Root/DamageType_Root/Critical_Root" unique_id=330523979]
+z_index = -2
+layout_mode = 0
+offset_left = 7.999997
+offset_top = -40.0
+offset_right = 180.0
+offset_bottom = 46.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "CRITICAL !"
+label_settings = ExtResource("4_ns0to")
+horizontal_alignment = 1
+
+[node name="Resist_Root" type="Control" parent="Root/DamageType_Root" unique_id=749482203]
+visible = false
+anchors_preset = 0
+offset_left = -22.0
+offset_top = 1.0
+offset_right = -22.0
+offset_bottom = 1.0
+
+[node name="Resist_Base" type="Label" parent="Root/DamageType_Root/Resist_Root" unique_id=1163225107]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "RESIST"
+label_settings = SubResource("LabelSettings_vgr7d")
+horizontal_alignment = 1
+
+[node name="Resist_Outline" type="Label" parent="Root/DamageType_Root/Resist_Root" unique_id=98947945]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "RESIST"
+label_settings = SubResource("LabelSettings_4a00r")
+horizontal_alignment = 1
+
+[node name="Resist_Shadow" type="Label" parent="Root/DamageType_Root/Resist_Root" unique_id=204211639]
+z_index = -2
+layout_mode = 0
+offset_left = 7.999996
+offset_top = -40.0
+offset_right = 180.0
+offset_bottom = 46.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "RESIST"
+label_settings = SubResource("LabelSettings_fj1xk")
+horizontal_alignment = 1
+
+[node name="Block_Root" type="Control" parent="Root/DamageType_Root" unique_id=1169070652]
+visible = false
+anchors_preset = 0
+offset_left = -22.0
+offset_top = -7.0
+offset_right = -22.0
+offset_bottom = -7.0
+
+[node name="Block_Base" type="Label" parent="Root/DamageType_Root/Block_Root" unique_id=745760448]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "BLOCK"
+label_settings = SubResource("LabelSettings_skmp6")
+horizontal_alignment = 1
+
+[node name="Block_Outline" type="Label" parent="Root/DamageType_Root/Block_Root" unique_id=513468424]
+z_index = -1
+layout_mode = 0
+offset_left = 5.0
+offset_top = -42.0
+offset_right = 177.0
+offset_bottom = 44.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "BLOCK"
+label_settings = SubResource("LabelSettings_mcesn")
+horizontal_alignment = 1
+
+[node name="Block_Shadow" type="Label" parent="Root/DamageType_Root/Block_Root" unique_id=1609532260]
+z_index = -2
+layout_mode = 0
+offset_left = 7.999996
+offset_top = -40.0
+offset_right = 180.0
+offset_bottom = 46.0
+rotation = -0.06981317
+pivot_offset = Vector2(86, 45)
+text = "BLOCK
+"
+label_settings = SubResource("LabelSettings_qtv03")
+horizontal_alignment = 1
+
+
+============================================================
+--- FILE: ./Scenes/UI/party_panel.tscn ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+[gd_scene format=3 uid="uid://4lpuiuambayr"]
+
+[ext_resource type="Script" uid="uid://u1sqqxkoiugb" path="res://Scripts/UI/party_panel.gd" id="1_party_panel"]
+[ext_resource type="Texture2D" uid="uid://ckfhvvh3exle4" path="res://Arts/UI/PlayerPartyHud/Star 3.png" id="1_saspk"]
+[ext_resource type="Texture2D" uid="uid://dixn6kwj4pyr1" path="res://Unity Old Code/Assets/Assets/UI/Player HUD/FINAL.png" id="2_hp5b6"]
+[ext_resource type="FontFile" uid="uid://dy4ruh0opke57" path="res://Arts/Fonts/Bangers/Bangers-Regular.ttf" id="3_hp5b6"]
+[ext_resource type="PackedScene" uid="uid://ufat5lxbhulb" path="res://Scenes/UI/affinity_panels/affinity_panels.tscn" id="5_8y2u2"]
+[ext_resource type="StyleBox" uid="uid://cs2pk7rtwcr6a" path="res://Arts/UI/PlayerPartyHud/Bg_HP_Bar.tres" id="6_i7yl8"]
+[ext_resource type="StyleBox" uid="uid://bfif76logtsnb" path="res://Arts/UI/PlayerPartyHud/Fill_HP_Bar.tres" id="7_ir2au"]
+[ext_resource type="StyleBox" uid="uid://cri8a71b7t5gu" path="res://Arts/UI/PlayerPartyHud/Bg_MP_Bar.tres" id="8_17bm1"]
+[ext_resource type="StyleBox" uid="uid://31xtuaa8kpiy" path="res://Arts/UI/PlayerPartyHud/Fill_MP_Bar.tres" id="9_5k0d0"]
+[ext_resource type="StyleBox" uid="uid://csbji5lmloixa" path="res://Arts/UI/PlayerPartyHud/Bg_Down_Bar.tres" id="10_4wcm1"]
+[ext_resource type="StyleBox" uid="uid://oc4k6gwrn6xj" path="res://Arts/UI/PlayerPartyHud/Fill_Down_Bar.tres" id="11_qpftg"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_r2hvd"]
+font = ExtResource("3_hp5b6")
+font_size = 30
+font_color = Color(0.039215688, 0.8392157, 0.6, 1)
+outline_size = 3
+outline_color = Color(0.015686275, 0.29803923, 0.21568628, 1)
+shadow_size = 2
+shadow_color = Color(0.015686275, 0.29803923, 0.21568628, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_8y2u2"]
+font = ExtResource("3_hp5b6")
+font_size = 30
+font_color = Color(0.8980392, 0.78039217, 0.06666667, 1)
+outline_size = 3
+outline_color = Color(0.18039216, 0.15686275, 0.011764706, 1)
+shadow_size = 2
+shadow_color = Color(0.18039216, 0.15686275, 0.011764706, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_debug_stats"]
+font = ExtResource("3_hp5b6")
+font_size = 14
+font_color = Color(0.95, 0.95, 0.95, 1)
+outline_size = 2
+outline_color = Color(0, 0, 0, 1)
+
+[node name="PartyPanel" type="Control" unique_id=1976608536]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_party_panel")
+metadata/_edit_lock_ = true
+
+[node name="BGStar" type="TextureRect" parent="." unique_id=808295796]
+layout_mode = 0
+offset_right = 191.0
+offset_bottom = 181.0
+texture = ExtResource("1_saspk")
+
+[node name="Portrait" type="TextureRect" parent="BGStar" unique_id=2090249044]
+clip_contents = true
+layout_mode = 0
+offset_left = 34.0
+offset_top = 16.000004
+offset_right = 306.0
+offset_bottom = 352.0
+scale = Vector2(0.407, 0.407)
+texture = ExtResource("2_hp5b6")
+
+[node name="NumVal" type="Control" parent="BGStar" unique_id=1818237534]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -20.0
+offset_bottom = 20.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="HpVal" type="Label" parent="BGStar/NumVal" unique_id=1403730718]
+layout_mode = 0
+offset_left = 2.0
+offset_top = -11.5
+offset_right = 46.0
+offset_bottom = 57.5
+text = "999
+"
+label_settings = SubResource("LabelSettings_r2hvd")
+
+[node name="ManaVal" type="Label" parent="BGStar/NumVal" unique_id=1882635731]
+layout_mode = 0
+offset_left = -5.0
+offset_top = 15.5
+offset_right = 39.0
+offset_bottom = 84.5
+text = "999
+"
+label_settings = SubResource("LabelSettings_8y2u2")
+
+[node name="AffinityRoot" type="Control" parent="BGStar/NumVal" unique_id=1364792326]
+anchors_preset = 0
+offset_left = -154.0
+offset_top = 13.500002
+offset_right = -114.0
+offset_bottom = 53.5
+rotation = 0.08552113
+
+[node name="AffinityPanels" parent="BGStar/NumVal/AffinityRoot" unique_id=233493983 instance=ExtResource("5_8y2u2")]
+layout_mode = 1
+scale = Vector2(0.77, 0.77)
+metadata/_edit_lock_ = true
+
+[node name="StatBar" type="Control" parent="BGStar" unique_id=236436834]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -40.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Background" type="Polygon2D" parent="BGStar/StatBar" unique_id=372978801]
+position = Vector2(-1.4999981, 1.0000019)
+scale = Vector2(0.82613033, 0.6233985)
+color = Color(0, 0, 0, 1)
+antialiased = true
+polygon = PackedVector2Array(-56.5, -27, 117.5, -29, 113.78351, 40.102753, -70.5, 38)
+
+[node name="HpBar" type="ProgressBar" parent="BGStar/StatBar/Background" unique_id=137786549]
+offset_left = -56.89175
+offset_top = -16.041103
+offset_right = 108.94165
+offset_bottom = -4.8123283
+theme_override_styles/background = ExtResource("6_i7yl8")
+theme_override_styles/fill = ExtResource("7_ir2au")
+page = 0.1
+value = 48.01
+exp_edit = true
+show_percentage = false
+
+[node name="MpBar" type="ProgressBar" parent="BGStar/StatBar/Background" unique_id=1464250794]
+offset_left = -53.260365
+offset_right = 112.573044
+offset_bottom = 11.228777
+theme_override_styles/background = ExtResource("8_17bm1")
+theme_override_styles/fill = ExtResource("9_5k0d0")
+page = 0.1
+value = 54.36
+exp_edit = true
+show_percentage = false
+
+[node name="MpBar2" type="ProgressBar" parent="BGStar/StatBar/Background" unique_id=1692351859]
+offset_left = -60.523136
+offset_top = 16.041107
+offset_right = 105.31027
+offset_bottom = 27.269882
+theme_override_styles/background = ExtResource("10_4wcm1")
+theme_override_styles/fill = ExtResource("11_qpftg")
+page = 0.1
+value = 54.36
+exp_edit = true
+show_percentage = false
+
+[node name="ActiveStats" type="Label" parent="BGStar" unique_id=300000001]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 172.0
+offset_right = 180.0
+offset_bottom = 221.0
+text = "ATK: --
+MAG: --"
+label_settings = SubResource("LabelSettings_debug_stats")
+
+
+============================================================
+--- FILE: ./Scenes/UI/buttons/Backbutton/back_btn.tscn ---
+--- LAST MODIFIED: 2026-05-26 16:21:49 ---
+============================================================
+
+[gd_scene format=3 uid="uid://5duydqceduse"]
+
+[ext_resource type="FontFile" uid="uid://dy4ruh0opke57" path="res://Arts/Fonts/Bangers/Bangers-Regular.ttf" id="1_n5rjn"]
+[ext_resource type="Texture2D" uid="uid://cm0xkr0gyqco6" path="res://Arts/UI/Buttons/BackBtn/Back.svg" id="2_3auxq"]
+[ext_resource type="Texture2D" uid="uid://bvpdmd5yr117a" path="res://Arts/UI/Buttons/BackBtn/BackBtnHvr.svg" id="3_3auxq"]
+[ext_resource type="StyleBox" uid="uid://dyr0fpfb621vc" path="res://Scenes/UI/buttons/Backbutton/BackbtnStyle.tres" id="3_xbgi2"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4xv8d"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("2_3auxq")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_xbgi2"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("2_3auxq")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mqg1e"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+texture = ExtResource("3_3auxq")
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_6f6id"]
+load_path = "res://.godot/imported/BackBtnHvr.svg-a8b15c7ceaf30db0b28481a9e000e94c.ctex"
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4fdfg"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
+texture = SubResource("CompressedTexture2D_6f6id")
+
+[node name="BackBtn" type="Control" unique_id=430696281]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Button" type="Button" parent="." unique_id=2062888865]
+layout_mode = 0
+offset_right = 87.0
+offset_bottom = 43.0
+theme_override_fonts/font = ExtResource("1_n5rjn")
+theme_override_styles/normal = SubResource("StyleBoxTexture_4xv8d")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_xbgi2")
+theme_override_styles/hover = SubResource("StyleBoxTexture_mqg1e")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_4fdfg")
+theme_override_styles/focus = ExtResource("3_xbgi2")
+text = "Rethink"
+
+
+============================================================
+--- FILE: ./Scenes/UI/buttons/movebutton/button.tscn ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+[gd_scene format=3 uid="uid://nies8luc08by"]
+
+[ext_resource type="Script" uid="uid://b8v0jxy860i7a" path="res://Scripts/UI/buttons/movebutton/move_button.gd" id="1_4movebtn"]
+[ext_resource type="PackedScene" uid="uid://bkrhrw7a1ipyy" path="res://Scenes/UI/icon_system/ui_icon_slot.tscn" id="2_ag8le"]
+[ext_resource type="LabelSettings" uid="uid://rcu1toakffpr" path="res://Arts/UI/Buttons/MoveSetBtn/MoveBtnFont.tres" id="3_w5b2q"]
+[ext_resource type="Script" uid="uid://bu4sr4xfr114d" path="res://Scripts/UI/icon_system/ui_icon_style.gd" id="3_x30h1"]
+[ext_resource type="Texture2D" uid="uid://bavmppyfkxmly" path="res://Arts/UI/Buttons/MoveSetBtn/Type Icon_Magic.svg" id="4_5qmsu"]
+[ext_resource type="Texture2D" uid="uid://byaygrdb87ul6" path="res://Arts/UI/Buttons/MoveSetBtn/Type Icon_Phys.svg" id="5_5qmsu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nl1om"]
+bg_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ag8le"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0.6313726, 0.84313726, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w5b2q"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+border_color = Color(1, 1, 1, 1)
+border_blend = true
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+shadow_color = Color(1, 1, 1, 1)
+shadow_size = 4
+shadow_offset = Vector2(4, 1.2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5qmsu"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.1, 0.1, 0.1, 0.3)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x30h1"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 1, 1, 0.75)
+draw_center = false
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+expand_margin_left = 2.0
+expand_margin_top = 2.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="Resource" id="Resource_s0wak"]
+script = ExtResource("3_x30h1")
+metadata/_custom_type_script = "uid://bu4sr4xfr114d"
+
+[node name="MoveButton" type="Control" unique_id=1373420282]
+custom_minimum_size = Vector2(180, 28)
+layout_mode = 3
+anchors_preset = 0
+mouse_filter = 2
+script = ExtResource("1_4movebtn")
+
+[node name="Button" type="Button" parent="." unique_id=1373420283]
+custom_minimum_size = Vector2(180, 16)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_nl1om")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ag8le")
+theme_override_styles/hover = SubResource("StyleBoxFlat_w5b2q")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_5qmsu")
+theme_override_styles/focus = SubResource("StyleBoxFlat_x30h1")
+
+[node name="MarginContainer" type="MarginContainer" parent="Button" unique_id=1745151746]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -75.0
+offset_top = -16.0
+offset_right = 75.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = -14
+theme_override_constants/margin_right = -15
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Button/MarginContainer" unique_id=31893019]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 9
+
+[node name="IconSpace" type="Control" parent="Button/MarginContainer/HBoxContainer" unique_id=695043876]
+custom_minimum_size = Vector2(12, 0)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="MoveName" type="Label" parent="Button/MarginContainer/HBoxContainer" unique_id=1824997615]
+layout_mode = 2
+size_flags_horizontal = 4
+label_settings = ExtResource("3_w5b2q")
+clip_text = true
+
+[node name="CostBox" type="HBoxContainer" parent="Button/MarginContainer/HBoxContainer" unique_id=655153521]
+custom_minimum_size = Vector2(42, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="CostLabel" type="Label" parent="Button/MarginContainer/HBoxContainer/CostBox" unique_id=1920403534]
+custom_minimum_size = Vector2(30, 0)
+layout_mode = 2
+text = "99"
+label_settings = ExtResource("3_w5b2q")
+horizontal_alignment = 2
+
+[node name="UIIconSlot" parent="." unique_id=1444521334 instance=ExtResource("2_ag8le")]
+layout_mode = 0
+offset_left = -17.0
+offset_top = -7.0
+offset_right = 18.0
+offset_bottom = 28.0
+size_flags_horizontal = 0
+mouse_filter = 2
+icon_style = SubResource("Resource_s0wak")
+
+[node name="TypeBadge" type="Control" parent="." unique_id=1702030723]
+z_index = 20
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 22.0
+offset_bottom = 22.0
+grow_horizontal = 0
+grow_vertical = 0
+scale = Vector2(0.61, 0.61)
+mouse_filter = 2
+
+[node name="MagicTypeIcon" type="TextureRect" parent="TypeBadge" unique_id=1903183265]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_5qmsu")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PhysicalTypeIcon" type="TextureRect" parent="TypeBadge" unique_id=1413183188]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5_5qmsu")
+expand_mode = 1
+stretch_mode = 5
+
+
+============================================================
+--- FILE: ./Scenes/UI/affinity_panels/affinity_panels.tscn ---
+--- LAST MODIFIED: 2026-06-04 15:45:20 ---
+============================================================
+
+[gd_scene format=3 uid="uid://ufat5lxbhulb"]
+
+[ext_resource type="Texture2D" uid="uid://eyd1gvgdcv4m" path="res://Arts/UI/AffinitiesPanelHud/BgFill.svg" id="1_0kvla"]
+[ext_resource type="Script" uid="uid://l4i0ayivceom" path="res://Scripts/UI/affinity_panels.gd" id="1_j8p1x"]
+[ext_resource type="Texture2D" uid="uid://c7ub5b5tjgpq6" path="res://Arts/UI/AffinitiesPanelHud/BgStroke.svg" id="2_28jop"]
+[ext_resource type="Texture2D" uid="uid://d7jnoy31lelm" path="res://Arts/UI/Icons/Icons/Fire.svg" id="4_ml8lo"]
+[ext_resource type="Texture2D" uid="uid://bvdv0y8ndggt8" path="res://Arts/UI/Icons/Icons/Light.svg" id="5_4rmdl"]
+[ext_resource type="Texture2D" uid="uid://dfyojhlhqhuo5" path="res://Arts/UI/Icons/Icons/Earth.svg" id="6_bqcky"]
+[ext_resource type="Texture2D" uid="uid://de0h4vff14cb6" path="res://Arts/UI/Icons/Icons/Dark.svg" id="7_srahe"]
+[ext_resource type="Texture2D" uid="uid://ejks1wne5op6" path="res://Arts/UI/Icons/Icons/Physical.svg" id="8_kmbm4"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_0urh6"]
+texture = ExtResource("1_0kvla")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_pt7yy"]
+texture = ExtResource("2_28jop")
+
+[node name="AffinityPanels" type="Control" unique_id=233493983]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_j8p1x")
+
+[node name="Root" type="Control" parent="." unique_id=1183829746]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FireRootIcons" type="Control" parent="Root" unique_id=1852706245]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -68.0
+offset_top = -20.0
+offset_right = -28.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BgFill" type="Panel" parent="Root/FireRootIcons" unique_id=1188041571]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.1125
+offset_top = -20.0
+offset_right = 20.1125
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_0urh6")
+metadata/_edit_lock_ = true
+
+[node name="BgStroke" type="Panel" parent="Root/FireRootIcons" unique_id=1590437605]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.1125
+offset_top = -20.0
+offset_right = 20.1125
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_pt7yy")
+metadata/_edit_lock_ = true
+
+[node name="IconRoot" type="Control" parent="Root/FireRootIcons" unique_id=570294576]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -3.0
+offset_top = -4.0
+offset_right = 24.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icons" type="TextureRect" parent="Root/FireRootIcons/IconRoot" unique_id=990934355]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -13.5
+offset_top = -19.0
+offset_right = 236.5
+offset_bottom = 418.5
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.08, 0.08)
+texture = ExtResource("4_ml8lo")
+
+[node name="LightRootIcons" type="Control" parent="Root" unique_id=70898673]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -39.0
+offset_top = -49.0
+offset_right = 1.0
+offset_bottom = -9.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BgFill" type="Panel" parent="Root/LightRootIcons" unique_id=1230317224]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.1125
+offset_top = -20.0
+offset_right = 20.1125
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_0urh6")
+metadata/_edit_lock_ = true
+
+[node name="BgStroke" type="Panel" parent="Root/LightRootIcons" unique_id=1337458156]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.1125
+offset_top = -20.0
+offset_right = 20.1125
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_pt7yy")
+metadata/_edit_lock_ = true
+
+[node name="IconRoot" type="Control" parent="Root/LightRootIcons" unique_id=667480957]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -3.0
+offset_top = -4.0
+offset_right = 24.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="Icons" type="TextureRect" parent="Root/LightRootIcons/IconRoot" unique_id=518776560]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -8.0
+offset_top = -9.0
+offset_right = 510.0
+offset_bottom = 508.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.08, 0.08)
+texture = ExtResource("5_4rmdl")
+
+[node name="EarthRootIcons" type="Control" parent="Root" unique_id=1824187674]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -20.0
+offset_right = 30.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BgFill" type="Panel" parent="Root/EarthRootIcons" unique_id=684609412]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.1125
+offset_top = -20.0
+offset_right = 20.1125
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_0urh6")
+metadata/_edit_lock_ = true
+
+[node name="BgStroke" type="Panel" parent="Root/EarthRootIcons" unique_id=1093278246]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.1125
+offset_top = -20.0
+offset_right = 20.1125
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_pt7yy")
+metadata/_edit_lock_ = true
+
+[node name="IconRoot" type="Control" parent="Root/EarthRootIcons" unique_id=279904157]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -3.0
+offset_top = -4.0
+offset_right = 24.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="Icons" type="TextureRect" parent="Root/EarthRootIcons/IconRoot" unique_id=674502228]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -8.5
+offset_top = -9.0
+offset_right = 336.5
+offset_bottom = 291.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.08, 0.08)
+texture = ExtResource("6_bqcky")
+
+[node name="DarkRootIcons" type="Control" parent="Root" unique_id=2140841169]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -39.0
+offset_top = 9.0
+offset_right = 1.0
+offset_bottom = 49.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BgFill" type="Panel" parent="Root/DarkRootIcons" unique_id=967384771]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.1125
+offset_top = -20.0
+offset_right = 20.1125
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_0urh6")
+metadata/_edit_lock_ = true
+
+[node name="BgStroke" type="Panel" parent="Root/DarkRootIcons" unique_id=1450674081]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.1125
+offset_top = -20.0
+offset_right = 20.1125
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_pt7yy")
+metadata/_edit_lock_ = true
+
+[node name="IconRoot" type="Control" parent="Root/DarkRootIcons" unique_id=1643640280]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -3.0
+offset_top = -4.0
+offset_right = 24.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="Icons" type="TextureRect" parent="Root/DarkRootIcons/IconRoot" unique_id=458287136]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.5
+offset_top = -9.0
+offset_right = 418.5
+offset_bottom = 291.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.08, 0.08)
+texture = ExtResource("7_srahe")
+
+[node name="PhysicalRootIcons" type="Control" parent="Root" unique_id=1802011954]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -29.0
+offset_top = -6.999939
+offset_right = 11.0
+offset_bottom = 33.00006
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.655, 0.655)
+
+[node name="BgFill" type="Panel" parent="Root/PhysicalRootIcons" unique_id=1462755947]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.1125
+offset_top = -20.0
+offset_right = 20.1125
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_0urh6")
+metadata/_edit_lock_ = true
+
+[node name="BgStroke" type="Panel" parent="Root/PhysicalRootIcons" unique_id=1482053452]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.1125
+offset_top = -20.0
+offset_right = 20.1125
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(1.555, 1.555)
+theme_override_styles/panel = SubResource("StyleBoxTexture_pt7yy")
+metadata/_edit_lock_ = true
+
+[node name="IconRoot" type="Control" parent="Root/PhysicalRootIcons" unique_id=1023755521]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -3.0
+offset_top = -4.0
+offset_right = 24.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_lock_ = true
+
+[node name="Icons" type="TextureRect" parent="Root/PhysicalRootIcons/IconRoot" unique_id=584948566]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -13.706118
+offset_top = -17.78636
+offset_right = 352.7978
+offset_bottom = 418.5278
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.08, 0.08)
+texture = ExtResource("8_kmbm4")
+
+
+============================================================
+--- FILE: ./Scenes/UI/icon_system/ui_icon_slot.tscn ---
+--- LAST MODIFIED: 2026-05-25 15:23:12 ---
+============================================================
+
+[gd_scene format=3 uid="uid://bkrhrw7a1ipyy"]
+
+[ext_resource type="Script" uid="uid://dx64w7eqlfiw7" path="res://Scripts/UI/icon_system/ui_icon_slot.gd" id="1_ui_icon_slot"]
+[ext_resource type="Texture2D" uid="uid://ylc2gihvgjux" path="res://Arts/UI/Icons/starbg.svg" id="2_bwdao"]
+
+[node name="UIIconSlot" type="Control" unique_id=1444521334]
+clip_contents = true
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_ui_icon_slot")
+
+[node name="BackgroundFill" type="TextureRect" parent="." unique_id=431621516]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_bwdao")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BackgroundStroke" type="TextureRect" parent="." unique_id=1728841158]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Icon" type="TextureRect" parent="." unique_id=310147886]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 3.0000002
+offset_top = 2.0
+offset_right = 3.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.809, 0.809)
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+
+============================================================
+--- FILE: ./Scenes/UI/EnemyHud/enemy_stats_panel.tscn ---
+--- LAST MODIFIED: 2026-06-04 16:19:21 ---
+============================================================
+
+[gd_scene format=3 uid="uid://bqjrcn7hjvtor"]
+
+[ext_resource type="StyleBox" uid="uid://cs2pk7rtwcr6a" path="res://Arts/UI/PlayerPartyHud/Bg_HP_Bar.tres" id="1_kss7v"]
+[ext_resource type="StyleBox" uid="uid://bfif76logtsnb" path="res://Arts/UI/PlayerPartyHud/Fill_HP_Bar.tres" id="2_nmeq5"]
+[ext_resource type="StyleBox" uid="uid://csbji5lmloixa" path="res://Arts/UI/PlayerPartyHud/Bg_Down_Bar.tres" id="3_vcy0h"]
+[ext_resource type="StyleBox" uid="uid://oc4k6gwrn6xj" path="res://Arts/UI/PlayerPartyHud/Fill_Down_Bar.tres" id="4_ogwhb"]
+[ext_resource type="LabelSettings" uid="uid://caoex6oxewdwv" path="res://Arts/UI/EnemyStatsBarHud/EnemyStatsNameSettings.tres" id="5_ynff2"]
+[ext_resource type="PackedScene" uid="uid://ufat5lxbhulb" path="res://Scenes/UI/affinity_panels/affinity_panels.tscn" id="6_yvmop"]
+[ext_resource type="PackedScene" uid="uid://bkrhrw7a1ipyy" path="res://Scenes/UI/icon_system/ui_icon_slot.tscn" id="7_nmeq5"]
+[ext_resource type="Texture2D" uid="uid://cg8bu25bo5wjw" path="res://Arts/UI/EnemyStatsBarHud/Buff.svg" id="7_ynff2"]
+[ext_resource type="Texture2D" uid="uid://bn2r1q6ndbm5x" path="res://Arts/UI/EnemyStatsBarHud/Debuff.svg" id="8_yvmop"]
+[ext_resource type="FontFile" uid="uid://dy4ruh0opke57" path="res://Arts/Fonts/Bangers/Bangers-Regular.ttf" id="9_3vcrh"]
+[ext_resource type="Script" uid="uid://dhjp352jpg5pm" path="res://Scripts/UI/EnemyHud/enemy_stats_panel.gd" id="10_enemyhud"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_w1unh"]
+line_spacing = 2.0
+font = ExtResource("9_3vcrh")
+font_size = 10
+font_color = Color(0.8980392, 0.78039217, 0.06666667, 1)
+outline_size = 2
+outline_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_j4423"]
+line_spacing = 2.0
+font = ExtResource("9_3vcrh")
+font_size = 10
+font_color = Color(0.039215688, 0.8392157, 0.6, 1)
+outline_size = 2
+outline_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_hwafa"]
+line_spacing = 2.0
+font = ExtResource("9_3vcrh")
+font_size = 10
+outline_size = 2
+outline_color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+
+[node name="EnemyStatsPanel" type="Control" unique_id=1776729931]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("10_enemyhud")
+battler_path = null
+follow_target = null
+screen_offset = null
+show_active_stats_debug = null
+
+[node name="PanelRoot" type="Control" parent="." unique_id=1209622514]
+layout_mode = 1
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="BarsRoot" type="Control" parent="PanelRoot" unique_id=1452637940]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -25.923077
+offset_top = -29.0
+offset_right = 22.076923
+offset_bottom = -21.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.465, 0.465)
+
+[node name="HpBar" type="ProgressBar" parent="PanelRoot/BarsRoot" unique_id=376640]
+layout_mode = 0
+offset_left = -92.63854
+offset_top = -4.3010755
+offset_right = 214.88837
+offset_bottom = 6.9276986
+theme_override_styles/background = ExtResource("1_kss7v")
+theme_override_styles/fill = ExtResource("2_nmeq5")
+page = 0.1
+value = 48.01
+exp_edit = true
+show_percentage = false
+
+[node name="DownBar" type="ProgressBar" parent="PanelRoot/BarsRoot" unique_id=729696065]
+layout_mode = 0
+offset_left = -107.69231
+offset_top = 12.903226
+offset_right = 199.83461
+offset_bottom = 24.132
+theme_override_styles/background = ExtResource("3_vcy0h")
+theme_override_styles/fill = ExtResource("4_ogwhb")
+page = 0.1
+value = 54.36
+exp_edit = true
+show_percentage = false
+
+[node name="StatusBar" type="Polygon2D" parent="PanelRoot" unique_id=1223326672]
+z_index = -1
+position = Vector2(27.30769, 0)
+scale = Vector2(1.3846153, 1)
+color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(-64, -27, 72, -23, 67, 13, -71, 10)
+metadata/_edit_lock_ = true
+
+[node name="NameRoot" type="Control" parent="PanelRoot" unique_id=240757903]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Name" type="Label" parent="PanelRoot/NameRoot" unique_id=517946860]
+layout_mode = 0
+offset_left = -62.0
+offset_top = -40.0
+offset_right = 93.0
+offset_bottom = -13.0
+text = "Monster"
+label_settings = ExtResource("5_ynff2")
+horizontal_alignment = 2
+text_overrun_behavior = 3
+uppercase = true
+
+[node name="AffinityPanelRoot" type="Control" parent="." unique_id=119812485]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="AffinityPanels" parent="AffinityPanelRoot" unique_id=233493983 instance=ExtResource("6_yvmop")]
+layout_mode = 1
+offset_left = 131.0
+offset_top = -29.999992
+offset_right = 107.0
+offset_bottom = -55.999992
+rotation = 0.17278759
+scale = Vector2(0.54, 0.54)
+
+[node name="StatsPanelRoot" type="Control" parent="." unique_id=859466794]
+layout_mode = 1
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="StatusBarRoots" type="Control" parent="StatsPanelRoot" unique_id=38396316]
+anchors_preset = 0
+offset_left = 15.0
+offset_top = 9.0
+offset_right = 60.055557
+offset_bottom = 49.0
+
+[node name="StatusBar" type="HBoxContainer" parent="StatsPanelRoot/StatusBarRoots" unique_id=406054612]
+layout_mode = 0
+offset_left = -68.88887
+offset_top = 4.0
+offset_right = 45.101128
+offset_bottom = 21.75
+scale = Vector2(0.998, 0.998)
+size_flags_stretch_ratio = 0.0
+
+[node name="AtkStatRoot" type="Control" parent="StatsPanelRoot/StatusBarRoots/StatusBar" unique_id=1990155613]
+custom_minimum_size = Vector2(24.81, 0)
+layout_mode = 2
+
+[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/AtkStatRoot" unique_id=216644536]
+layout_mode = 0
+offset_left = -7.111125
+offset_right = 184.0002
+offset_bottom = 191.11133
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("7_ynff2")
+
+[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/AtkStatRoot" unique_id=1150962710]
+layout_mode = 0
+offset_left = -6.8888855
+offset_right = 203.11111
+offset_bottom = 186.66666
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("8_yvmop")
+
+[node name="AtkMagicLabel" type="Label" parent="StatsPanelRoot/StatusBarRoots/StatusBar/AtkStatRoot" unique_id=2035937168]
+layout_mode = 0
+offset_left = 1.0
+offset_right = 15.0
+offset_bottom = 12.0
+text = "Atk"
+label_settings = SubResource("LabelSettings_w1unh")
+horizontal_alignment = 1
+autowrap_mode = 1
+
+[node name="AtkPhysicalLabel" type="Label" parent="StatsPanelRoot/StatusBarRoots/StatusBar/AtkStatRoot" unique_id=828991440]
+layout_mode = 0
+offset_left = 1.0
+offset_right = 15.0
+offset_bottom = 12.0
+text = "Atk"
+label_settings = SubResource("LabelSettings_j4423")
+horizontal_alignment = 1
+autowrap_mode = 1
+
+[node name="DefStatRoot" type="Control" parent="StatsPanelRoot/StatusBarRoots/StatusBar" unique_id=74438898]
+custom_minimum_size = Vector2(24.81, 0)
+layout_mode = 2
+
+[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/DefStatRoot" unique_id=496423249]
+layout_mode = 0
+offset_left = -7.3333282
+offset_right = 202.66667
+offset_bottom = 186.66666
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("7_ynff2")
+
+[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/DefStatRoot" unique_id=1347068018]
+layout_mode = 0
+offset_left = -5.8888855
+offset_right = 204.11111
+offset_bottom = 186.66666
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("8_yvmop")
+
+[node name="DefMagicLabel" type="Label" parent="StatsPanelRoot/StatusBarRoots/StatusBar/DefStatRoot" unique_id=544084058]
+layout_mode = 0
+offset_left = 1.0
+offset_right = 15.0
+offset_bottom = 12.0
+text = "Def"
+label_settings = SubResource("LabelSettings_w1unh")
+horizontal_alignment = 1
+autowrap_mode = 1
+
+[node name="DefPhysicalLabel" type="Label" parent="StatsPanelRoot/StatusBarRoots/StatusBar/DefStatRoot" unique_id=381094066]
+layout_mode = 0
+offset_left = 1.0
+offset_right = 15.0
+offset_bottom = 12.0
+text = "Def"
+label_settings = SubResource("LabelSettings_j4423")
+horizontal_alignment = 1
+autowrap_mode = 1
+
+[node name="SpeedStatRoot" type="Control" parent="StatsPanelRoot/StatusBarRoots/StatusBar" unique_id=188167025]
+custom_minimum_size = Vector2(24.81, 0)
+layout_mode = 2
+
+[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/SpeedStatRoot" unique_id=1856329914]
+layout_mode = 0
+offset_left = -9.333332
+offset_right = 200.66667
+offset_bottom = 186.66666
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("7_ynff2")
+
+[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/SpeedStatRoot" unique_id=1719856490]
+layout_mode = 0
+offset_left = -7.8888855
+offset_right = 202.11111
+offset_bottom = 186.66666
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("8_yvmop")
+
+[node name="SpeedLabel" type="Label" parent="StatsPanelRoot/StatusBarRoots/StatusBar/SpeedStatRoot" unique_id=1168145582]
+layout_mode = 0
+offset_left = 1.0
+offset_right = 15.0
+offset_bottom = 12.0
+text = "SPD"
+label_settings = SubResource("LabelSettings_hwafa")
+horizontal_alignment = 1
+autowrap_mode = 1
+
+[node name="DownStatRoot" type="Control" parent="StatsPanelRoot/StatusBarRoots/StatusBar" unique_id=1635612639]
+custom_minimum_size = Vector2(24.81, 0)
+layout_mode = 2
+
+[node name="BuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/DownStatRoot" unique_id=1492428198]
+layout_mode = 0
+offset_left = -9.333313
+offset_right = 200.66669
+offset_bottom = 186.66666
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("7_ynff2")
+
+[node name="DebuffIcon" type="TextureRect" parent="StatsPanelRoot/StatusBarRoots/StatusBar/DownStatRoot" unique_id=1370976848]
+layout_mode = 0
+offset_left = -7.8888855
+offset_right = 202.11111
+offset_bottom = 186.66666
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("8_yvmop")
+
+[node name="DwnLabel" type="Label" parent="StatsPanelRoot/StatusBarRoots/StatusBar/DownStatRoot" unique_id=810295269]
+layout_mode = 0
+offset_left = 1.0
+offset_right = 17.777765
+offset_bottom = 12.0
+text = "Dwn"
+label_settings = SubResource("LabelSettings_hwafa")
+horizontal_alignment = 1
+autowrap_mode = 1
+
+[node name="StatusBar" type="Polygon2D" parent="StatsPanelRoot" unique_id=355393551]
+z_index = -2
+position = Vector2(23, 9)
+scale = Vector2(1.3846153, 1)
+color = Color(0.047058824, 0.21960784, 0.84313726, 1)
+polygon = PackedVector2Array(-68.611115, -8, 52.000004, -6, 45.5, 23, -74.38889, 20)
+metadata/_edit_lock_ = true
+
+[node name="ElementalRoot" type="Control" parent="." unique_id=1396400736]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="PrimerIconSlot" type="Control" parent="ElementalRoot" unique_id=194149858]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="UIIconSlot" parent="ElementalRoot/PrimerIconSlot" unique_id=1444521334 instance=ExtResource("7_nmeq5")]
+layout_mode = 0
+offset_left = 67.0
+offset_top = 22.999994
+offset_right = 99.0
+offset_bottom = 54.999992
+rotation = -0.6894051
+scale = Vector2(1.54, 1.54)
+
+[node name="TriggerIconSlot" type="Control" parent="ElementalRoot" unique_id=1857538814]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="UIIconSlot" parent="ElementalRoot/TriggerIconSlot" unique_id=52813138 instance=ExtResource("7_nmeq5")]
+layout_mode = 0
+offset_left = 104.0
+offset_top = 28.999998
+offset_right = 136.0
+offset_bottom = 61.0
+rotation = -0.6894051
+scale = Vector2(1.54, 1.54)
+
