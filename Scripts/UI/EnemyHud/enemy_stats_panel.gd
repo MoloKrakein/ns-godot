@@ -74,8 +74,9 @@ func bind_battler(new_battler: Battler) -> void:
 	_bound_battler = new_battler
 	battler = new_battler
 
+	# Set the reference on the child component
 	if affinity_panels != null:
-		affinity_panels.battler = _bound_battler
+		affinity_panels.battler = _bound_battler # 🔄 This triggers bind_battler inside AffinityPanels!
 
 	if _bound_battler != null:
 		if not _bound_battler.health_changed.is_connected(_on_battler_health_changed):
@@ -98,10 +99,15 @@ func bind_battler(new_battler: Battler) -> void:
 				_bound_battler.down_manager.down_meter_updated.connect(_on_down_meter_updated)
 			_on_down_meter_updated(_bound_battler.down_manager.current_meter, _bound_battler.down_manager.max_meter)
 
-	call_deferred("_refresh_panel")
-	call_deferred("_update_elemental_and_status_icons")
+	# Force immediate calculation instead of letting it render on unassigned frames
+	_refresh_panel()
+	_update_elemental_and_status_icons()
+	
+	# 🆕 FORCE CHILDPANELS TO RUN SYNCHRONIZED IMMEDATELY
+	if affinity_panels != null and is_instance_valid(affinity_panels):
+		affinity_panels.bind_battler(_bound_battler)
 
-
+		
 func _unbind_battler() -> void:
 	if _bound_battler == null:
 		return

@@ -39,7 +39,7 @@ func bind_battler(new_battler: Battler) -> void:
 
 
 func _refresh_panel() -> void:
-	if fire_bg_fill == null or fire_bg_stroke == null or light_bg_fill == null or light_bg_stroke == null or earth_bg_fill == null or earth_bg_stroke == null or dark_bg_fill == null or dark_bg_stroke == null or physical_bg_fill == null or physical_bg_stroke == null:
+	if fire_bg_fill == null or fire_bg_stroke == null or light_bg_fill == null or light_bg_stroke == null or earth_bg_fill == null or earth_bg_stroke == null or physical_bg_fill == null or physical_bg_stroke == null:
 		return
 
 	if _bound_battler == null or not is_instance_valid(_bound_battler) or _bound_battler.affinity_manager == null:
@@ -51,13 +51,17 @@ func _refresh_panel() -> void:
 		return
 
 	var affinity_manager: AffinityManager = _bound_battler.affinity_manager
+	
+	# --- Core Elemental Mappings ---
 	_apply_slot_color(fire_bg_fill, fire_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.FIRE)))
 	_apply_slot_color(light_bg_fill, light_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.LIGHT)))
 	_apply_slot_color(earth_bg_fill, earth_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.EARTH)))
 	_apply_slot_color(dark_bg_fill, dark_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.DARK)))
-	_apply_slot_color(physical_bg_fill, physical_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(false, GlobalData.Element.NEUTRAL, GlobalData.PhysicalType.NONE)))
-
-
+	
+	# --- 🔄 FIXED: Pass the consolidated physical type enum key instead of NONE ---
+	_apply_slot_color(physical_bg_fill, physical_bg_stroke, _get_affinity_color(
+		affinity_manager.get_current_affinity(false, GlobalData.Element.NEUTRAL, GlobalData.PhysicalType.PHYSICAL)
+	))
 func _get_affinity_color(affinity: BattlerStats.Affinity) -> Color:
 	match affinity:
 		BattlerStats.Affinity.WEAK:
