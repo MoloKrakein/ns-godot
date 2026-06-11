@@ -13,7 +13,6 @@ enum Slot { WEAPON, ARMOR, SHOE, NECKTIE, PANTS, ACCESSORY }
 
 @export var set_family: String = "None"
 
-
 @export_group("Stat Bonuses")
 @export var bonus_max_hp:int = 0
 @export var bonus_strength:int = 0
@@ -30,5 +29,4 @@ enum Slot { WEAPON, ARMOR, SHOE, NECKTIE, PANTS, ACCESSORY }
 @export_group("Firearm")
 @export var ammo:int = 0
 @export var bullet_type:GlobalData.Element = GlobalData.Element.NEUTRAL
-
 

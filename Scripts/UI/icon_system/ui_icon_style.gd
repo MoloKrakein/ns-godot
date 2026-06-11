@@ -28,7 +28,7 @@ class_name UIIconStyle
 @export var theme_icon_type: StringName = &"EditorIcons"
 
 func has_background() -> bool:
-	return use_background and (background_fill_texture != null or background_stroke_texture != null)
+    return use_background and (background_fill_texture != null or background_stroke_texture != null)
 
 func has_icon() -> bool:
-	return use_icon and (icon_texture != null or theme_icon_name != &"")
+    return use_icon and (icon_texture != null or theme_icon_name != &"")

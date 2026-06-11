@@ -14,12 +14,10 @@ enum Type { BUFF, DEBUFF, CROWD_CONTROL}
 @export var decay_per_jump: float = 0.0 # For conductive reactions, how much the effect weakens with each jump
 @export var base_stun_chance: float = 0.0 # For conductive reactions, the chance to stun on each jump
 
-
 @export_group("Damage & Healing Over Time")
 @export var dot_dmg: int = 0
 @export var heals_lowest_ally_per_turn: int = 0
 @export var down_meter_fill_per_turn: int = 0
-
 
 @export_group("Stat Modifiers (Percentages)")
 # Use decimals! e.g., 0.5 is +50% Buff, -0.3 is -30% Debuff
@@ -48,10 +46,10 @@ enum Type { BUFF, DEBUFF, CROWD_CONTROL}
 # This allows one reaction to be triggered by multiple recipes (useful for ascended variants).
 @export var reaction_recipes: Array[Vector2i] = []
 @export var refresh_recipe_preview: bool = false:
-	set(value):
-		if value:
-			rebuild_reaction_recipe_preview()
-		refresh_recipe_preview = false
+    set(value):
+        if value:
+            rebuild_reaction_recipe_preview()
+        refresh_recipe_preview = false
 @export_multiline var reaction_recipe_preview: String = ""
 @export var damage_scales_with_debuffs: bool = false
 @export var clears_all_statuses: bool = false
@@ -98,37 +96,37 @@ enum Type { BUFF, DEBUFF, CROWD_CONTROL}
 # @export var steals_stats: bool = false
 
 func matches_reaction_recipe(primer: int, trigger: int) -> bool:
-	if not is_chain_reaction:
-		return false
+    if not is_chain_reaction:
+        return false
 
-	# New path: support multiple recipes per reaction resource.
-	for recipe in reaction_recipes:
-		if (recipe.x == primer and recipe.y == trigger) or (recipe.x == trigger and recipe.y == primer):
-			return true
+    # New path: support multiple recipes per reaction resource.
+    for recipe in reaction_recipes:
+        if (recipe.x == primer and recipe.y == trigger) or (recipe.x == trigger and recipe.y == primer):
+            return true
 
-	# Backward compatibility: old single-pair fields still work.
-	return (reaction_primer == primer and reaction_trigger == trigger) or (reaction_primer == trigger and reaction_trigger == primer)
+    # Backward compatibility: old single-pair fields still work.
+    return (reaction_primer == primer and reaction_trigger == trigger) or (reaction_primer == trigger and reaction_trigger == primer)
 
 func rebuild_reaction_recipe_preview() -> void:
-	var lines: PackedStringArray = []
+    var lines: PackedStringArray = []
 
-	for recipe in reaction_recipes:
-		lines.append(_format_recipe_line(recipe.x, recipe.y))
+    for recipe in reaction_recipes:
+        lines.append(_format_recipe_line(recipe.x, recipe.y))
 
-	# Show legacy single-pair recipe too, so old data is still visible while editing.
-	if reaction_primer != 0 or reaction_trigger != 0:
-		lines.append("legacy: " + _format_recipe_line(reaction_primer, reaction_trigger))
+    # Show legacy single-pair recipe too, so old data is still visible while editing.
+    if reaction_primer != 0 or reaction_trigger != 0:
+        lines.append("legacy: " + _format_recipe_line(reaction_primer, reaction_trigger))
 
-	if lines.is_empty():
-		reaction_recipe_preview = "No recipes configured."
-	else:
-		reaction_recipe_preview = "\n".join(lines)
+    if lines.is_empty():
+        reaction_recipe_preview = "No recipes configured."
+    else:
+        reaction_recipe_preview = "\n".join(lines)
 
 func _format_recipe_line(primer: int, trigger: int) -> String:
-	return _element_name(primer) + " + " + _element_name(trigger)
+    return _element_name(primer) + " + " + _element_name(trigger)
 
 func _element_name(value: int) -> String:
-	var names: PackedStringArray = GlobalData.Element.keys()
-	if value >= 0 and value < names.size():
-		return names[value]
-	return "UNKNOWN(" + str(value) + ")"
+    var names: PackedStringArray = GlobalData.Element.keys()
+    if value >= 0 and value < names.size():
+        return names[value]
+    return "UNKNOWN(" + str(value) + ")"

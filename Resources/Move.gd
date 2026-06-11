@@ -50,169 +50,169 @@ enum TurnOrderManipulation {NONE, PLACE_BEFORE_ACTOR, PLACE_AFTER_ACTOR, HASTEN_
 @export var stat_pct_bonus: Dictionary = {}
 
 func get_move_category() -> MoveCategory:
-	if power > 0:
-		return MoveCategory.OFFENSE
-	if heals_hp > 0 or heals_mp > 0:
-		return MoveCategory.HEALING
-	if applied_status != null:
-		return MoveCategory.STATUS
-	if cures_status:
-		return MoveCategory.SUPPORT
-	return MoveCategory.UTILITY
+    if power > 0:
+        return MoveCategory.OFFENSE
+    if heals_hp > 0 or heals_mp > 0:
+        return MoveCategory.HEALING
+    if applied_status != null:
+        return MoveCategory.STATUS
+    if cures_status:
+        return MoveCategory.SUPPORT
+    return MoveCategory.UTILITY
 
 func get_move_template() -> MoveTemplate:
-	if template_mode != MoveTemplate.AUTO:
-		return template_mode
+    if template_mode != MoveTemplate.AUTO:
+        return template_mode
 
-	match get_move_category():
-		MoveCategory.OFFENSE:
-			return MoveTemplate.ATTACK
-		MoveCategory.HEALING:
-			return MoveTemplate.HEAL
-		MoveCategory.STATUS:
-			return MoveTemplate.STATUS
-		MoveCategory.SUPPORT:
-			return MoveTemplate.SUPPORT
-		MoveCategory.UTILITY:
-			return MoveTemplate.UTILITY
+    match get_move_category():
+        MoveCategory.OFFENSE:
+            return MoveTemplate.ATTACK
+        MoveCategory.HEALING:
+            return MoveTemplate.HEAL
+        MoveCategory.STATUS:
+            return MoveTemplate.STATUS
+        MoveCategory.SUPPORT:
+            return MoveTemplate.SUPPORT
+        MoveCategory.UTILITY:
+            return MoveTemplate.UTILITY
 
-	return MoveTemplate.UTILITY
+    return MoveTemplate.UTILITY
 
 func get_move_template_label() -> String:
-	match get_move_template():
-		MoveTemplate.ATTACK:
-			return "Attack Template"
-		MoveTemplate.HEAL:
-			return "Heal Template"
-		MoveTemplate.STATUS:
-			return "Status Template"
-		MoveTemplate.SUPPORT:
-			return "Support Template"
-		MoveTemplate.UTILITY:
-			return "Utility Template"
-		_:
-			return "Auto Template"
+    match get_move_template():
+        MoveTemplate.ATTACK:
+            return "Attack Template"
+        MoveTemplate.HEAL:
+            return "Heal Template"
+        MoveTemplate.STATUS:
+            return "Status Template"
+        MoveTemplate.SUPPORT:
+            return "Support Template"
+        MoveTemplate.UTILITY:
+            return "Utility Template"
+        _:
+            return "Auto Template"
 
 func get_move_category_label() -> String:
-	match get_move_category():
-		MoveCategory.OFFENSE:
-			return "Attack"
-		MoveCategory.HEALING:
-			return "Heal"
-		MoveCategory.STATUS:
-			return "Status"
-		MoveCategory.SUPPORT:
-			return "Support"
-		_:
-			return "Utility"
+    match get_move_category():
+        MoveCategory.OFFENSE:
+            return "Attack"
+        MoveCategory.HEALING:
+            return "Heal"
+        MoveCategory.STATUS:
+            return "Status"
+        MoveCategory.SUPPORT:
+            return "Support"
+        _:
+            return "Utility"
 
 func get_target_label() -> String:
-	match target_type:
-		Target.SINGLE_ENEMY:
-			return "Single Enemy"
-		Target.ALL_ENEMIES:
-			return "All Enemies"
-		Target.SINGLE_ALLY:
-			return "Single Ally"
-		Target.ALL_ALLIES:
-			return "All Allies"
-		Target.SELF:
-			return "Self"
-	return "Unknown"
+    match target_type:
+        Target.SINGLE_ENEMY:
+            return "Single Enemy"
+        Target.ALL_ENEMIES:
+            return "All Enemies"
+        Target.SINGLE_ALLY:
+            return "Single Ally"
+        Target.ALL_ALLIES:
+            return "All Allies"
+        Target.SELF:
+            return "Self"
+    return "Unknown"
 
 func _append_icon_candidate(candidates: PackedStringArray, value: StringName) -> void:
-	if value != &"" and not candidates.has(String(value)):
-		candidates.append(String(value))
+    if value != &"" and not candidates.has(String(value)):
+        candidates.append(String(value))
 
 func get_icon_candidates() -> PackedStringArray:
-	var candidates: PackedStringArray = PackedStringArray()
+    var candidates: PackedStringArray = PackedStringArray()
 
-	_append_icon_candidate(candidates, ui_icon_name)
+    _append_icon_candidate(candidates, ui_icon_name)
 
-	if icon != null:
-		_append_icon_candidate(candidates, &"custom_texture")
+    if icon != null:
+        _append_icon_candidate(candidates, &"custom_texture")
 
-	var template_key: String = "template_%s" % get_move_template_label().to_lower().replace(" ", "_")
-	_append_icon_candidate(candidates, StringName(template_key))
+    var template_key: String = "template_%s" % get_move_template_label().to_lower().replace(" ", "_")
+    _append_icon_candidate(candidates, StringName(template_key))
 
-	var category_key: String = "move_%s" % get_move_category_label().to_lower().replace(" ", "_")
-	_append_icon_candidate(candidates, StringName(category_key))
+    var category_key: String = "move_%s" % get_move_category_label().to_lower().replace(" ", "_")
+    _append_icon_candidate(candidates, StringName(category_key))
 
-	if is_magic and element != GlobalData.Element.NEUTRAL:
-		var element_key: String = "element_%s" % GlobalData.Element.keys()[element].to_lower()
-		_append_icon_candidate(candidates, StringName(element_key))
-	elif not is_magic and physical_type != GlobalData.PhysicalType.NONE:
-		# PhysicalType enum was simplified to a single PHYSICAL value.
-		# Guard against old serialized numeric values that may be out of range.
-		var phys_keys := GlobalData.PhysicalType.keys()
-		var phys_name: String = "physical_physical"
-		if physical_type >= 0 and physical_type < phys_keys.size():
-			phys_name = "physical_%s" % phys_keys[physical_type].to_lower()
-		_append_icon_candidate(candidates, StringName(phys_name))
+    if is_magic and element != GlobalData.Element.NEUTRAL:
+        var element_key: String = "element_%s" % GlobalData.Element.keys()[element].to_lower()
+        _append_icon_candidate(candidates, StringName(element_key))
+    elif not is_magic and physical_type != GlobalData.PhysicalType.NONE:
+        # PhysicalType enum was simplified to a single PHYSICAL value.
+        # Guard against old serialized numeric values that may be out of range.
+        var phys_keys := GlobalData.PhysicalType.keys()
+        var phys_name: String = "physical_physical"
+        if physical_type >= 0 and physical_type < phys_keys.size():
+            phys_name = "physical_%s" % phys_keys[physical_type].to_lower()
+        _append_icon_candidate(candidates, StringName(phys_name))
 
-	match target_type:
-		Target.ALL_ENEMIES, Target.ALL_ALLIES:
-			_append_icon_candidate(candidates, &"target_aoe")
-		Target.SELF:
-			_append_icon_candidate(candidates, &"target_self")
+    match target_type:
+        Target.ALL_ENEMIES, Target.ALL_ALLIES:
+            _append_icon_candidate(candidates, &"target_aoe")
+        Target.SELF:
+            _append_icon_candidate(candidates, &"target_self")
 
-	return candidates
+    return candidates
 
 func get_icon_key() -> StringName:
-	var candidates := get_icon_candidates()
-	if candidates.size() > 0:
-		return StringName(candidates[0])
-	return &""
+    var candidates := get_icon_candidates()
+    if candidates.size() > 0:
+        return StringName(candidates[0])
+    return &""
 
 func get_placeholder_icon_name() -> StringName:
-	if ui_icon_name != &"":
-		return ui_icon_name
+    if ui_icon_name != &"":
+        return ui_icon_name
 
-	match get_move_template():
-		MoveTemplate.ATTACK:
-			if target_type == Target.ALL_ENEMIES or target_type == Target.ALL_ALLIES:
-				return &"Group"
-			if is_magic:
-				# All magic elements use the generic magic icon
-				return &"ColorRect"
-			return &"Sword"
-		MoveTemplate.HEAL:
-			return &"Heal"
-		MoveTemplate.STATUS:
-			if applied_status != null and applied_status.effect_type == StatusEffect.Type.BUFF:
-				return &"Buff"
-			return &"Debuff"
-		MoveTemplate.SUPPORT:
-			return &"Heal"
-		MoveTemplate.UTILITY:
-			return &"Node"
-		_:
-			return &"Node"
+    match get_move_template():
+        MoveTemplate.ATTACK:
+            if target_type == Target.ALL_ENEMIES or target_type == Target.ALL_ALLIES:
+                return &"Group"
+            if is_magic:
+                # All magic elements use the generic magic icon
+                return &"ColorRect"
+            return &"Sword"
+        MoveTemplate.HEAL:
+            return &"Heal"
+        MoveTemplate.STATUS:
+            if applied_status != null and applied_status.effect_type == StatusEffect.Type.BUFF:
+                return &"Buff"
+            return &"Debuff"
+        MoveTemplate.SUPPORT:
+            return &"Heal"
+        MoveTemplate.UTILITY:
+            return &"Node"
+        _:
+            return &"Node"
 
 func get_icon_tags() -> PackedStringArray:
-	return get_icon_candidates()
+    return get_icon_candidates()
 
 func get_button_label() -> String:
-	var label_parts: PackedStringArray = PackedStringArray()
-	label_parts.append(get_move_template_label())
-	label_parts.append(get_target_label())
+    var label_parts: PackedStringArray = PackedStringArray()
+    label_parts.append(get_move_template_label())
+    label_parts.append(get_target_label())
 
-	if is_magic and element != GlobalData.Element.NEUTRAL:
-		label_parts.append(GlobalData.Element.keys()[element].capitalize())
-	elif not is_magic and physical_type != GlobalData.PhysicalType.NONE:
-		# Use a stable, human-friendly label for physical moves.
-		# If serialized data contains old enum indices, default to "Physical".
-		var phys_label := "Physical"
-		var phys_keys := GlobalData.PhysicalType.keys()
-		if physical_type >= 0 and physical_type < phys_keys.size():
-			phys_label = phys_keys[physical_type].capitalize()
-		label_parts.append(phys_label)
+    if is_magic and element != GlobalData.Element.NEUTRAL:
+        label_parts.append(GlobalData.Element.keys()[element].capitalize())
+    elif not is_magic and physical_type != GlobalData.PhysicalType.NONE:
+        # Use a stable, human-friendly label for physical moves.
+        # If serialized data contains old enum indices, default to "Physical".
+        var phys_label := "Physical"
+        var phys_keys := GlobalData.PhysicalType.keys()
+        if physical_type >= 0 and physical_type < phys_keys.size():
+            phys_label = phys_keys[physical_type].capitalize()
+        label_parts.append(phys_label)
 
-	return "%s [%s]" % [move_name, ", ".join(label_parts)]
+    return "%s [%s]" % [move_name, ", ".join(label_parts)]
 
 func get_action_value(attacker: Battler = null) -> int:
-	var speed_component: float = 0.0
-	if attacker != null and attacker.stats_manager != null:
-		speed_component = float(attacker.stats_manager.get_active_speed()) * action_value_speed_scale
+    var speed_component: float = 0.0
+    if attacker != null and attacker.stats_manager != null:
+        speed_component = float(attacker.stats_manager.get_active_speed()) * action_value_speed_scale
 
-	return max(1, roundi(speed_component + float(action_value_bonus)))
+    return max(1, roundi(speed_component + float(action_value_bonus)))

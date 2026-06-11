@@ -2,8 +2,9 @@ extends Control
 class_name AffinityPanels
 
 @export var battler: Battler:
-	set(value):
-		bind_battler(value)
+    set(value):
+        if _bound_battler != value:
+            bind_battler(value)
 
 @export var weak_color: Color = Color("#00BDF2")
 @export var normal_color: Color = Color("#29388A")
@@ -23,57 +24,59 @@ class_name AffinityPanels
 
 var _bound_battler: Battler = null
 
-
 func _ready() -> void:
-	_refresh_panel()
-
+    custom_minimum_size = Vector2(120, 30)
+    _refresh_panel()
 
 func bind_battler(new_battler: Battler) -> void:
-	if _bound_battler == new_battler:
-		_refresh_panel()
-		return
+    if _bound_battler == new_battler:
+        _refresh_panel()
+        return
 
-	_bound_battler = new_battler
-	battler = new_battler
-	_refresh_panel()
-
+    _bound_battler = new_battler
+    battler = new_battler
+    _refresh_panel()
 
 func _refresh_panel() -> void:
-	if fire_bg_fill == null or fire_bg_stroke == null or light_bg_fill == null or light_bg_stroke == null or earth_bg_fill == null or earth_bg_stroke == null or physical_bg_fill == null or physical_bg_stroke == null:
-		return
+    if fire_bg_fill == null or fire_bg_stroke == null or light_bg_fill == null or light_bg_stroke == null or earth_bg_fill == null or earth_bg_stroke == null or physical_bg_fill == null or physical_bg_stroke == null:
+        return
 
-	if _bound_battler == null or not is_instance_valid(_bound_battler) or _bound_battler.affinity_manager == null:
-		_apply_slot_color(fire_bg_fill, fire_bg_stroke, normal_color)
-		_apply_slot_color(light_bg_fill, light_bg_stroke, normal_color)
-		_apply_slot_color(earth_bg_fill, earth_bg_stroke, normal_color)
-		_apply_slot_color(dark_bg_fill, dark_bg_stroke, normal_color)
-		_apply_slot_color(physical_bg_fill, physical_bg_stroke, normal_color)
-		return
+    if _bound_battler == null or not is_instance_valid(_bound_battler) or _bound_battler.affinity_manager == null:
+        _apply_slot_color(fire_bg_fill, fire_bg_stroke, normal_color)
+        _apply_slot_color(light_bg_fill, light_bg_stroke, normal_color)
+        _apply_slot_color(earth_bg_fill, earth_bg_stroke, normal_color)
+        _apply_slot_color(dark_bg_fill, dark_bg_stroke, normal_color)
+        _apply_slot_color(physical_bg_fill, physical_bg_stroke, normal_color)
+        return
 
-	var affinity_manager: AffinityManager = _bound_battler.affinity_manager
-	
-	# --- Core Elemental Mappings ---
-	_apply_slot_color(fire_bg_fill, fire_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.FIRE)))
-	_apply_slot_color(light_bg_fill, light_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.LIGHT)))
-	_apply_slot_color(earth_bg_fill, earth_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.EARTH)))
-	_apply_slot_color(dark_bg_fill, dark_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.DARK)))
-	
-	# --- 🔄 FIXED: Pass the consolidated physical type enum key instead of NONE ---
-	_apply_slot_color(physical_bg_fill, physical_bg_stroke, _get_affinity_color(
-		affinity_manager.get_current_affinity(false, GlobalData.Element.NEUTRAL, GlobalData.PhysicalType.PHYSICAL)
-	))
+    var affinity_manager: AffinityManager = _bound_battler.affinity_manager
+
+    # --- Core Elemental Mappings ---
+    _apply_slot_color(fire_bg_fill, fire_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.FIRE)))
+    _apply_slot_color(light_bg_fill, light_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.LIGHT)))
+    _apply_slot_color(earth_bg_fill, earth_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.EARTH)))
+    _apply_slot_color(dark_bg_fill, dark_bg_stroke, _get_affinity_color(affinity_manager.get_current_affinity(true, GlobalData.Element.DARK)))
+
+    # --- 🔄 FIXED: Pass the consolidated physical type enum key instead of NONE ---
+    _apply_slot_color(physical_bg_fill, physical_bg_stroke, _get_affinity_color(
+        affinity_manager.get_current_affinity(false, GlobalData.Element.NEUTRAL, GlobalData.PhysicalType.PHYSICAL)
+    ))
 func _get_affinity_color(affinity: BattlerStats.Affinity) -> Color:
-	match affinity:
-		BattlerStats.Affinity.WEAK:
-			return weak_color
-		BattlerStats.Affinity.RESIST:
-			return resist_color
-		BattlerStats.Affinity.BLOCK:
-			return block_color
-		_:
-			return normal_color
-
+    match affinity:
+        BattlerStats.Affinity.WEAK:
+            return weak_color
+        BattlerStats.Affinity.RESIST:
+            return resist_color
+        BattlerStats.Affinity.BLOCK:
+            return block_color
+        _:
+            return normal_color
 
 func _apply_slot_color(fill_panel: Panel, stroke_panel: Panel, color_value: Color) -> void:
-	fill_panel.modulate = color_value
-	stroke_panel.modulate = color_value
+    fill_panel.modulate = color_value
+    stroke_panel.modulate = color_value
+
+    fill_panel.visible = true
+    stroke_panel.visible = true
+    if fill_panel.get_parent() is Control:
+        fill_panel.get_parent().visible = true

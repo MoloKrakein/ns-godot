@@ -7,7 +7,6 @@ func _ready():
     _scan_directory("res://Resources/")
     print("Load ", database.size(),"item to db")
 
-
 # Scanner for tscn
 func _scan_directory(path: String):
     var dir = DirAccess.open(path)
@@ -49,4 +48,3 @@ func get_reaction_id(primer: int, trigger: int) -> String:
         return reaction.id
     return ""
 
-    
